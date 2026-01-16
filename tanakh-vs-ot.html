@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tanakh vs Old Testament - Book Comparison</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e0e0e0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .column {
+            width: 320px;
+            z-index: 2;
+        }
+
+        .column-title {
+            text-align: center;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 8px;
+            border: 2px solid #ffd700;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            background: linear-gradient(90deg, #4a4a8a, #6a6aaa);
+            color: white;
+            padding: 8px 15px;
+            font-weight: bold;
+            border-radius: 6px 6px 0 0;
+            font-size: 0.95em;
+        }
+
+        .left .section-header {
+            background: linear-gradient(90deg, #8b4513, #a0522d);
+        }
+
+        .right .section-header {
+            background: linear-gradient(90deg, #2e5a2e, #3d7a3d);
+        }
+
+        .book-list {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .book {
+            padding: 8px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.2s;
+            cursor: default;
+        }
+
+        .book:last-child {
+            border-bottom: none;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .book:hover {
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .book.highlight {
+            background: rgba(255, 215, 0, 0.3);
+        }
+
+        .hebrew {
+            font-size: 0.85em;
+            color: #aaa;
+            margin-left: 8px;
+        }
+
+        .svg-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .connection-line {
+            stroke: rgba(255, 215, 0, 0.3);
+            stroke-width: 1.5;
+            fill: none;
+            transition: stroke 0.2s, stroke-width 0.2s;
+        }
+
+        .connection-line.highlight {
+            stroke: #ffd700;
+            stroke-width: 3;
+        }
+
+        .legend {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .legend h3 {
+            margin-bottom: 10px;
+            color: #ffd700;
+        }
+
+        .legend p {
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .note {
+            color: #aaa;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hebrew Tanakh vs Christian Old Testament</h1>
+
+    <div class="container" id="container">
+        <div class="column left">
+            <div class="column-title">Tanakh (24 Books)</div>
+
+            <div class="section">
+                <div class="section-header">Torah (Teaching) - 5 Books</div>
+                <div class="book-list">
+                    <div class="book" data-id="genesis">Bereshit <span class="hebrew">בְּרֵאשִׁית</span></div>
+                    <div class="book" data-id="exodus">Shemot <span class="hebrew">שְׁמוֹת</span></div>
+                    <div class="book" data-id="leviticus">Vayikra <span class="hebrew">וַיִּקְרָא</span></div>
+                    <div class="book" data-id="numbers">Bamidbar <span class="hebrew">בְּמִדְבַּר</span></div>
+                    <div class="book" data-id="deuteronomy">Devarim <span class="hebrew">דְּבָרִים</span></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Nevi'im (Prophets) - 8 Books</div>
+                <div class="book-list">
+                    <div class="book" data-id="joshua">Yehoshua <span class="hebrew">יְהוֹשֻׁעַ</span></div>
+                    <div class="book" data-id="judges">Shoftim <span class="hebrew">שׁוֹפְטִים</span></div>
+                    <div class="book" data-id="samuel">Shmuel <span class="hebrew">שְׁמוּאֵל</span></div>
+                    <div class="book" data-id="kings">Melakhim <span class="hebrew">מְלָכִים</span></div>
+                    <div class="book" data-id="isaiah">Yeshayahu <span class="hebrew">יְשַׁעְיָהוּ</span></div>
+                    <div class="book" data-id="jeremiah">Yirmeyahu <span class="hebrew">יִרְמְיָהוּ</span></div>
+                    <div class="book" data-id="ezekiel">Yechezkel <span class="hebrew">יְחֶזְקֵאל</span></div>
+                    <div class="book" data-id="twelve">Trei Asar <span class="hebrew">תְּרֵי עָשָׂר</span></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Ketuvim (Writings) - 11 Books</div>
+                <div class="book-list">
+                    <div class="book" data-id="psalms">Tehillim <span class="hebrew">תְּהִלִּים</span></div>
+                    <div class="book" data-id="proverbs">Mishlei <span class="hebrew">מִשְׁלֵי</span></div>
+                    <div class="book" data-id="job">Iyov <span class="hebrew">אִיּוֹב</span></div>
+                    <div class="book" data-id="song">Shir HaShirim <span class="hebrew">שִׁיר הַשִּׁירִים</span></div>
+                    <div class="book" data-id="ruth">Rut <span class="hebrew">רוּת</span></div>
+                    <div class="book" data-id="lamentations">Eikhah <span class="hebrew">אֵיכָה</span></div>
+                    <div class="book" data-id="ecclesiastes">Kohelet <span class="hebrew">קֹהֶלֶת</span></div>
+                    <div class="book" data-id="esther">Ester <span class="hebrew">אֶסְתֵּר</span></div>
+                    <div class="book" data-id="daniel">Daniel <span class="hebrew">דָּנִיֵּאל</span></div>
+                    <div class="book" data-id="ezra-nehemiah">Ezra-Nechemyah <span class="hebrew">עֶזְרָא-נְחֶמְיָה</span></div>
+                    <div class="book" data-id="chronicles">Divrei HaYamim <span class="hebrew">דִּבְרֵי הַיָּמִים</span></div>
+                </div>
+            </div>
+        </div>
+
+        <svg class="svg-container" id="svg"></svg>
+
+        <div class="column right">
+            <div class="column-title">Old Testament (39 Books)</div>
+
+            <div class="section">
+                <div class="section-header">Pentateuch (Law) - 5 Books</div>
+                <div class="book-list">
+                    <div class="book" data-id="genesis">Genesis</div>
+                    <div class="book" data-id="exodus">Exodus</div>
+                    <div class="book" data-id="leviticus">Leviticus</div>
+                    <div class="book" data-id="numbers">Numbers</div>
+                    <div class="book" data-id="deuteronomy">Deuteronomy</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Historical Books - 12 Books</div>
+                <div class="book-list">
+                    <div class="book" data-id="joshua">Joshua</div>
+                    <div class="book" data-id="judges">Judges</div>
+                    <div class="book" data-id="ruth">Ruth</div>
+                    <div class="book" data-id="samuel">1 Samuel</div>
+                    <div class="book" data-id="samuel">2 Samuel</div>
+                    <div class="book" data-id="kings">1 Kings</div>
+                    <div class="book" data-id="kings">2 Kings</div>
+                    <div class="book" data-id="chronicles">1 Chronicles</div>
+                    <div class="book" data-id="chronicles">2 Chronicles</div>
+                    <div class="book" data-id="ezra-nehemiah">Ezra</div>
+                    <div class="book" data-id="ezra-nehemiah">Nehemiah</div>
+                    <div class="book" data-id="esther">Esther</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Wisdom/Poetry - 5 Books</div>
+                <div class="book-list">
+                    <div class="book" data-id="job">Job</div>
+                    <div class="book" data-id="psalms">Psalms</div>
+                    <div class="book" data-id="proverbs">Proverbs</div>
+                    <div class="book" data-id="ecclesiastes">Ecclesiastes</div>
+                    <div class="book" data-id="song">Song of Solomon</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Major Prophets - 5 Books</div>
+                <div class="book-list">
+                    <div class="book" data-id="isaiah">Isaiah</div>
+                    <div class="book" data-id="jeremiah">Jeremiah</div>
+                    <div class="book" data-id="lamentations">Lamentations</div>
+                    <div class="book" data-id="ezekiel">Ezekiel</div>
+                    <div class="book" data-id="daniel">Daniel</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Minor Prophets - 12 Books</div>
+                <div class="book-list">
+                    <div class="book" data-id="twelve">Hosea</div>
+                    <div class="book" data-id="twelve">Joel</div>
+                    <div class="book" data-id="twelve">Amos</div>
+                    <div class="book" data-id="twelve">Obadiah</div>
+                    <div class="book" data-id="twelve">Jonah</div>
+                    <div class="book" data-id="twelve">Micah</div>
+                    <div class="book" data-id="twelve">Nahum</div>
+                    <div class="book" data-id="twelve">Habakkuk</div>
+                    <div class="book" data-id="twelve">Zephaniah</div>
+                    <div class="book" data-id="twelve">Haggai</div>
+                    <div class="book" data-id="twelve">Zechariah</div>
+                    <div class="book" data-id="twelve">Malachi</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="legend">
+        <h3>Key Differences</h3>
+        <p>
+            The Tanakh and Old Testament contain the same content but are organized differently.
+            The Tanakh counts <strong>24 books</strong> while the Christian Old Testament counts <strong>39 books</strong>.
+        </p>
+        <p class="note">
+            Differences: Samuel, Kings, Chronicles, and Ezra-Nehemiah are each one book in the Tanakh but split in two in the OT.
+            The 12 Minor Prophets (Trei Asar) are counted as one book in the Tanakh.
+            <br>Hover over any book to see its correspondence.
+        </p>
+    </div>
+
+    <script>
+        const container = document.getElementById('container');
+        const svg = document.getElementById('svg');
+        const leftColumn = document.querySelector('.left');
+        const rightColumn = document.querySelector('.right');
+
+        // Group books by data-id
+        function getBooksByID() {
+            const groups = {};
+            document.querySelectorAll('.book').forEach(book => {
+                const id = book.dataset.id;
+                if (!groups[id]) groups[id] = { left: [], right: [] };
+                if (book.closest('.left')) {
+                    groups[id].left.push(book);
+                } else {
+                    groups[id].right.push(book);
+                }
+            });
+            return groups;
+        }
+
+        function drawLines() {
+            const containerRect = container.getBoundingClientRect();
+            svg.setAttribute('width', containerRect.width);
+            svg.setAttribute('height', containerRect.height);
+            svg.innerHTML = '';
+
+            const groups = getBooksByID();
+
+            for (const id in groups) {
+                const { left, right } = groups[id];
+                if (left.length === 0 || right.length === 0) continue;
+
+                left.forEach(leftBook => {
+                    right.forEach(rightBook => {
+                        const leftRect = leftBook.getBoundingClientRect();
+                        const rightRect = rightBook.getBoundingClientRect();
+
+                        const x1 = leftRect.right - containerRect.left;
+                        const y1 = leftRect.top + leftRect.height / 2 - containerRect.top;
+                        const x2 = rightRect.left - containerRect.left;
+                        const y2 = rightRect.top + rightRect.height / 2 - containerRect.top;
+
+                        // Create curved path
+                        const midX = (x1 + x2) / 2;
+                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        path.setAttribute('d', `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`);
+                        path.setAttribute('class', 'connection-line');
+                        path.dataset.id = id;
+                        svg.appendChild(path);
+                    });
+                });
+            }
+        }
+
+        // Highlight on hover
+        document.querySelectorAll('.book').forEach(book => {
+            book.addEventListener('mouseenter', () => {
+                const id = book.dataset.id;
+                // Highlight all books with same id
+                document.querySelectorAll(`.book[data-id="${id}"]`).forEach(b => {
+                    b.classList.add('highlight');
+                });
+                // Highlight lines
+                document.querySelectorAll(`.connection-line[data-id="${id}"]`).forEach(line => {
+                    line.classList.add('highlight');
+                });
+            });
+
+            book.addEventListener('mouseleave', () => {
+                const id = book.dataset.id;
+                document.querySelectorAll(`.book[data-id="${id}"]`).forEach(b => {
+                    b.classList.remove('highlight');
+                });
+                document.querySelectorAll(`.connection-line[data-id="${id}"]`).forEach(line => {
+                    line.classList.remove('highlight');
+                });
+            });
+        });
+
+        // Initial draw and redraw on resize
+        window.addEventListener('load', drawLines);
+        window.addEventListener('resize', drawLines);
+    </script>
+</body>
+</html>
