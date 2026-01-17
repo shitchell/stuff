@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cube Interpretations</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui;
+      background: #000000;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .banner {
+      width: 100%;
+      text-align: center;
+      font-size: 1.5em;
+      font-weight: bold;
+      padding: 1em;
+    }
+
+    .slanty {
+      font-style: italic;
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .main>.image-wrapper {
+      flex: 0 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+    }
+
+    .image-wrapper img {
+      max-height: 90vh;
+      max-width: 100%;
+      height: auto;
+      border: 1px solid #ccc;
+    }
+
+    .scenes {
+      flex: 1;
+      flex-wrap: wrap;
+      justify-content: center;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      gap: 40px;
+    }
+
+    canvas,
+    .scenes>.image-wrapper>img {
+      width: 300px !important;
+      height: 300px !important;
+      border: 1px solid #ccc;
+    }
+
+    .label {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    pre.code-description {
+      white-space-collapse: preserve-breaks;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="main">
+      <div class="banner">
+        &#9432; <span class="slanty">drag cubes to rotate</span>
+      </div>
+      <div class="scenes">
+        <div class="image-wrapper">
+          <!-- <img src="https://i.imgur.com/AYHt79M.jpeg" alt="Original reference image"> -->
+          <div class="label">Reference Image</div>
+          <img src="https://i.imgur.com/reDkF3O.png" alt="Original reference image" />
+        </div>
+        <div>
+          <div class="label">A: Cube with missing corner</div>
+          <canvas id="sceneA"></canvas>
+          <pre class="code-description">
+            camera.position.set(16.5, -14.5, 25);
+            light.position.set(15, -15, 25);
+          </pre>
+        </div>
+        <div>
+          <div class="label">B: Cube in corner of 3D graph</div>
+          <canvas id="sceneB"></canvas>
+          <pre class="code-description">
+            camera.position.set(33.5, 25, 25);
+            light.position.set(10, -10, 25);
+            controls.target.y += 0.5
+          </pre>
+        </div>
+        <div>
+          <div class="label">C: Cube with protruding block</div>
+          <canvas id="sceneC"></canvas>
+          <pre class="code-description">
+            camera.position.set(16.5, -14.5, 25);
+            light.position.set(15, -15, 25);
+          </pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.152.2/build/three.module.js';
+    import {
+      OrbitControls
+    } from 'https://unpkg.com/three@0.152.2/examples/jsm/controls/OrbitControls.js?module';
+
+    function initScene(canvasId, createObjectsFn, cameraPosition) {
+      const canvas = document.getElementById(canvasId);
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        alpha: true,
+        antialias: true
+      });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(
+        canvas.clientWidth, canvas.clientHeight, false
+      );
+      const scene = new THREE.Scene();
+      var w = canvas.clientWidth;
+      var h = canvas.clientHeight;
+      var viewSize = 6;
+      var aspectRatio = w / h;
+      const _viewport = {
+        viewSize: viewSize,
+        aspectRatio: aspectRatio,
+        left: (-aspectRatio * viewSize) / 2,
+        right: (aspectRatio * viewSize) / 2,
+        top: viewSize / 2,
+        bottom: -viewSize / 2,
+        near: -100,
+        far: 100
+      }
+      console.log("------", canvas, "_viewport = ", _viewport, "------")
+      const camera = new THREE.OrthographicCamera(
+        _viewport.left,
+        _viewport.right,
+        _viewport.top,
+        _viewport.bottom,
+        _viewport.near,
+        _viewport.far
+      );
+      const light = new THREE.DirectionalLight(0xffffff, 1);
+      const controls = new OrbitControls(camera, canvas);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.target.set(1, 1, 1);
+      controls.update();
+      /*************************************************************************
+       Set up the camera
+       ************************************************************************/
+      // we started  with a normal perspective camera, but someone rightly
+      // pointed out that didn't get the, well, perspective quite right.
+      //const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+      // So we switched to an OrthographicCamera to keep everything flatter
+      //const camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, near, far );
+      // But I've got Scene B set up such that we're looking down from the top
+      // and the other two set up such that we're looking up from the bottom, so
+      // that requires slightly different camera positions/lighting
+      let ambientLightColor = 0xeeeeee;
+      let ambientLightOpacity = 0.5;
+      if (cameraPosition === 'top') {
+        camera.position.set(33.5, 25, 25);
+        light.position.set(20, 8, 10);
+        //                (llr, ud, lrr)
+        //ambientLightColor = 0xbbbbbb;
+        ambientLightOpacity = 0.55;
+        //light.intensity = 0.75;
+        controls.target.y += 0.5
+      } else if (cameraPosition === 'bottom') {
+        camera.position.set(16.5, -14.5, 24.25);
+        light.position.set(15, -10, 28);
+        ambientLightColor = 0xeeeeee;
+      }
+      camera.lookAt(scene.position);
+      scene.add(light);
+      //scene.add(new THREE.AmbientLight(0x404040, 0.05));
+      scene.add(new THREE.AmbientLight(
+        ambientLightColor, ambientLightOpacity
+      ));
+      //scene.background = new THREE.Color(0xf5c25a);
+      createObjectsFn(scene);
+
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+      }
+      animate();
+    }
+
+    function makeFaceMaterial(x, y, z, faceIndex) {
+      const size = 128;
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      // Background (transparent)
+      ctx.clearRect(0, 0, size, size);
+      // Optional: white background
+      // ctx.fillStyle = '#ffffff';
+      // ctx.fillRect(0, 0, size, size);
+      // Text
+      ctx.fillStyle = '#000000';
+      ctx.font = 'bold 20px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const label = `{${x},${y},${z}}/${faceIndex}`;
+      ctx.fillText(label, size / 2, size / 2);
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.needsUpdate = true;
+      return new THREE.MeshStandardMaterial({
+        map: texture,
+        transparent: true,
+      });
+    }
+
+    function addRubikCube(scene, options = {}) {
+      const size = 1;
+      const gap = 0.02;
+      const edgeMaterial = new THREE.LineBasicMaterial({
+        color: 0x222222
+      });
+      const renderOnlyFaces = options.renderOnlyFaces || false;
+      const renderHalfFaces = options.renderHalfFaces || false;
+      for (let x = 0; x < 3; x++) {
+        for (let y = 0; y < 3; y++) {
+          for (let z = 0; z < 3; z++) {
+            const skip = options.skip ? options.skip(x, y, z) : false;
+            if (!skip) {
+              // Determine the faces touching the edges
+              let faces = new Set();
+              // faces: (from the current starting point)
+              //  0 = front right
+              //  1 = back left
+              //  2 = top
+              //  3 = bottom
+              //  4 = front left
+              //  5 = back right
+              // coords:
+              //  x: 0-2: back left (1) to front right (0)
+              //  y: 0-2: bottom (3) to top (2)
+              //  z: 0-2: back right (5) to front left (4)
+              if (x === 2 && !renderOnlyFaces) faces.add(0);
+              if (x === 0) faces.add(1);
+              if (y === 2) faces.add(2);
+              if (y === 0 && !renderOnlyFaces) faces.add(3);
+              if (z === 2 && !renderOnlyFaces) faces.add(4);
+              if (z === 0) faces.add(5);
+              // console.log(`cube[${x}, ${y}, ${z}] faces == ${Array.from(faces)}`);
+              const materials = [];
+              let faceOptions = {};
+              for (let i = 0; i < 6; i++) {
+                if (faces.has(i)) {
+                  faceOptions = {
+                    color: 0x999999
+                  };
+                  if (renderOnlyFaces) faceOptions.side = THREE.DoubleSide;
+                } else if (renderOnlyFaces) {
+                  faceOptions = {
+                    transparent: true,
+                    opacity: 0
+                  };
+                } else {
+                  faceOptions = {
+                    color: 0xf5c25a
+                  };
+                  if (renderOnlyFaces) faceOptions.side = THREE.DoubleSide;
+                }
+                materials.push(new THREE.MeshStandardMaterial(faceOptions));
+                //materials.push(makeFaceMaterial(x, y, z, i));
+              }
+              const geometry = new THREE.BoxGeometry(size, size, size);
+              const cube = new THREE.Mesh(geometry, materials);
+              cube.position.set(x * (size + gap), y * (size + gap), z * (size + gap));
+              scene.add(cube);
+              const edges = new THREE.EdgesGeometry(geometry);
+              const line = new THREE.LineSegments(edges, edgeMaterial);
+              line.position.copy(cube.position);
+              scene.add(line);
+            }
+          }
+        }
+      }
+    }
+    // Scene A: Cube missing corner
+    initScene('sceneA', scene => {
+      addRubikCube(scene, {
+        skip: (x, y, z) => x === 2 && y === 0 && z === 2
+      });
+    }, 'bottom');
+    // Scene B: Cube inside 3D coordinate walls with grey walls and orange cube
+    initScene('sceneB', scene => {
+      const wallColor = 0x222222;
+      const bgColor = 0x9d9d9d;
+      const gridSize = 3;
+      const gridDivisions = 3;
+      // Create background panel for each plane
+      const bgMaterial = new THREE.MeshStandardMaterial({
+        color: bgColor,
+        side: THREE.DoubleSide
+      });
+      const planes = [{
+          rotation: [Math.PI / 2, 0, 0],
+          position: [1, 0, 1]
+        }, // xy plane (back)
+        {
+          rotation: [0, 0, 0],
+          position: [1, 1.5, -0.5]
+        }, // xz plane (bottom)
+        {
+          rotation: [0, Math.PI / 2, 0],
+          position: [-0.5, 1.5, 1]
+        } // yz plane (left)
+      ];
+      for (const {
+          rotation,
+          position
+        } of planes) {
+        const panel = new THREE.Mesh(new THREE.PlaneGeometry(gridSize, gridSize), bgMaterial);
+        panel.rotation.set(...rotation);
+        panel.position.set(...position);
+        scene.add(panel);
+      }
+      // Add gridlines on top of panels
+      const gridMaterial = new THREE.LineBasicMaterial({
+        color: 0x000000
+      });
+      const xy = new THREE.GridHelper(gridSize, gridDivisions, wallColor, wallColor);
+      xy.rotation.x = Math.PI / 2;
+      xy.position.set(1, 1.5, -0.5);
+      scene.add(xy);
+      const xyGridLineEnhancer = new THREE.GridHelper(gridSize, gridDivisions, 0x000000, 0x000000);
+      xyGridLineEnhancer.rotation.x = Math.PI / 2;
+      xyGridLineEnhancer.position.set(1, 1.5, -0.49);
+      //xyGridLineEnhancer.scale.set(1.001, 1.001, 1.001); // push slightly in front
+      scene.add(xyGridLineEnhancer);
+      const xz = new THREE.GridHelper(gridSize, gridDivisions, wallColor, wallColor);
+      xz.position.set(1, 0, 1);
+      scene.add(xz);
+      const xzGridLineEnhancer = new THREE.GridHelper(gridSize, gridDivisions, 0x000000, 0x000000);
+      xzGridLineEnhancer.position.set(1, 0.01, 1);
+      //xzGridLineEnhancer.scale.set(1.001, 1.001, 1.001); // push slightly in front
+      scene.add(xzGridLineEnhancer);
+      const yz = new THREE.GridHelper(gridSize, gridDivisions, wallColor, wallColor);
+      yz.rotation.z = Math.PI / 2;
+      yz.position.set(-0.5, 1.5, 1);
+      scene.add(yz);
+      const yzGridLineEnhancer = new THREE.GridHelper(gridSize, gridDivisions, 0x000000, 0x000000);
+      yzGridLineEnhancer.rotation.z = Math.PI / 2;
+      yzGridLineEnhancer.position.set(-0.49, 1.5, 1);
+      //yzGridLineEnhancer.scale.set(1.001, 1.001, 1.001); // push slightly in front
+      scene.add(yzGridLineEnhancer);
+      // Target cube
+      const cube = new THREE.Mesh(
+        new THREE.BoxGeometry(0.99, 0.99, 0.99),
+        new THREE.MeshStandardMaterial({
+          color: 0xf5c25a
+        })
+      );
+      cube.position.set(0.001, 0.501, 0.001);
+      scene.add(cube);
+      const edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(0.998, 0.998, 0.998));
+      const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({
+        color: 0x222222
+      }));
+      line.position.set(0.001, 0.501, 0.001);
+      scene.add(line);
+    }, 'top');
+    // Scene C: Cube + orange block
+    initScene('sceneC', scene => {
+      addRubikCube(scene);
+      const geometry = new THREE.BoxGeometry(1, 1, 2);
+      const shearMatrix = new THREE.Matrix4().set(
+        // 1, 0, 0, 0,
+        // 0, 1, 0, 0,
+        // 1, 0.2, 0, 0, // parallellogram shear -- top moves right
+        1, 0, 1, 1, // shear ... right, base connected to cube correctly
+        0, 1, -1, -1, // shear down :D this + the above seems to do it
+        0, 0, 1, 0,
+        0, 0, 0, 1
+      );
+      geometry.applyMatrix4(shearMatrix);
+      const orange = new THREE.Mesh(
+        geometry,
+        new THREE.MeshStandardMaterial({
+          color: 0xf5c25a
+        })
+      );
+      orange.position.set(2.04, 0, 3.54);
+      scene.add(orange);
+      const edges = new THREE.EdgesGeometry(geometry);
+      const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({
+        color: 0x222222
+      }));
+      line.position.copy(orange.position);
+      scene.add(line);
+    }, 'bottom');
+  </script>
+</body>
+
+</html>
