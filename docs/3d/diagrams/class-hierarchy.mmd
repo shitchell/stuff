@@ -9,6 +9,21 @@ classDiagram
         +update()
     }
     note for AutoCamera "lib/core/auto-camera.js"
+    class BoidSimulation {
+        +bounds
+        +count
+        +mesh
+        +positions
+        +velocities
+        +colorsNeedUpdate()
+        +constructor()
+        +dispose()
+        +getSpeed()
+        +rebuild()
+        +setColor()
+        +update()
+    }
+    note for BoidSimulation "scenes/boids/boids.js"
     class ChromeController {
         +constructor()
         +destroy()
@@ -77,6 +92,14 @@ classDiagram
         +reset()
     }
     note for SettingsPanel "lib/ui/settings.js"
+    class SpatialGrid {
+        +clear()
+        +constructor()
+        +insert()
+        +query()
+        +setCellSize()
+    }
+    note for SpatialGrid "scenes/boids/boids.js"
     class TerrainManager {
         +amplitude
         +chunkCount

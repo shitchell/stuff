@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project contains four interactive 3D scenes served as static files on GitHub Pages. Each scene is a standalone web page built with Three.js, featuring configurable settings with localStorage persistence, auto-hide UI chrome, and an automatic screensaver camera.
+This project contains five interactive 3D scenes served as static files on GitHub Pages. Each scene is a standalone web page built with Three.js, featuring configurable settings with localStorage persistence, auto-hide UI chrome, and an automatic screensaver camera.
 
 The scenes are:
 
@@ -10,6 +10,7 @@ The scenes are:
 - **Lorenz Attractor** -- A visualization of the Lorenz system with up to 5 simultaneous trails, RK4 integration, and velocity-based coloring.
 - **Wireframe Flythrough** -- A synthwave-inspired endless flythrough over noise-generated wireframe terrain with decorative objects.
 - **Reaction-Diffusion** -- A Gray-Scott reaction-diffusion simulation rendered onto a rotating sphere using GPU compute (ping-pong render targets).
+- **Boids** -- A flocking simulation using Craig Reynolds' boids algorithm with separation, alignment, and cohesion forces, spatial hashing for efficient neighbor lookups, and instanced rendering in toroidal space.
 
 All scenes share a common library (`docs/3d/lib/`) that provides scene lifecycle management, camera systems, UI controls, and math/color/noise/shader utilities. There is no build step -- everything is pure ES modules loaded via `<script type="importmap">` in each scene's HTML file.
 
@@ -54,12 +55,16 @@ docs/
 |   |   |   +-- terrain.js           # TerrainManager -- ring-buffer terrain chunks with noise
 |   |   |   +-- objects.js           # Decorative wireframe object factories (trees, pyramids, columns)
 |   |   +-- reaction-diffusion/
+|   |   |   +-- index.html
+|   |   |   +-- main.js
+|   |   |   +-- simulation.js        # ReactionDiffusion class -- GPU ping-pong Gray-Scott
+|   |   |   +-- reaction-diffusion.vert  # Fullscreen quad vertex shader
+|   |   |   +-- reaction-diffusion.frag  # Gray-Scott fragment shader
+|   |   |   +-- display.frag         # Display fragment shader (palette mapping)
+|   |   +-- boids/
 |   |       +-- index.html
 |   |       +-- main.js
-|   |       +-- simulation.js        # ReactionDiffusion class -- GPU ping-pong Gray-Scott
-|   |       +-- reaction-diffusion.vert  # Fullscreen quad vertex shader
-|   |       +-- reaction-diffusion.frag  # Gray-Scott fragment shader
-|   |       +-- display.frag         # Display fragment shader (palette mapping)
+|   |       +-- boids.js             # BoidSimulation class -- flocking with spatial hash grid
 |   +-- vendor/
 |       +-- three.module.js          # Three.js r182 (standalone ESM bundle)
 |       +-- three-addons/
@@ -98,6 +103,10 @@ graph LR
         lib_utils_noise_js["noise.js"]
         lib_utils_shader_js["shader.js"]
     end
+    subgraph scenes/boids
+        scenes_boids_boids_js["boids.js"]
+        scenes_boids_main_js["main.js"]
+    end
     subgraph scenes/line-walker
         scenes_line_walker_main_js["main.js"]
         scenes_line_walker_walker_js["walker.js"]
@@ -116,6 +125,13 @@ graph LR
         scenes_wireframe_flythrough_terrain_js["terrain.js"]
     end
     lib_core_auto_camera_js --> lib_utils_math_js
+    scenes_boids_main_js --> lib_core_auto_camera_js
+    scenes_boids_main_js --> lib_core_scene_js
+    scenes_boids_main_js --> lib_ui_chrome_js
+    scenes_boids_main_js --> lib_ui_settings_js
+    scenes_boids_main_js --> lib_utils_color_js
+    scenes_boids_main_js --> lib_utils_math_js
+    scenes_boids_main_js --> scenes_boids_boids_js
     scenes_line_walker_main_js --> lib_core_auto_camera_js
     scenes_line_walker_main_js --> lib_core_scene_js
     scenes_line_walker_main_js --> lib_ui_chrome_js
@@ -162,6 +178,21 @@ classDiagram
         +update()
     }
     note for AutoCamera "lib/core/auto-camera.js"
+    class BoidSimulation {
+        +bounds
+        +count
+        +mesh
+        +positions
+        +velocities
+        +colorsNeedUpdate()
+        +constructor()
+        +dispose()
+        +getSpeed()
+        +rebuild()
+        +setColor()
+        +update()
+    }
+    note for BoidSimulation "scenes/boids/boids.js"
     class ChromeController {
         +constructor()
         +destroy()
@@ -230,6 +261,14 @@ classDiagram
         +reset()
     }
     note for SettingsPanel "lib/ui/settings.js"
+    class SpatialGrid {
+        +clear()
+        +constructor()
+        +insert()
+        +query()
+        +setCellSize()
+    }
+    note for SpatialGrid "scenes/boids/boids.js"
     class TerrainManager {
         +amplitude
         +chunkCount

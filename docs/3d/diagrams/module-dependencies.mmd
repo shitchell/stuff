@@ -14,6 +14,10 @@ graph LR
         lib_utils_noise_js["noise.js"]
         lib_utils_shader_js["shader.js"]
     end
+    subgraph scenes/boids
+        scenes_boids_boids_js["boids.js"]
+        scenes_boids_main_js["main.js"]
+    end
     subgraph scenes/line-walker
         scenes_line_walker_main_js["main.js"]
         scenes_line_walker_walker_js["walker.js"]
@@ -32,6 +36,13 @@ graph LR
         scenes_wireframe_flythrough_terrain_js["terrain.js"]
     end
     lib_core_auto_camera_js --> lib_utils_math_js
+    scenes_boids_main_js --> lib_core_auto_camera_js
+    scenes_boids_main_js --> lib_core_scene_js
+    scenes_boids_main_js --> lib_ui_chrome_js
+    scenes_boids_main_js --> lib_ui_settings_js
+    scenes_boids_main_js --> lib_utils_color_js
+    scenes_boids_main_js --> lib_utils_math_js
+    scenes_boids_main_js --> scenes_boids_boids_js
     scenes_line_walker_main_js --> lib_core_auto_camera_js
     scenes_line_walker_main_js --> lib_core_scene_js
     scenes_line_walker_main_js --> lib_ui_chrome_js

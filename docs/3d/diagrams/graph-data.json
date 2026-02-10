@@ -182,6 +182,97 @@
       "loadShader"
     ]
   },
+  "scenes/boids/boids.js": {
+    "exports": [
+      "BoidSimulation"
+    ],
+    "imports": [],
+    "classes": [
+      {
+        "name": "SpatialGrid",
+        "extends": null,
+        "methods": [
+          "clear()",
+          "constructor()",
+          "insert()",
+          "query()",
+          "setCellSize()"
+        ],
+        "properties": []
+      },
+      {
+        "name": "BoidSimulation",
+        "extends": null,
+        "methods": [
+          "colorsNeedUpdate()",
+          "constructor()",
+          "dispose()",
+          "getSpeed()",
+          "rebuild()",
+          "setColor()",
+          "update()"
+        ],
+        "properties": [
+          "bounds",
+          "count",
+          "mesh",
+          "positions",
+          "velocities"
+        ]
+      }
+    ],
+    "functions": []
+  },
+  "scenes/boids/main.js": {
+    "exports": [],
+    "imports": [
+      {
+        "target": "lib/core/scene.js",
+        "specifiers": [
+          "SceneManager"
+        ]
+      },
+      {
+        "target": "lib/ui/settings.js",
+        "specifiers": [
+          "SettingsPanel"
+        ]
+      },
+      {
+        "target": "lib/ui/chrome.js",
+        "specifiers": [
+          "ChromeController"
+        ]
+      },
+      {
+        "target": "lib/core/auto-camera.js",
+        "specifiers": [
+          "AutoCamera"
+        ]
+      },
+      {
+        "target": "lib/utils/color.js",
+        "specifiers": [
+          "hslToHex"
+        ]
+      },
+      {
+        "target": "lib/utils/math.js",
+        "specifiers": [
+          "map",
+          "clamp"
+        ]
+      },
+      {
+        "target": "scenes/boids/boids.js",
+        "specifiers": [
+          "BoidSimulation"
+        ]
+      }
+    ],
+    "classes": [],
+    "functions": []
+  },
   "scenes/line-walker/main.js": {
     "exports": [],
     "imports": [
