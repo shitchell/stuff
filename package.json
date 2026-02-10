@@ -1,0 +1,15 @@
+{
+  "name": "stuff-shitchell",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "diagrams": "node tools/generate-diagrams.mjs",
+    "validate": "node tools/validate-architecture.mjs",
+    "update-docs": "npm run diagrams && echo 'Now update ARCHITECTURE.md prose'",
+    "serve": "npx serve docs"
+  },
+  "devDependencies": {
+    "acorn": "^8.14.0",
+    "acorn-walk": "^8.3.0"
+  }
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scene Test</title>
+    <link rel="stylesheet" href="../../css/scene.css">
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "../../vendor/three.module.js",
+            "three/addons/": "../../vendor/three-addons/",
+            "lil-gui": "../../vendor/lil-gui.esm.js"
+        }
+    }
+    </script>
+</head>
+<body>
+    <canvas class="scene-canvas" id="canvas"></canvas>
+    <script type="module">
+        import * as THREE from 'three';
+        import { SceneManager } from '../../lib/core/scene.js';
+
+        const mgr = new SceneManager(document.getElementById('canvas'));
+        mgr.camera.position.set(0, 2, 5);
+
+        const geo = new THREE.BoxGeometry();
+        const mat = new THREE.MeshNormalMaterial();
+        const cube = new THREE.Mesh(geo, mat);
+        mgr.scene.add(cube);
+
+        mgr.start((dt) => {
+            cube.rotation.x += dt;
+            cube.rotation.y += dt * 0.7;
+        });
+    </script>
+</body>
+</html>
