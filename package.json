@@ -6,7 +6,7 @@
     "diagrams": "node tools/generate-diagrams.mjs",
     "validate": "node tools/validate-architecture.mjs",
     "update-docs": "npm run diagrams && echo 'Now update ARCHITECTURE.md prose'",
-    "serve": "npx serve docs"
+    "serve": "npx serve site"
   },
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "^11.12.0",

@@ -1,4 +1,4 @@
 node_modules/
-docs/diagrams/*.svg
-docs/3d/diagrams/*.svg
+site/3d/diagrams/*.svg
 test-results/
+_work/

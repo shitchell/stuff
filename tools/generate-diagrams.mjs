@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * generate-diagrams.mjs — Parse JS files under docs/ and produce deterministic
+ * generate-diagrams.mjs — Parse JS files under site/ and produce deterministic
  * Mermaid diagrams for module dependencies and class hierarchy.
  *
  * Usage:
@@ -31,7 +31,7 @@ import * as walk from 'acorn-walk';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const PROJECT_ROOT = resolve(__dirname, '..');
-const DOCS_DIR = resolve(PROJECT_ROOT, 'docs', '3d');
+const DOCS_DIR = resolve(PROJECT_ROOT, 'site', '3d');
 const DIAGRAMS_DIR = resolve(DOCS_DIR, 'diagrams');
 const SCAN_DIRS = [
     resolve(DOCS_DIR, 'lib'),
@@ -214,8 +214,8 @@ function extractName(node) {
  * Returns null if the import is external (bare specifier like 'three' or 'lil-gui').
  *
  * @param {string} importSource - The import source string (e.g., '../../lib/core/scene.js')
- * @param {string} importerRelPath - The importer's path relative to docs/ (e.g., 'scenes/line-walker/main.js')
- * @returns {string|null} - Resolved path relative to docs/ or null if external
+ * @param {string} importerRelPath - The importer's path relative to site/ (e.g., 'scenes/line-walker/main.js')
+ * @returns {string|null} - Resolved path relative to site/ or null if external
  */
 function resolveImport(importSource, importerRelPath) {
     // Bare specifiers (no ./ or ../) are external — skip them
@@ -234,7 +234,7 @@ function resolveImport(importSource, importerRelPath) {
 
 /**
  * Determine the subgraph key for a file path.
- * Groups by directory under docs/ (e.g., 'lib/core', 'scenes/line-walker').
+ * Groups by directory under site/ (e.g., 'lib/core', 'scenes/line-walker').
  */
 function getSubgraph(relPath) {
     const dir = dirname(relPath);

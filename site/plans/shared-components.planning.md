@@ -39,7 +39,7 @@ Claude proposed: "Auto-hide everything (Recommended) -- Settings panel + a small
 
 Architecture overview confirmed:
 
-> docs/
+> site/
 > ├── lib/                    # Shared ES module library
 > │   ├── core/               # Scene, renderer, camera, animation loop
 > │   ├── ui/                 # Settings panel, auto-hide chrome, fullscreen
@@ -131,7 +131,7 @@ Known Limitations section documents the WebGL linewidth issue.
 
 3. **CSS theme colors** -- The design doc says dark theme matching existing site (#1a1a2e background, #ffd700 gold accents). Implementation plan CSS (Task 1) matches. No gap.
 
-4. **Import map depth assumption** -- All scene pages must be at `docs/3d/scenes/<name>/index.html` (two levels deep from docs/3d/) for the import map relative paths to work. This is not explicitly stated as a constraint but is implicit in the import map pattern. If a scene is added at a different depth, imports will break. This is a fragile assumption that should be documented.
+4. **Import map depth assumption** -- All scene pages must be at `site/3d/scenes/<name>/index.html` (two levels deep from site/3d/) for the import map relative paths to work. This is not explicitly stated as a constraint but is implicit in the import map pattern. If a scene is added at a different depth, imports will break. This is a fragile assumption that should be documented.
 
 ## Implementation Guidance
 

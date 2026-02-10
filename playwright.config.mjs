@@ -18,7 +18,7 @@ export default defineConfig({
         },
     },
     webServer: {
-        command: 'npx serve docs/ -l 3333 --no-clipboard',
+        command: 'npx serve site/ -l 3333 --no-clipboard',
         port: 3333,
         reuseExistingServer: !process.env.CI,
     },

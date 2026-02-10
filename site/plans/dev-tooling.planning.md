@@ -79,10 +79,10 @@ Diagram generation approach:
 > - **Class graph** -- class names, method signatures, extends relationships
 > - **Export graph** -- what each module exports (functions, classes, constants)
 >
-> Outputs two Mermaid files to `docs/3d/diagrams/`:
+> Outputs two Mermaid files to `site/3d/diagrams/`:
 >
 > ```
-> docs/3d/diagrams/
+> site/3d/diagrams/
 > +-- module-dependencies.mmd    # file-level import/export graph
 > +-- class-hierarchy.mmd        # class relationships + key methods
 > ```
@@ -127,8 +127,8 @@ Pre-commit hook details:
 
 > ```bash
 > #!/usr/bin/env bash
-> # Only run if JS files under docs/3d/ changed
-> CHANGED=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^docs/3d/.*\.js$')
+> # Only run if JS files under site/3d/ changed
+> CHANGED=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^site/3d/.*\.js$')
 > if [ -z "$CHANGED" ]; then
 >     exit 0
 > fi
@@ -144,7 +144,7 @@ Pre-commit hook details:
 > fi
 >
 > # Auto-stage updated diagram files
-> git add docs/3d/diagrams/*.mmd
+> git add site/3d/diagrams/*.mmd
 > ```
 -- Source: Claude, Task 14 Step 4
 
@@ -190,6 +190,6 @@ Task 15 covers ARCHITECTURE.md and index page updates.
 - The user expects to iterate on dev tooling, so a working-but-imperfect first version is acceptable.
 - Use `acorn` (ecmaVersion 2022, sourceType 'module') and `acorn-walk` for AST traversal.
 - Output must be deterministic: sort all nodes and edges alphabetically before writing .mmd files.
-- The pre-commit hook only runs when JS files under `docs/` are modified (filtered by `git diff --cached`).
+- The pre-commit hook only runs when JS files under `site/` are modified (filtered by `git diff --cached`).
 - `git config core.hooksPath .githooks` must be run to enable the hook.
 - ARCHITECTURE.md should contain prose overview + embedded Mermaid diagrams + "How to add a new scene" section + dev tooling explanation.

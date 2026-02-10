@@ -29,7 +29,7 @@ import { generate, buildGraphData } from './generate-diagrams.mjs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const PROJECT_ROOT = resolve(__dirname, '..');
-const DOCS_DIR = resolve(PROJECT_ROOT, 'docs', '3d');
+const DOCS_DIR = resolve(PROJECT_ROOT, 'site', '3d');
 const DIAGRAMS_DIR = resolve(DOCS_DIR, 'diagrams');
 
 const MODULE_DEP_FILE = resolve(DIAGRAMS_DIR, 'module-dependencies.mmd');
@@ -407,7 +407,7 @@ function main() {
     if (existsSync(GRAPH_DATA_FILE)) {
         try {
             // Try to get the committed version (before our write)
-            const committedJson = execSync(`git show HEAD:docs/3d/diagrams/graph-data.json 2>/dev/null`, {
+            const committedJson = execSync(`git show HEAD:site/3d/diagrams/graph-data.json 2>/dev/null`, {
                 cwd: PROJECT_ROOT,
                 encoding: 'utf-8',
             });
@@ -440,8 +440,8 @@ function main() {
     error('Commit blocked: architecture diagrams have changed.');
     console.log('');
     console.log(`${C.BOLD}To proceed:${C.RESET}`);
-    console.log(`  1. Update ${C.INFO}docs/3d/ARCHITECTURE.md${C.RESET} to reflect the changes above`);
-    console.log(`  2. Stage it: ${C.DIM}git add docs/3d/ARCHITECTURE.md${C.RESET}`);
+    console.log(`  1. Update ${C.INFO}site/3d/ARCHITECTURE.md${C.RESET} to reflect the changes above`);
+    console.log(`  2. Stage it: ${C.DIM}git add site/3d/ARCHITECTURE.md${C.RESET}`);
     console.log(`  3. Retry your commit`);
     console.log('');
     console.log(`${C.DIM}Or run: npm run update-docs${C.RESET}`);

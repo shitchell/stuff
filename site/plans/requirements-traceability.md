@@ -2,8 +2,8 @@
 
 **Date:** 2026-02-10
 **Conversation:** Planning session for 3D Interactive Scenes
-**Design Doc:** `docs/plans/2026-02-10-3d-scenes-design.md`
-**Implementation Plan:** `docs/plans/2026-02-10-3d-scenes-implementation.md`
+**Design Doc:** `site/plans/2026-02-10-3d-scenes-design.md`
+**Implementation Plan:** `site/plans/2026-02-10-3d-scenes-implementation.md`
 
 ---
 
@@ -80,7 +80,7 @@ Implementation specifications that cannot be directly mapped to a user requireme
 | Reaction-Diffusion preset F/k values | Task 11 | Standard values from Gray-Scott parameter space literature. |
 | CSS specifics (colors, font sizes, z-index) | Task 1 CSS | Reasonable choices matching existing site theme. |
 | package.json `name: "stuff-shitchell"` | Task 1 | Reasonable naming convention. |
-| `docs/3d/scenes/_test/` temporary test page | Tasks 2-4 | Development aid, removed in Task 15. |
+| `site/3d/scenes/_test/` temporary test page | Tasks 2-4 | Development aid, removed in Task 15. |
 | `serve` npm script | Task 1 | Development convenience. |
 
 All untraceable items are reasonable technical defaults or implementation details that do not conflict with any stated requirement.

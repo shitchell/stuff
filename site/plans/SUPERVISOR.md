@@ -5,7 +5,7 @@
 
 ## What This Project Is
 
-Building 4 interactive 3D screensaver pages for stuff.shitchell.com with a shared ES module library. Full design at `docs/plans/2026-02-10-3d-scenes-design.md`, implementation plan at `docs/plans/2026-02-10-3d-scenes-implementation.md`.
+Building 4 interactive 3D screensaver pages for stuff.shitchell.com with a shared ES module library. Full design at `site/plans/2026-02-10-3d-scenes-design.md`, implementation plan at `site/plans/2026-02-10-3d-scenes-implementation.md`.
 
 ## Your Role
 
@@ -15,13 +15,13 @@ You are a **supervisor only**. You do NOT write code. You launch Task subagents,
 
 ### Completed Tasks
 - **Task 1:** Project setup (vendor files, CSS, package.json, directories) ✅
-- **Task 2:** SceneManager + camera factories (`docs/3d/lib/core/scene.js`, `camera.js`, test page) ✅
-- **Task 3:** SettingsPanel (`docs/3d/lib/ui/settings.js`) ✅
-- **Task 4:** ChromeController (`docs/3d/lib/ui/chrome.js`) ✅
-- **Task 5:** Math + Color utilities (`docs/3d/lib/utils/math.js`, `color.js`) ✅
-- **Task 6:** Line Walker scene (`docs/3d/scenes/line-walker/`) ✅
-- **Task 8:** Simplex Noise (`docs/3d/lib/utils/noise.js`) ✅
-- **Task 10:** Shader utility (`docs/3d/lib/utils/shader.js`) ✅
+- **Task 2:** SceneManager + camera factories (`site/3d/lib/core/scene.js`, `camera.js`, test page) ✅
+- **Task 3:** SettingsPanel (`site/3d/lib/ui/settings.js`) ✅
+- **Task 4:** ChromeController (`site/3d/lib/ui/chrome.js`) ✅
+- **Task 5:** Math + Color utilities (`site/3d/lib/utils/math.js`, `color.js`) ✅
+- **Task 6:** Line Walker scene (`site/3d/scenes/line-walker/`) ✅
+- **Task 8:** Simplex Noise (`site/3d/lib/utils/noise.js`) ✅
+- **Task 10:** Shader utility (`site/3d/lib/utils/shader.js`) ✅
 
 ### Currently Running (Round 3 — launched in parallel)
 - **Task 7:** Lorenz Attractor scene (agent a85cf24)
@@ -48,7 +48,7 @@ You are implementing Task N of a 3D interactive scenes project.
 
 ## What to do
 
-Read the implementation plan at `docs/plans/2026-02-10-3d-scenes-implementation.md` — specifically **Task N**. Also read `docs/plans/<component>.planning.md` for requirements context.
+Read the implementation plan at `site/plans/2026-02-10-3d-scenes-implementation.md` — specifically **Task N**. Also read `site/plans/<component>.planning.md` for requirements context.
 
 [Specific file list to create]
 
@@ -80,14 +80,14 @@ You are implementing Task 13 of a 3D interactive scenes project.
 
 Project root: `/home/guy/code/git/github.com/shitchell/stuff`
 
-Read the implementation plan at `docs/plans/2026-02-10-3d-scenes-implementation.md` — specifically Task 13.
-Also read `docs/plans/auto-camera.planning.md`.
+Read the implementation plan at `site/plans/2026-02-10-3d-scenes-implementation.md` — specifically Task 13.
+Also read `site/plans/auto-camera.planning.md`.
 
 You must MODIFY (not create) these 4 existing files:
-- docs/3d/scenes/line-walker/main.js
-- docs/3d/scenes/lorenz/main.js
-- docs/3d/scenes/wireframe-flythrough/main.js
-- docs/3d/scenes/reaction-diffusion/main.js
+- site/3d/scenes/line-walker/main.js
+- site/3d/scenes/lorenz/main.js
+- site/3d/scenes/wireframe-flythrough/main.js
+- site/3d/scenes/reaction-diffusion/main.js
 
 For each, add:
 1. Import AutoCamera from '../../lib/core/auto-camera.js'
@@ -109,24 +109,24 @@ IMPORTANT: Read each main.js FIRST to understand the existing code, then add the
 ## After Task 13
 
 - **Task 14** (dev tooling) — user said this is lower priority. The plan is intentionally less detailed. Prompt the agent with the plan + `dev-tooling.planning.md`.
-- **Task 15** (ARCHITECTURE.md + index) — straightforward. Update `docs/index.html` to add scene links. Write `docs/3d/ARCHITECTURE.md`. Remove `docs/3d/scenes/_test/`.
+- **Task 15** (ARCHITECTURE.md + index) — straightforward. Update `site/index.html` to add scene links. Write `site/3d/ARCHITECTURE.md`. Remove `site/3d/scenes/_test/`.
 
 ## After All Tasks
 
-- Do a comprehensive review: `ls -R docs/3d/scenes/ docs/3d/lib/`
+- Do a comprehensive review: `ls -R site/3d/scenes/ site/3d/lib/`
 - Consider a batch commit of everything
-- The user may want to serve and test: `npx serve docs`
+- The user may want to serve and test: `npx serve site`
 - No git push unless user asks
 
 ## Key Files Reference
 
 | File | Purpose |
 |------|---------|
-| `docs/plans/2026-02-10-3d-scenes-design.md` | Approved design (with amendments section) |
-| `docs/plans/2026-02-10-3d-scenes-implementation.md` | Full implementation plan with code |
-| `docs/plans/requirements-traceability.md` | All requirements mapped to plan |
-| `docs/plans/*.planning.md` | Per-component requirements with verbatim user quotes |
-| `docs/plans/SUPERVISOR.md` | This file |
+| `site/plans/2026-02-10-3d-scenes-design.md` | Approved design (with amendments section) |
+| `site/plans/2026-02-10-3d-scenes-implementation.md` | Full implementation plan with code |
+| `site/plans/requirements-traceability.md` | All requirements mapped to plan |
+| `site/plans/*.planning.md` | Per-component requirements with verbatim user quotes |
+| `site/plans/SUPERVISOR.md` | This file |
 
 ## User Preferences
 

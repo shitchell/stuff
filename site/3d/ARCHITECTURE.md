@@ -13,12 +13,12 @@ The scenes are:
 - **Boids** -- A flocking simulation using Craig Reynolds' boids algorithm with separation, alignment, and cohesion forces, spatial hashing for efficient neighbor lookups, and instanced rendering in toroidal space.
 - **Fractal Dreamscape** -- An animated Julia set fractal with kaleidoscope symmetry, dynamic zoom, color palettes, and morphing Julia c parameter tracing a figure-8 path.
 
-All scenes share a common library (`docs/3d/lib/`) that provides scene lifecycle management, camera systems, UI controls, and math/color/noise/shader utilities. There is no build step -- everything is pure ES modules loaded via `<script type="importmap">` in each scene's HTML file.
+All scenes share a common library (`site/3d/lib/`) that provides scene lifecycle management, camera systems, UI controls, and math/color/noise/shader utilities. There is no build step -- everything is pure ES modules loaded via `<script type="importmap">` in each scene's HTML file.
 
 ## Directory Structure
 
 ```
-docs/
+site/
 +-- index.html                   # Landing page with links to all scenes
 +-- 3d/
 |   +-- ARCHITECTURE.md          # This file
@@ -441,7 +441,7 @@ Each scene directory contains:
 
 1. **Create the scene directory:**
    ```bash
-   mkdir docs/3d/scenes/my-scene
+   mkdir site/3d/scenes/my-scene
    ```
 
 2. **Create `index.html`** by copying from an existing scene. Update the `<title>` and the `<script>` src to `./main.js`. The import map and CSS link stay the same.
@@ -454,15 +454,15 @@ Each scene directory contains:
 
 4. **Create scene-specific modules** as needed. Export classes/functions and import them in `main.js`.
 
-5. **Add a link** in `docs/index.html` pointing to `3d/scenes/my-scene/`.
+5. **Add a link** in `site/index.html` pointing to `3d/scenes/my-scene/`.
 
 6. **Regenerate diagrams:**
    ```bash
    npm run diagrams
    ```
-   This updates the `.mmd` files and `graph-data.json` in `docs/3d/diagrams/`.
+   This updates the `.mmd` files and `graph-data.json` in `site/3d/diagrams/`.
 
-7. **Update this file** (`docs/3d/ARCHITECTURE.md`) to describe the new scene. The pre-commit hook will block your commit if diagram changes are detected but this file is not staged.
+7. **Update this file** (`site/3d/ARCHITECTURE.md`) to describe the new scene. The pre-commit hook will block your commit if diagram changes are detected but this file is not staged.
 
 8. **Test locally:**
    ```bash
@@ -476,7 +476,7 @@ The project includes tooling to keep architecture documentation in sync with the
 
 ### Diagram Generation (`tools/generate-diagrams.mjs`)
 
-Uses **acorn** and **acorn-walk** to parse every `.js` file under `docs/3d/lib/` and `docs/3d/scenes/`. For each file, it extracts:
+Uses **acorn** and **acorn-walk** to parse every `.js` file under `site/3d/lib/` and `site/3d/scenes/`. For each file, it extracts:
 
 - **Import declarations** -- which files import which, resolved from relative paths.
 - **Class declarations** -- class names, public properties, public methods, and `extends` relationships. Private members (those using `#` syntax) are excluded.
@@ -484,9 +484,9 @@ Uses **acorn** and **acorn-walk** to parse every `.js` file under `docs/3d/lib/`
 
 From this AST data, it generates three outputs:
 
-- `docs/3d/diagrams/module-dependencies.mmd` -- A Mermaid `graph LR` showing file-level import edges, grouped by directory.
-- `docs/3d/diagrams/class-hierarchy.mmd` -- A Mermaid `classDiagram` showing all classes with their public API.
-- `docs/3d/diagrams/graph-data.json` -- A structured JSON representation of the full module graph, used by the validation script for diffing.
+- `site/3d/diagrams/module-dependencies.mmd` -- A Mermaid `graph LR` showing file-level import edges, grouped by directory.
+- `site/3d/diagrams/class-hierarchy.mmd` -- A Mermaid `classDiagram` showing all classes with their public API.
+- `site/3d/diagrams/graph-data.json` -- A structured JSON representation of the full module graph, used by the validation script for diffing.
 
 All outputs are deterministic: nodes and edges are sorted alphabetically, so the same source code always produces identical output. This makes `git diff` on the `.mmd` files meaningful.
 
@@ -505,13 +505,13 @@ Compares freshly generated diagrams against the committed versions. When differe
 3. **Shows connected modules** for each changed file -- which other files import from it.
 4. **Detects dead ends** -- modules that export symbols but are never imported by anything.
 5. **Detects orphans** -- modules that neither import nor export anything.
-6. **Checks if `docs/3d/ARCHITECTURE.md` is staged** in the git index. If it is, validation passes. If not, the commit is blocked with instructions.
+6. **Checks if `site/3d/ARCHITECTURE.md` is staged** in the git index. If it is, validation passes. If not, the commit is blocked with instructions.
 
 ### Pre-Commit Hook (`.githooks/pre-commit`)
 
 A Bash script that integrates the validation into the git workflow:
 
-1. Checks if any `.js` files under `docs/3d/` are staged for commit. If not, exits immediately (no validation needed).
+1. Checks if any `.js` files under `site/3d/` are staged for commit. If not, exits immediately (no validation needed).
 2. Verifies that `node` and `node_modules/acorn` are available. If not, warns and skips (does not block).
 3. Runs `validate-architecture.mjs`.
 4. If validation fails (exit code non-zero), blocks the commit with instructions.
@@ -529,7 +529,7 @@ git commit --no-verify
 
 ## Vendored Dependencies
 
-All runtime dependencies are vendored in `docs/3d/vendor/` rather than loaded from a CDN or installed via npm:
+All runtime dependencies are vendored in `site/3d/vendor/` rather than loaded from a CDN or installed via npm:
 
 - **Three.js r182** (`three.module.js`) -- The standalone ESM build of Three.js. This is the complete library in a single file, suitable for use with import maps.
 - **OrbitControls** (`three-addons/controls/OrbitControls.js`) -- The OrbitControls addon from Three.js r182 examples, for interactive camera rotation/zoom/pan.
