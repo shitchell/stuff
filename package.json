@@ -9,6 +9,7 @@
     "serve": "npx serve docs"
   },
   "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^11.12.0",
     "acorn": "^8.14.0",
     "acorn-walk": "^8.3.0"
   }

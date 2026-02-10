@@ -1,0 +1,524 @@
+{
+  "lib/core/auto-camera.js": {
+    "exports": [
+      "AutoCamera"
+    ],
+    "imports": [
+      {
+        "target": "lib/utils/math.js",
+        "specifiers": [
+          "lerp"
+        ]
+      }
+    ],
+    "classes": [
+      {
+        "name": "AutoCamera",
+        "extends": null,
+        "methods": [
+          "activate()",
+          "constructor()",
+          "deactivate()",
+          "setMode()",
+          "setTarget()",
+          "update()"
+        ],
+        "properties": [
+          "active"
+        ]
+      }
+    ],
+    "functions": []
+  },
+  "lib/core/camera.js": {
+    "exports": [
+      "createFlyCamera",
+      "createOrthographicCamera",
+      "createPerspectiveCamera"
+    ],
+    "imports": [],
+    "classes": [],
+    "functions": [
+      "createFlyCamera",
+      "createOrthographicCamera",
+      "createPerspectiveCamera"
+    ]
+  },
+  "lib/core/scene.js": {
+    "exports": [
+      "SceneManager"
+    ],
+    "imports": [],
+    "classes": [
+      {
+        "name": "SceneManager",
+        "extends": null,
+        "methods": [
+          "constructor()",
+          "dispose()",
+          "resize()",
+          "start()",
+          "stop()"
+        ],
+        "properties": [
+          "camera",
+          "controls",
+          "renderer",
+          "running",
+          "scene"
+        ]
+      }
+    ],
+    "functions": []
+  },
+  "lib/ui/chrome.js": {
+    "exports": [
+      "ChromeController"
+    ],
+    "imports": [],
+    "classes": [
+      {
+        "name": "ChromeController",
+        "extends": null,
+        "methods": [
+          "constructor()",
+          "destroy()",
+          "hide()",
+          "resetTimer()",
+          "show()"
+        ],
+        "properties": []
+      }
+    ],
+    "functions": []
+  },
+  "lib/ui/settings.js": {
+    "exports": [
+      "SettingsPanel"
+    ],
+    "imports": [],
+    "classes": [
+      {
+        "name": "SettingsPanel",
+        "extends": null,
+        "methods": [
+          "addButton()",
+          "addColor()",
+          "addDropdown()",
+          "addSeparator()",
+          "addSlider()",
+          "addToggle()",
+          "constructor()",
+          "controller()",
+          "destroy()",
+          "get domElement()",
+          "get()",
+          "onChange()",
+          "reset()"
+        ],
+        "properties": [
+          "defaults",
+          "gui",
+          "sceneId",
+          "values"
+        ]
+      }
+    ],
+    "functions": []
+  },
+  "lib/utils/color.js": {
+    "exports": [
+      "colorRamp",
+      "hslToHex",
+      "palette"
+    ],
+    "imports": [],
+    "classes": [],
+    "functions": [
+      "colorRamp",
+      "hslToHex",
+      "palette"
+    ]
+  },
+  "lib/utils/math.js": {
+    "exports": [
+      "clamp",
+      "lerp",
+      "map",
+      "randomRange"
+    ],
+    "imports": [],
+    "classes": [],
+    "functions": [
+      "clamp",
+      "lerp",
+      "map",
+      "randomRange"
+    ]
+  },
+  "lib/utils/noise.js": {
+    "exports": [
+      "createNoise",
+      "simplex2D",
+      "simplex3D"
+    ],
+    "imports": [],
+    "classes": [],
+    "functions": [
+      "createNoise",
+      "simplex2D",
+      "simplex3D"
+    ]
+  },
+  "lib/utils/shader.js": {
+    "exports": [
+      "createShaderMaterial",
+      "loadShader"
+    ],
+    "imports": [],
+    "classes": [],
+    "functions": [
+      "createShaderMaterial",
+      "loadShader"
+    ]
+  },
+  "scenes/line-walker/main.js": {
+    "exports": [],
+    "imports": [
+      {
+        "target": "lib/core/scene.js",
+        "specifiers": [
+          "SceneManager"
+        ]
+      },
+      {
+        "target": "lib/ui/settings.js",
+        "specifiers": [
+          "SettingsPanel"
+        ]
+      },
+      {
+        "target": "lib/ui/chrome.js",
+        "specifiers": [
+          "ChromeController"
+        ]
+      },
+      {
+        "target": "lib/core/auto-camera.js",
+        "specifiers": [
+          "AutoCamera"
+        ]
+      },
+      {
+        "target": "lib/utils/color.js",
+        "specifiers": [
+          "colorRamp",
+          "hslToHex"
+        ]
+      },
+      {
+        "target": "lib/utils/math.js",
+        "specifiers": [
+          "randomRange"
+        ]
+      },
+      {
+        "target": "scenes/line-walker/walker.js",
+        "specifiers": [
+          "Walker"
+        ]
+      }
+    ],
+    "classes": [],
+    "functions": []
+  },
+  "scenes/line-walker/walker.js": {
+    "exports": [
+      "Walker"
+    ],
+    "imports": [
+      {
+        "target": "lib/utils/math.js",
+        "specifiers": [
+          "randomRange"
+        ]
+      }
+    ],
+    "classes": [
+      {
+        "name": "Walker",
+        "extends": null,
+        "methods": [
+          "constructor()",
+          "get tip()",
+          "reset()",
+          "step()"
+        ],
+        "properties": [
+          "bias",
+          "direction",
+          "geometry",
+          "maxPoints",
+          "pointCount",
+          "position",
+          "positions",
+          "stepLength"
+        ]
+      }
+    ],
+    "functions": []
+  },
+  "scenes/lorenz/attractor.js": {
+    "exports": [
+      "LorenzTrail",
+      "PRESETS"
+    ],
+    "imports": [],
+    "classes": [
+      {
+        "name": "LorenzTrail",
+        "extends": null,
+        "methods": [
+          "constructor()",
+          "reset()",
+          "step()"
+        ],
+        "properties": [
+          "colors",
+          "geometry",
+          "maxPoints",
+          "pointCount",
+          "positions",
+          "state"
+        ]
+      }
+    ],
+    "functions": []
+  },
+  "scenes/lorenz/main.js": {
+    "exports": [],
+    "imports": [
+      {
+        "target": "lib/core/scene.js",
+        "specifiers": [
+          "SceneManager"
+        ]
+      },
+      {
+        "target": "lib/ui/settings.js",
+        "specifiers": [
+          "SettingsPanel"
+        ]
+      },
+      {
+        "target": "lib/ui/chrome.js",
+        "specifiers": [
+          "ChromeController"
+        ]
+      },
+      {
+        "target": "lib/core/auto-camera.js",
+        "specifiers": [
+          "AutoCamera"
+        ]
+      },
+      {
+        "target": "lib/utils/color.js",
+        "specifiers": [
+          "hslToHex"
+        ]
+      },
+      {
+        "target": "scenes/lorenz/attractor.js",
+        "specifiers": [
+          "LorenzTrail",
+          "PRESETS"
+        ]
+      }
+    ],
+    "classes": [],
+    "functions": []
+  },
+  "scenes/reaction-diffusion/main.js": {
+    "exports": [],
+    "imports": [
+      {
+        "target": "lib/core/scene.js",
+        "specifiers": [
+          "SceneManager"
+        ]
+      },
+      {
+        "target": "lib/ui/settings.js",
+        "specifiers": [
+          "SettingsPanel"
+        ]
+      },
+      {
+        "target": "lib/ui/chrome.js",
+        "specifiers": [
+          "ChromeController"
+        ]
+      },
+      {
+        "target": "lib/core/auto-camera.js",
+        "specifiers": [
+          "AutoCamera"
+        ]
+      },
+      {
+        "target": "lib/utils/shader.js",
+        "specifiers": [
+          "loadShader",
+          "createShaderMaterial"
+        ]
+      },
+      {
+        "target": "scenes/reaction-diffusion/simulation.js",
+        "specifiers": [
+          "ReactionDiffusion",
+          "PRESETS"
+        ]
+      }
+    ],
+    "classes": [],
+    "functions": []
+  },
+  "scenes/reaction-diffusion/simulation.js": {
+    "exports": [
+      "PRESETS",
+      "ReactionDiffusion"
+    ],
+    "imports": [
+      {
+        "target": "lib/utils/shader.js",
+        "specifiers": [
+          "loadShader",
+          "createShaderMaterial"
+        ]
+      }
+    ],
+    "classes": [
+      {
+        "name": "ReactionDiffusion",
+        "extends": null,
+        "methods": [
+          "constructor()",
+          "dispose()",
+          "get texture()",
+          "seed()",
+          "setParams()",
+          "step()"
+        ],
+        "properties": [
+          "resolution",
+          "rtA",
+          "rtB",
+          "simCamera",
+          "simMaterial",
+          "simScene"
+        ]
+      }
+    ],
+    "functions": []
+  },
+  "scenes/wireframe-flythrough/main.js": {
+    "exports": [],
+    "imports": [
+      {
+        "target": "lib/core/scene.js",
+        "specifiers": [
+          "SceneManager"
+        ]
+      },
+      {
+        "target": "lib/ui/settings.js",
+        "specifiers": [
+          "SettingsPanel"
+        ]
+      },
+      {
+        "target": "lib/ui/chrome.js",
+        "specifiers": [
+          "ChromeController"
+        ]
+      },
+      {
+        "target": "lib/core/auto-camera.js",
+        "specifiers": [
+          "AutoCamera"
+        ]
+      },
+      {
+        "target": "scenes/wireframe-flythrough/terrain.js",
+        "specifiers": [
+          "TerrainManager"
+        ]
+      },
+      {
+        "target": "scenes/wireframe-flythrough/objects.js",
+        "specifiers": [
+          "spawnObjects",
+          "updateObjectsColor"
+        ]
+      }
+    ],
+    "classes": [],
+    "functions": []
+  },
+  "scenes/wireframe-flythrough/objects.js": {
+    "exports": [
+      "createColumn",
+      "createPyramid",
+      "createTree",
+      "spawnObjects",
+      "updateObjectsColor"
+    ],
+    "imports": [],
+    "classes": [],
+    "functions": [
+      "createColumn",
+      "createPyramid",
+      "createTree",
+      "spawnObjects",
+      "updateObjectsColor"
+    ]
+  },
+  "scenes/wireframe-flythrough/terrain.js": {
+    "exports": [
+      "TerrainManager"
+    ],
+    "imports": [
+      {
+        "target": "lib/utils/noise.js",
+        "specifiers": [
+          "simplex2D"
+        ]
+      }
+    ],
+    "classes": [
+      {
+        "name": "TerrainManager",
+        "extends": null,
+        "methods": [
+          "constructor()",
+          "dispose()",
+          "get material()",
+          "getHeightAt()",
+          "setAmplitude()",
+          "setColor()",
+          "setFrequency()",
+          "update()"
+        ],
+        "properties": [
+          "amplitude",
+          "chunkCount",
+          "chunkSize",
+          "frequency",
+          "segments"
+        ]
+      }
+    ],
+    "functions": []
+  }
+}

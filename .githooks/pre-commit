@@ -1,0 +1,130 @@
+#!/usr/bin/env bash
+#
+# Pre-commit hook: Validate architecture diagrams when JS files under docs/ change
+#
+# This hook checks if any .js files under docs/ are staged for commit.
+# If so, it runs the architecture validation script which:
+#   1. Regenerates Mermaid diagrams from the current source
+#   2. Compares against committed versions
+#   3. If diagrams changed:
+#      - Reports what changed and connected modules
+#      - Checks if ARCHITECTURE.md is staged
+#      - Blocks commit if ARCHITECTURE.md is not staged
+#   4. Auto-stages updated .mmd files
+#
+# Enable this hook:
+#   git config core.hooksPath .githooks
+#
+# Bypass this hook:
+#   git commit --no-verify
+#
+# Inspired by: claude-dashboard/.githooks/pre-commit (940 lines, Go project)
+# This JS-project version is simpler because our diagram output is deterministic
+# (no byte-frequency comparison needed) and we use acorn instead of gopls for
+# connected-class extraction.
+#
+
+set -o pipefail
+
+# ---------------------------------------------------------------------------
+# Setup
+# ---------------------------------------------------------------------------
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+# Colors (only if terminal)
+if [[ -t 1 ]]; then
+    C_INFO=$'\033[0;34m'
+    C_SUCCESS=$'\033[0;32m'
+    C_WARN=$'\033[0;33m'
+    C_ERROR=$'\033[0;31m'
+    C_RESET=$'\033[0m'
+else
+    C_INFO="" C_SUCCESS="" C_WARN="" C_ERROR="" C_RESET=""
+fi
+
+function info() {
+    echo -e "${C_INFO}[pre-commit]${C_RESET} ${1}"
+}
+
+function success() {
+    echo -e "${C_SUCCESS}[pre-commit]${C_RESET} ${1}"
+}
+
+function warn() {
+    echo -e "${C_WARN}[pre-commit]${C_RESET} ${1}"
+}
+
+function error() {
+    echo -e "${C_ERROR}[pre-commit]${C_RESET} ${1}" >&2
+}
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+
+# Only run if JS files under docs/ are staged (Added, Copied, Modified)
+CHANGED_JS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^docs/.*\.js$' || true)
+
+if [[ -z "${CHANGED_JS}" ]]; then
+    # No JS files under docs/ changed — nothing to validate
+    exit 0
+fi
+
+info "JS files under docs/ changed, validating architecture diagrams..."
+info "Changed files:"
+echo "${CHANGED_JS}" | while IFS= read -r f; do
+    echo "  ${f}"
+done
+
+# Check that node is available
+if ! command -v node &>/dev/null; then
+    warn "node not found -- skipping diagram validation"
+    warn "Install node and run: npm install"
+    exit 0
+fi
+
+# Check that the validation script exists
+VALIDATE_SCRIPT="${REPO_ROOT}/tools/validate-architecture.mjs"
+if [[ ! -f "${VALIDATE_SCRIPT}" ]]; then
+    warn "tools/validate-architecture.mjs not found -- skipping"
+    exit 0
+fi
+
+# Check that node_modules exist (acorn, acorn-walk)
+if [[ ! -d "${REPO_ROOT}/node_modules/acorn" ]]; then
+    warn "node_modules not installed -- skipping diagram validation"
+    warn "Run: npm install"
+    exit 0
+fi
+
+# Run validation
+echo ""
+node "${VALIDATE_SCRIPT}"
+RESULT=$?
+
+if [[ ${RESULT} -ne 0 ]]; then
+    echo ""
+    error "Commit blocked: architecture diagrams are out of date."
+    echo ""
+    echo "To fix:"
+    echo "  1. Review the changes above"
+    echo "  2. Update docs/ARCHITECTURE.md to reflect the changes"
+    echo "  3. Stage both: git add docs/ARCHITECTURE.md docs/diagrams/"
+    echo "  4. Retry your commit"
+    echo ""
+    echo "Or run: npm run update-docs"
+    echo "To bypass: git commit --no-verify"
+    echo ""
+    exit 1
+fi
+
+# Auto-stage updated diagram files
+if [[ -d "${REPO_ROOT}/docs/diagrams" ]]; then
+    git add "${REPO_ROOT}"/docs/diagrams/*.mmd 2>/dev/null || true
+    git add "${REPO_ROOT}"/docs/diagrams/graph-data.json 2>/dev/null || true
+    success "Auto-staged updated diagram files"
+fi
+
+success "Architecture validation passed"
+exit 0

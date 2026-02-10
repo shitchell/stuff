@@ -1,0 +1,110 @@
+classDiagram
+    class AutoCamera {
+        +active
+        +activate()
+        +constructor()
+        +deactivate()
+        +setMode()
+        +setTarget()
+        +update()
+    }
+    note for AutoCamera "lib/core/auto-camera.js"
+    class ChromeController {
+        +constructor()
+        +destroy()
+        +hide()
+        +resetTimer()
+        +show()
+    }
+    note for ChromeController "lib/ui/chrome.js"
+    class LorenzTrail {
+        +colors
+        +geometry
+        +maxPoints
+        +pointCount
+        +positions
+        +state
+        +constructor()
+        +reset()
+        +step()
+    }
+    note for LorenzTrail "scenes/lorenz/attractor.js"
+    class ReactionDiffusion {
+        +resolution
+        +rtA
+        +rtB
+        +simCamera
+        +simMaterial
+        +simScene
+        +constructor()
+        +dispose()
+        +get texture()
+        +seed()
+        +setParams()
+        +step()
+    }
+    note for ReactionDiffusion "scenes/reaction-diffusion/simulation.js"
+    class SceneManager {
+        +camera
+        +controls
+        +renderer
+        +running
+        +scene
+        +constructor()
+        +dispose()
+        +resize()
+        +start()
+        +stop()
+    }
+    note for SceneManager "lib/core/scene.js"
+    class SettingsPanel {
+        +defaults
+        +gui
+        +sceneId
+        +values
+        +addButton()
+        +addColor()
+        +addDropdown()
+        +addSeparator()
+        +addSlider()
+        +addToggle()
+        +constructor()
+        +controller()
+        +destroy()
+        +get domElement()
+        +get()
+        +onChange()
+        +reset()
+    }
+    note for SettingsPanel "lib/ui/settings.js"
+    class TerrainManager {
+        +amplitude
+        +chunkCount
+        +chunkSize
+        +frequency
+        +segments
+        +constructor()
+        +dispose()
+        +get material()
+        +getHeightAt()
+        +setAmplitude()
+        +setColor()
+        +setFrequency()
+        +update()
+    }
+    note for TerrainManager "scenes/wireframe-flythrough/terrain.js"
+    class Walker {
+        +bias
+        +direction
+        +geometry
+        +maxPoints
+        +pointCount
+        +position
+        +positions
+        +stepLength
+        +constructor()
+        +get tip()
+        +reset()
+        +step()
+    }
+    note for Walker "scenes/line-walker/walker.js"
