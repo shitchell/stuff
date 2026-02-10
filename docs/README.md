@@ -1,11 +1,21 @@
 # Documentation
 
-Project documentation for the 3D scene collection.
+Project documentation index.
 
-## Guides
+## Structure
 
-- [Testing Standards & Patterns](testing.md) -- Testing philosophy, Playwright setup, pixel sampling, and test patterns
-- [Coding Standards & Principles](standards.md) -- Architecture principles, code style, scene anatomy, dev tooling, and debugging
+```
+docs/
+├── README.md              ← this index
+├── core/
+│   ├── principles.md      ← universal values and principles
+│   └── standards.md       ← project-wide coding standards
+```
+
+## Core
+
+- [core/principles.md](core/principles.md) -- Universal values, principles, and design guidelines (clarity over cleverness, one contiguous block, explicit over implicit, etc.)
+- [core/standards.md](core/standards.md) -- Project-wide coding standards (architecture principles, code style, scene anatomy, dev tooling, debugging)
 
 ## Architecture
 
@@ -14,3 +24,9 @@ Project documentation for the 3D scene collection.
 ## Plans
 
 - [Design & Implementation Plans](../site/plans/) -- Historical design documents and implementation plans for individual scenes and shared components
+
+## Implementation-Specific Docs
+
+Implementation-specific standards and architecture docs live under `_work/implementations/`:
+
+- [001-3d-scenes](./../_work/implementations/001-3d-scenes/README.md) -- 3D scene collection (testing guide, development standards, architecture symlinks)
