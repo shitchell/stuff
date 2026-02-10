@@ -15,13 +15,13 @@ You are a **supervisor only**. You do NOT write code. You launch Task subagents,
 
 ### Completed Tasks
 - **Task 1:** Project setup (vendor files, CSS, package.json, directories) ✅
-- **Task 2:** SceneManager + camera factories (`docs/lib/core/scene.js`, `camera.js`, test page) ✅
-- **Task 3:** SettingsPanel (`docs/lib/ui/settings.js`) ✅
-- **Task 4:** ChromeController (`docs/lib/ui/chrome.js`) ✅
-- **Task 5:** Math + Color utilities (`docs/lib/utils/math.js`, `color.js`) ✅
-- **Task 6:** Line Walker scene (`docs/scenes/line-walker/`) ✅
-- **Task 8:** Simplex Noise (`docs/lib/utils/noise.js`) ✅
-- **Task 10:** Shader utility (`docs/lib/utils/shader.js`) ✅
+- **Task 2:** SceneManager + camera factories (`docs/3d/lib/core/scene.js`, `camera.js`, test page) ✅
+- **Task 3:** SettingsPanel (`docs/3d/lib/ui/settings.js`) ✅
+- **Task 4:** ChromeController (`docs/3d/lib/ui/chrome.js`) ✅
+- **Task 5:** Math + Color utilities (`docs/3d/lib/utils/math.js`, `color.js`) ✅
+- **Task 6:** Line Walker scene (`docs/3d/scenes/line-walker/`) ✅
+- **Task 8:** Simplex Noise (`docs/3d/lib/utils/noise.js`) ✅
+- **Task 10:** Shader utility (`docs/3d/lib/utils/shader.js`) ✅
 
 ### Currently Running (Round 3 — launched in parallel)
 - **Task 7:** Lorenz Attractor scene (agent a85cf24)
@@ -84,10 +84,10 @@ Read the implementation plan at `docs/plans/2026-02-10-3d-scenes-implementation.
 Also read `docs/plans/auto-camera.planning.md`.
 
 You must MODIFY (not create) these 4 existing files:
-- docs/scenes/line-walker/main.js
-- docs/scenes/lorenz/main.js
-- docs/scenes/wireframe-flythrough/main.js
-- docs/scenes/reaction-diffusion/main.js
+- docs/3d/scenes/line-walker/main.js
+- docs/3d/scenes/lorenz/main.js
+- docs/3d/scenes/wireframe-flythrough/main.js
+- docs/3d/scenes/reaction-diffusion/main.js
 
 For each, add:
 1. Import AutoCamera from '../../lib/core/auto-camera.js'
@@ -109,11 +109,11 @@ IMPORTANT: Read each main.js FIRST to understand the existing code, then add the
 ## After Task 13
 
 - **Task 14** (dev tooling) — user said this is lower priority. The plan is intentionally less detailed. Prompt the agent with the plan + `dev-tooling.planning.md`.
-- **Task 15** (ARCHITECTURE.md + index) — straightforward. Update `docs/index.html` to add scene links. Write `docs/ARCHITECTURE.md`. Remove `docs/scenes/_test/`.
+- **Task 15** (ARCHITECTURE.md + index) — straightforward. Update `docs/index.html` to add scene links. Write `docs/3d/ARCHITECTURE.md`. Remove `docs/3d/scenes/_test/`.
 
 ## After All Tasks
 
-- Do a comprehensive review: `ls -R docs/scenes/ docs/lib/`
+- Do a comprehensive review: `ls -R docs/3d/scenes/ docs/3d/lib/`
 - Consider a batch commit of everything
 - The user may want to serve and test: `npx serve docs`
 - No git push unless user asks

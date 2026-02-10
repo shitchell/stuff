@@ -4,7 +4,7 @@
 
 **Goal:** Build four interactive 3D screensaver pages with a shared modular library, configurable settings with localStorage persistence, auto-hide UI, auto-camera screensaver mode, and deterministic architecture diagram generation with commit-hook enforcement.
 
-**Architecture:** Pure ES modules served as static files on GitHub Pages. Shared library in `docs/lib/`, four scene pages in `docs/scenes/`, Three.js and lil-gui vendored in `docs/vendor/`. Import maps in HTML resolve bare `'three'` specifiers. Dev tooling (node-based) generates Mermaid diagrams from AST and enforces ARCHITECTURE.md updates via pre-commit hook.
+**Architecture:** Pure ES modules served as static files on GitHub Pages. Shared library in `docs/3d/lib/`, four scene pages in `docs/3d/scenes/`, Three.js and lil-gui vendored in `docs/3d/vendor/`. Import maps in HTML resolve bare `'three'` specifiers. Dev tooling (node-based) generates Mermaid diagrams from AST and enforces ARCHITECTURE.md updates via pre-commit hook.
 
 **Tech Stack:** Three.js r0.182.0, lil-gui 0.21.0, ES modules (no build step), acorn (dev tooling only)
 
@@ -18,14 +18,14 @@
 ## Task 1: Project Setup — Vendor Files, Package.json, Directory Structure
 
 **Files:**
-- Create: `docs/vendor/three.module.js`
-- Create: `docs/vendor/three-addons/controls/OrbitControls.js`
-- Create: `docs/vendor/lil-gui.esm.js`
-- Create: `docs/css/scene.css`
+- Create: `docs/3d/vendor/three.module.js`
+- Create: `docs/3d/vendor/three-addons/controls/OrbitControls.js`
+- Create: `docs/3d/vendor/lil-gui.esm.js`
+- Create: `docs/3d/css/scene.css`
 - Create: `package.json`
-- Create: `docs/lib/core/.gitkeep` (establish directory)
-- Create: `docs/lib/ui/.gitkeep`
-- Create: `docs/lib/utils/.gitkeep`
+- Create: `docs/3d/lib/core/.gitkeep` (establish directory)
+- Create: `docs/3d/lib/ui/.gitkeep`
+- Create: `docs/3d/lib/utils/.gitkeep`
 
 **Step 1: Create directory structure**
 
@@ -38,9 +38,9 @@ mkdir -p tools .githooks
 **Step 2: Download vendor files**
 
 ```bash
-curl -o docs/vendor/three.module.js 'https://unpkg.com/three@0.182.0/build/three.module.js'
-curl -o docs/vendor/three-addons/controls/OrbitControls.js 'https://unpkg.com/three@0.182.0/examples/jsm/controls/OrbitControls.js'
-curl -o docs/vendor/lil-gui.esm.js 'https://unpkg.com/lil-gui@0.21.0/dist/lil-gui.esm.js'
+curl -o docs/3d/vendor/three.module.js 'https://unpkg.com/three@0.182.0/build/three.module.js'
+curl -o docs/3d/vendor/three-addons/controls/OrbitControls.js 'https://unpkg.com/three@0.182.0/examples/jsm/controls/OrbitControls.js'
+curl -o docs/3d/vendor/lil-gui.esm.js 'https://unpkg.com/lil-gui@0.21.0/dist/lil-gui.esm.js'
 ```
 
 **Step 3: Create package.json**
@@ -65,7 +65,7 @@ curl -o docs/vendor/lil-gui.esm.js 'https://unpkg.com/lil-gui@0.21.0/dist/lil-gu
 
 Note: We don't need dependency-cruiser as a dep — our custom acorn script handles everything.
 
-**Step 4: Create shared CSS** (`docs/css/scene.css`)
+**Step 4: Create shared CSS** (`docs/3d/css/scene.css`)
 
 ```css
 /* === Reset & Full-Viewport Canvas === */
@@ -163,9 +163,9 @@ npm install
 **Step 6: Verify vendor files downloaded correctly**
 
 ```bash
-head -5 docs/vendor/three.module.js
-head -5 docs/vendor/lil-gui.esm.js
-head -5 docs/vendor/three-addons/controls/OrbitControls.js
+head -5 docs/3d/vendor/three.module.js
+head -5 docs/3d/vendor/lil-gui.esm.js
+head -5 docs/3d/vendor/three-addons/controls/OrbitControls.js
 ```
 
 Expected: Each file should contain JS code (not 404 HTML).
@@ -173,7 +173,7 @@ Expected: Each file should contain JS code (not 404 HTML).
 **Step 7: Commit**
 
 ```bash
-git add docs/vendor/ docs/css/scene.css package.json package-lock.json
+git add docs/3d/vendor/ docs/3d/css/scene.css package.json package-lock.json
 git commit -m "feat: project setup — vendor Three.js r182, lil-gui, shared CSS"
 ```
 
@@ -182,10 +182,10 @@ git commit -m "feat: project setup — vendor Three.js r182, lil-gui, shared CSS
 ## Task 2: SceneManager + Camera Factories
 
 **Files:**
-- Create: `docs/lib/core/scene.js`
-- Create: `docs/lib/core/camera.js`
+- Create: `docs/3d/lib/core/scene.js`
+- Create: `docs/3d/lib/core/camera.js`
 
-**Step 1: Implement SceneManager** (`docs/lib/core/scene.js`)
+**Step 1: Implement SceneManager** (`docs/3d/lib/core/scene.js`)
 
 The SceneManager is the foundation every scene builds on. It owns the renderer, scene, camera, controls, animation loop, resize handling, and cleanup.
 
@@ -322,7 +322,7 @@ export class SceneManager {
 }
 ```
 
-**Step 2: Implement camera factories** (`docs/lib/core/camera.js`)
+**Step 2: Implement camera factories** (`docs/3d/lib/core/camera.js`)
 
 ```js
 import * as THREE from 'three';
@@ -413,7 +413,7 @@ export function createFlyCamera(options = {}, listenElement = document) {
 }
 ```
 
-**Step 3: Create a minimal test page to verify** (`docs/scenes/_test/index.html`)
+**Step 3: Create a minimal test page to verify** (`docs/3d/scenes/_test/index.html`)
 
 ```html
 <!DOCTYPE html>
@@ -467,7 +467,7 @@ npx serve docs
 **Step 5: Commit**
 
 ```bash
-git add docs/lib/core/scene.js docs/lib/core/camera.js docs/scenes/_test/
+git add docs/3d/lib/core/scene.js docs/3d/lib/core/camera.js docs/3d/scenes/_test/
 git commit -m "feat: SceneManager and camera factories with test page"
 ```
 
@@ -476,9 +476,9 @@ git commit -m "feat: SceneManager and camera factories with test page"
 ## Task 3: SettingsPanel
 
 **Files:**
-- Create: `docs/lib/ui/settings.js`
+- Create: `docs/3d/lib/ui/settings.js`
 
-**Step 1: Implement SettingsPanel** (`docs/lib/ui/settings.js`)
+**Step 1: Implement SettingsPanel** (`docs/3d/lib/ui/settings.js`)
 
 Wraps lil-gui with localStorage persistence, namespaced by scene ID. Builder pattern (methods return `this` for chaining).
 
@@ -683,7 +683,7 @@ export class SettingsPanel {
 
 **Step 2: Update test page to include settings**
 
-Add to `docs/scenes/_test/index.html`'s script:
+Add to `docs/3d/scenes/_test/index.html`'s script:
 
 ```js
 import { SettingsPanel } from '../../lib/ui/settings.js';
@@ -717,7 +717,7 @@ npx serve docs
 **Step 4: Commit**
 
 ```bash
-git add docs/lib/ui/settings.js docs/scenes/_test/
+git add docs/3d/lib/ui/settings.js docs/3d/scenes/_test/
 git commit -m "feat: SettingsPanel with localStorage persistence"
 ```
 
@@ -726,9 +726,9 @@ git commit -m "feat: SettingsPanel with localStorage persistence"
 ## Task 4: ChromeController
 
 **Files:**
-- Create: `docs/lib/ui/chrome.js`
+- Create: `docs/3d/lib/ui/chrome.js`
 
-**Step 1: Implement ChromeController** (`docs/lib/ui/chrome.js`)
+**Step 1: Implement ChromeController** (`docs/3d/lib/ui/chrome.js`)
 
 Auto-hides registered UI elements after inactivity. Also handles fullscreen toggle via `F` key and double-click.
 
@@ -839,7 +839,7 @@ export class ChromeController {
 
 **Step 2: Update test page to wire ChromeController**
 
-Add to `docs/scenes/_test/index.html`'s script:
+Add to `docs/3d/scenes/_test/index.html`'s script:
 
 ```js
 import { ChromeController } from '../../lib/ui/chrome.js';
@@ -865,7 +865,7 @@ npx serve docs
 **Step 4: Commit**
 
 ```bash
-git add docs/lib/ui/chrome.js docs/scenes/_test/
+git add docs/3d/lib/ui/chrome.js docs/3d/scenes/_test/
 git commit -m "feat: ChromeController with auto-hide and fullscreen"
 ```
 
@@ -874,10 +874,10 @@ git commit -m "feat: ChromeController with auto-hide and fullscreen"
 ## Task 5: Math + Color Utilities
 
 **Files:**
-- Create: `docs/lib/utils/math.js`
-- Create: `docs/lib/utils/color.js`
+- Create: `docs/3d/lib/utils/math.js`
+- Create: `docs/3d/lib/utils/color.js`
 
-**Step 1: Implement math utilities** (`docs/lib/utils/math.js`)
+**Step 1: Implement math utilities** (`docs/3d/lib/utils/math.js`)
 
 ```js
 /** @param {number} a @param {number} b @param {number} t @returns {number} */
@@ -905,7 +905,7 @@ export function randomRange(min, max) {
 }
 ```
 
-**Step 2: Implement color utilities** (`docs/lib/utils/color.js`)
+**Step 2: Implement color utilities** (`docs/3d/lib/utils/color.js`)
 
 ```js
 /**
@@ -982,8 +982,8 @@ function hexToRgb(hex) {
 
 ```bash
 node -e "
-import { lerp, clamp, map, randomRange } from './docs/lib/utils/math.js';
-import { hslToHex, colorRamp } from './docs/lib/utils/color.js';
+import { lerp, clamp, map, randomRange } from './docs/3d/lib/utils/math.js';
+import { hslToHex, colorRamp } from './docs/3d/lib/utils/color.js';
 console.log('lerp(0,10,0.5):', lerp(0, 10, 0.5));       // 5
 console.log('clamp(15,0,10):', clamp(15, 0, 10));         // 10
 console.log('map(5,0,10,0,100):', map(5, 0, 10, 0, 100)); // 50
@@ -1000,7 +1000,7 @@ Note: This requires running from the project root with `--input-type=module` or 
 **Step 4: Commit**
 
 ```bash
-git add docs/lib/utils/math.js docs/lib/utils/color.js
+git add docs/3d/lib/utils/math.js docs/3d/lib/utils/color.js
 git commit -m "feat: math and color utility modules"
 ```
 
@@ -1009,13 +1009,13 @@ git commit -m "feat: math and color utility modules"
 ## Task 6: Line Walker Scene
 
 **Files:**
-- Create: `docs/scenes/line-walker/index.html`
-- Create: `docs/scenes/line-walker/main.js`
-- Create: `docs/scenes/line-walker/walker.js`
+- Create: `docs/3d/scenes/line-walker/index.html`
+- Create: `docs/3d/scenes/line-walker/main.js`
+- Create: `docs/3d/scenes/line-walker/walker.js`
 
 This is the first full scene and validates the entire shared library stack.
 
-**Step 1: Create the walker logic** (`docs/scenes/line-walker/walker.js`)
+**Step 1: Create the walker logic** (`docs/3d/scenes/line-walker/walker.js`)
 
 The walker maintains a growing trail of 3D points. Each step picks a new direction: a random vector blended with the previous direction based on a "bias" parameter (higher bias = straighter path).
 
@@ -1116,7 +1116,7 @@ export class Walker {
 }
 ```
 
-**Step 2: Create the scene main** (`docs/scenes/line-walker/main.js`)
+**Step 2: Create the scene main** (`docs/3d/scenes/line-walker/main.js`)
 
 ```js
 import * as THREE from 'three';
@@ -1224,7 +1224,7 @@ mgr.start((dt) => {
 });
 ```
 
-**Step 3: Create the HTML page** (`docs/scenes/line-walker/index.html`)
+**Step 3: Create the HTML page** (`docs/3d/scenes/line-walker/index.html`)
 
 ```html
 <!DOCTYPE html>
@@ -1269,7 +1269,7 @@ npx serve docs
 **Step 5: Commit**
 
 ```bash
-git add docs/scenes/line-walker/
+git add docs/3d/scenes/line-walker/
 git commit -m "feat: line walker scene — first complete interactive page"
 ```
 
@@ -1278,11 +1278,11 @@ git commit -m "feat: line walker scene — first complete interactive page"
 ## Task 7: Lorenz Attractor Scene
 
 **Files:**
-- Create: `docs/scenes/lorenz/index.html`
-- Create: `docs/scenes/lorenz/main.js`
-- Create: `docs/scenes/lorenz/attractor.js`
+- Create: `docs/3d/scenes/lorenz/index.html`
+- Create: `docs/3d/scenes/lorenz/main.js`
+- Create: `docs/3d/scenes/lorenz/attractor.js`
 
-**Step 1: Implement the attractor** (`docs/scenes/lorenz/attractor.js`)
+**Step 1: Implement the attractor** (`docs/3d/scenes/lorenz/attractor.js`)
 
 Uses RK4 integration for the Lorenz system. Supports multiple trails with slightly offset initial conditions.
 
@@ -1394,7 +1394,7 @@ export class LorenzTrail {
 }
 ```
 
-**Step 2: Create scene main** (`docs/scenes/lorenz/main.js`)
+**Step 2: Create scene main** (`docs/3d/scenes/lorenz/main.js`)
 
 ```js
 import * as THREE from 'three';
@@ -1555,7 +1555,7 @@ mgr.start((dt, elapsed) => {
 - Changing trail count destroys all existing trails and creates new ones (clean rebuild, no stale geometry).
 - The integration timestep is fixed at 0.005 (stable for all presets). The "speed" setting controls how many steps run per frame, not the timestep itself.
 
-**Step 3: Create HTML page** (`docs/scenes/lorenz/index.html`)
+**Step 3: Create HTML page** (`docs/3d/scenes/lorenz/index.html`)
 
 Same pattern as line-walker: importmap, scene.css link, canvas, module script src.
 
@@ -1575,7 +1575,7 @@ npx serve docs
 **Step 5: Commit**
 
 ```bash
-git add docs/scenes/lorenz/
+git add docs/3d/scenes/lorenz/
 git commit -m "feat: lorenz attractor scene with RK4 integration and multi-trail"
 ```
 
@@ -1584,9 +1584,9 @@ git commit -m "feat: lorenz attractor scene with RK4 integration and multi-trail
 ## Task 8: Simplex Noise Utility
 
 **Files:**
-- Create: `docs/lib/utils/noise.js`
+- Create: `docs/3d/lib/utils/noise.js`
 
-**Step 1: Implement simplex noise** (`docs/lib/utils/noise.js`)
+**Step 1: Implement simplex noise** (`docs/3d/lib/utils/noise.js`)
 
 Implement 2D and 3D simplex noise. Use the well-known public domain algorithm by Stefan Gustavson. This is a self-contained implementation with no dependencies.
 
@@ -1602,7 +1602,7 @@ Optionally export a `createNoise(seed)` factory that returns `{ simplex2D, simpl
 
 ```bash
 node -e "
-import { simplex2D, simplex3D } from './docs/lib/utils/noise.js';
+import { simplex2D, simplex3D } from './docs/3d/lib/utils/noise.js';
 const v2 = simplex2D(1.5, 2.3);
 const v3 = simplex3D(1.5, 2.3, 0.7);
 console.log('simplex2D(1.5, 2.3):', v2, '(should be between -1 and 1)');
@@ -1614,7 +1614,7 @@ console.log(Math.abs(v2) <= 1 && Math.abs(v3) <= 1 ? 'PASS' : 'FAIL');
 **Step 3: Commit**
 
 ```bash
-git add docs/lib/utils/noise.js
+git add docs/3d/lib/utils/noise.js
 git commit -m "feat: simplex noise utility (2D and 3D)"
 ```
 
@@ -1623,12 +1623,12 @@ git commit -m "feat: simplex noise utility (2D and 3D)"
 ## Task 9: Wireframe Flythrough Scene
 
 **Files:**
-- Create: `docs/scenes/wireframe-flythrough/index.html`
-- Create: `docs/scenes/wireframe-flythrough/main.js`
-- Create: `docs/scenes/wireframe-flythrough/terrain.js`
-- Create: `docs/scenes/wireframe-flythrough/objects.js`
+- Create: `docs/3d/scenes/wireframe-flythrough/index.html`
+- Create: `docs/3d/scenes/wireframe-flythrough/main.js`
+- Create: `docs/3d/scenes/wireframe-flythrough/terrain.js`
+- Create: `docs/3d/scenes/wireframe-flythrough/objects.js`
 
-**Step 1: Implement terrain generation** (`docs/scenes/wireframe-flythrough/terrain.js`)
+**Step 1: Implement terrain generation** (`docs/3d/scenes/wireframe-flythrough/terrain.js`)
 
 Chunked terrain system. Key algorithm:
 
@@ -1649,7 +1649,7 @@ class TerrainManager {
 }
 ```
 
-**Step 2: Implement decorative objects** (`docs/scenes/wireframe-flythrough/objects.js`)
+**Step 2: Implement decorative objects** (`docs/3d/scenes/wireframe-flythrough/objects.js`)
 
 Simple wireframe shapes placed on the terrain:
 - **Trees:** Wireframe cone on a wireframe cylinder (trunk)
@@ -1665,7 +1665,7 @@ function createColumn(height, radius) → THREE.Mesh
 
 Objects are spawned randomly on terrain chunks when they're recycled. Old objects are removed with old chunks.
 
-**Step 3: Create scene main** (`docs/scenes/wireframe-flythrough/main.js`)
+**Step 3: Create scene main** (`docs/3d/scenes/wireframe-flythrough/main.js`)
 
 **IMPORTANT — Camera behavior:** This scene does NOT use OrbitControls or `createFlyCamera`. The camera moves forward automatically at a configurable speed. There is no user steering. The camera setup is:
 
@@ -1717,7 +1717,7 @@ npx serve docs
 **Step 6: Commit**
 
 ```bash
-git add docs/scenes/wireframe-flythrough/ docs/lib/utils/noise.js
+git add docs/3d/scenes/wireframe-flythrough/ docs/3d/lib/utils/noise.js
 git commit -m "feat: wireframe flythrough scene with procedural terrain"
 ```
 
@@ -1726,9 +1726,9 @@ git commit -m "feat: wireframe flythrough scene with procedural terrain"
 ## Task 10: Shader Utility
 
 **Files:**
-- Create: `docs/lib/utils/shader.js`
+- Create: `docs/3d/lib/utils/shader.js`
 
-**Step 1: Implement shader utilities** (`docs/lib/utils/shader.js`)
+**Step 1: Implement shader utilities** (`docs/3d/lib/utils/shader.js`)
 
 ```js
 import * as THREE from 'three';
@@ -1765,7 +1765,7 @@ export function createShaderMaterial(vertexShader, fragmentShader, uniforms, opt
 **Step 2: Commit**
 
 ```bash
-git add docs/lib/utils/shader.js
+git add docs/3d/lib/utils/shader.js
 git commit -m "feat: shader utility for loading GLSL and creating materials"
 ```
 
@@ -1774,14 +1774,14 @@ git commit -m "feat: shader utility for loading GLSL and creating materials"
 ## Task 11: Reaction-Diffusion Scene
 
 **Files:**
-- Create: `docs/scenes/reaction-diffusion/index.html`
-- Create: `docs/scenes/reaction-diffusion/main.js`
-- Create: `docs/scenes/reaction-diffusion/simulation.js`
-- Create: `docs/scenes/reaction-diffusion/reaction-diffusion.frag`
-- Create: `docs/scenes/reaction-diffusion/reaction-diffusion.vert`
-- Create: `docs/scenes/reaction-diffusion/display.frag`
+- Create: `docs/3d/scenes/reaction-diffusion/index.html`
+- Create: `docs/3d/scenes/reaction-diffusion/main.js`
+- Create: `docs/3d/scenes/reaction-diffusion/simulation.js`
+- Create: `docs/3d/scenes/reaction-diffusion/reaction-diffusion.frag`
+- Create: `docs/3d/scenes/reaction-diffusion/reaction-diffusion.vert`
+- Create: `docs/3d/scenes/reaction-diffusion/display.frag`
 
-**Step 1: Implement the simulation module** (`docs/scenes/reaction-diffusion/simulation.js`)
+**Step 1: Implement the simulation module** (`docs/3d/scenes/reaction-diffusion/simulation.js`)
 
 Ping-pong render-to-texture Gray-Scott simulation.
 
@@ -1883,7 +1883,7 @@ seed(pattern) {
 - spots: (0.035, 0.065)
 - waves: (0.014, 0.054)
 
-**Step 2: Create scene main** (`docs/scenes/reaction-diffusion/main.js`)
+**Step 2: Create scene main** (`docs/3d/scenes/reaction-diffusion/main.js`)
 
 - Create a `THREE.SphereGeometry(2, 64, 64)` with the display shader as its material.
 - **Important:** The display shader is applied to the sphere as a `THREE.ShaderMaterial`. Its vertex shader must use Three.js standard projection (`projectionMatrix * modelViewMatrix * vec4(position, 1.0)`) — NOT the fullscreen quad passthrough used by the simulation shader. The display shader's fragment shader samples the simulation texture using the sphere's `vUv` coordinates.
@@ -1988,7 +1988,7 @@ npx serve docs
 **Step 6: Commit**
 
 ```bash
-git add docs/scenes/reaction-diffusion/
+git add docs/3d/scenes/reaction-diffusion/
 git commit -m "feat: reaction-diffusion on sphere with Gray-Scott shader"
 ```
 
@@ -1997,9 +1997,9 @@ git commit -m "feat: reaction-diffusion on sphere with Gray-Scott shader"
 ## Task 12: AutoCamera
 
 **Files:**
-- Create: `docs/lib/core/auto-camera.js`
+- Create: `docs/3d/lib/core/auto-camera.js`
 
-**Step 1: Implement AutoCamera** (`docs/lib/core/auto-camera.js`)
+**Step 1: Implement AutoCamera** (`docs/3d/lib/core/auto-camera.js`)
 
 ```js
 import * as THREE from 'three';
@@ -2189,7 +2189,7 @@ function smoothstep(t) {
 **Step 2: Commit**
 
 ```bash
-git add docs/lib/core/auto-camera.js
+git add docs/3d/lib/core/auto-camera.js
 git commit -m "feat: AutoCamera with orbit, drift, and follow modes"
 ```
 
@@ -2198,10 +2198,10 @@ git commit -m "feat: AutoCamera with orbit, drift, and follow modes"
 ## Task 13: Integrate AutoCamera Into All Scenes
 
 **Files:**
-- Modify: `docs/scenes/line-walker/main.js`
-- Modify: `docs/scenes/lorenz/main.js`
-- Modify: `docs/scenes/wireframe-flythrough/main.js`
-- Modify: `docs/scenes/reaction-diffusion/main.js`
+- Modify: `docs/3d/scenes/line-walker/main.js`
+- Modify: `docs/3d/scenes/lorenz/main.js`
+- Modify: `docs/3d/scenes/wireframe-flythrough/main.js`
+- Modify: `docs/3d/scenes/reaction-diffusion/main.js`
 
 **Step 1: Add auto-camera settings and wiring to each scene**
 
@@ -2291,7 +2291,7 @@ Open each scene, wait 30 seconds, confirm:
 **Step 3: Commit**
 
 ```bash
-git add docs/scenes/ docs/lib/core/auto-camera.js
+git add docs/3d/scenes/ docs/3d/lib/core/auto-camera.js
 git commit -m "feat: integrate auto-camera into all four scenes"
 ```
 
@@ -2303,8 +2303,8 @@ git commit -m "feat: integrate auto-camera into all four scenes"
 - Create: `tools/generate-diagrams.mjs`
 - Create: `tools/validate-architecture.mjs`
 - Create: `.githooks/pre-commit`
-- Create: `docs/diagrams/module-dependencies.mmd`
-- Create: `docs/diagrams/class-hierarchy.mmd`
+- Create: `docs/3d/diagrams/module-dependencies.mmd`
+- Create: `docs/3d/diagrams/class-hierarchy.mmd`
 
 **Step 1: Install dev dependencies**
 
@@ -2315,7 +2315,7 @@ npm install --save-dev acorn acorn-walk
 **Step 2: Implement diagram generation** (`tools/generate-diagrams.mjs`)
 
 This script:
-1. Finds all `.js` files under `docs/lib/` and `docs/scenes/`
+1. Finds all `.js` files under `docs/3d/lib/` and `docs/3d/scenes/`
 2. Parses each with acorn (`ecmaVersion: 2022`, `sourceType: 'module'`)
 3. Walks the AST to extract:
    - **Import declarations** → edges in module dependency graph
@@ -2324,7 +2324,7 @@ This script:
    - **Extends clauses** → inheritance edges
 4. Outputs two deterministic Mermaid files:
 
-`docs/diagrams/module-dependencies.mmd`:
+`docs/3d/diagrams/module-dependencies.mmd`:
 ```mermaid
 graph LR
     subgraph lib/core
@@ -2342,7 +2342,7 @@ graph LR
     ...
 ```
 
-`docs/diagrams/class-hierarchy.mmd`:
+`docs/3d/diagrams/class-hierarchy.mmd`:
 ```mermaid
 classDiagram
     class SceneManager {
@@ -2384,7 +2384,7 @@ classDiagram
        - No consumers yet (dead end)
      ```
    - Check for dead ends (exported but never imported) and orphans
-   - Check if `docs/ARCHITECTURE.md` is staged: `git diff --cached --name-only | grep ARCHITECTURE.md`
+   - Check if `docs/3d/ARCHITECTURE.md` is staged: `git diff --cached --name-only | grep ARCHITECTURE.md`
    - If staged: exit 0 (and auto-stage the updated `.mmd` files)
    - If not staged: exit 1 with message
 
@@ -2392,8 +2392,8 @@ classDiagram
 
 ```bash
 #!/usr/bin/env bash
-# Only run if JS files under docs/ changed
-CHANGED=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^docs/.*\.js$')
+# Only run if JS files under docs/3d/ changed
+CHANGED=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^docs/3d/.*\.js$')
 if [ -z "$CHANGED" ]; then
     exit 0
 fi
@@ -2409,7 +2409,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Auto-stage updated diagram files
-git add docs/diagrams/*.mmd
+git add docs/3d/diagrams/*.mmd
 ```
 
 **Step 5: Configure git to use the hooks directory**
@@ -2423,7 +2423,7 @@ chmod +x .githooks/pre-commit
 
 ```bash
 npm run diagrams
-# Expected: docs/diagrams/module-dependencies.mmd and class-hierarchy.mmd created
+# Expected: docs/3d/diagrams/module-dependencies.mmd and class-hierarchy.mmd created
 
 npm run validate
 # Expected: exit 0 (no diff since we just generated them)
@@ -2435,7 +2435,7 @@ npm run validate
 **Step 7: Commit**
 
 ```bash
-git add tools/ .githooks/ docs/diagrams/ package.json package-lock.json
+git add tools/ .githooks/ docs/3d/diagrams/ package.json package-lock.json
 git commit -m "feat: diagram generation, architecture validation, and pre-commit hook"
 ```
 
@@ -2444,10 +2444,10 @@ git commit -m "feat: diagram generation, architecture validation, and pre-commit
 ## Task 15: ARCHITECTURE.md + Index Page Update
 
 **Files:**
-- Create: `docs/ARCHITECTURE.md`
+- Create: `docs/3d/ARCHITECTURE.md`
 - Modify: `docs/index.html`
 
-**Step 1: Write ARCHITECTURE.md** (`docs/ARCHITECTURE.md`)
+**Step 1: Write ARCHITECTURE.md** (`docs/3d/ARCHITECTURE.md`)
 
 Write prose documentation covering:
 - Project overview (what this is, how to run it)
@@ -2471,7 +2471,7 @@ Add links to the four scene pages in the existing `<ul>`:
 
 **Step 3: Clean up test scene**
 
-Remove `docs/scenes/_test/` — it was only for validation during development.
+Remove `docs/3d/scenes/_test/` — it was only for validation during development.
 
 **Step 4: Final verification**
 
@@ -2485,8 +2485,8 @@ npx serve docs
 **Step 5: Commit**
 
 ```bash
-git add docs/ARCHITECTURE.md docs/index.html
-git rm -r docs/scenes/_test/
+git add docs/3d/ARCHITECTURE.md docs/index.html
+git rm -r docs/3d/scenes/_test/
 git commit -m "docs: ARCHITECTURE.md, index page links, remove test scene"
 ```
 

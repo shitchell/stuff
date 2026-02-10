@@ -257,7 +257,7 @@ Uses acorn to parse all `.js` files under `lib/` and `scenes/`. Extracts:
 - Class declarations, method signatures, extends → class hierarchy
 - Exported functions and constants → export map
 
-Outputs deterministic Mermaid `.mmd` files to `docs/diagrams/`.
+Outputs deterministic Mermaid `.mmd` files to `docs/3d/diagrams/`.
 
 ### Architecture Validation (`tools/validate-architecture.mjs`)
 
@@ -323,7 +323,7 @@ git commit
 17. `tools/generate-diagrams.mjs`
 18. `tools/validate-architecture.mjs`
 19. `.githooks/pre-commit`
-20. `docs/ARCHITECTURE.md`
+20. `docs/3d/ARCHITECTURE.md`
 21. Update `docs/index.html` with links to all scenes
 
 ---

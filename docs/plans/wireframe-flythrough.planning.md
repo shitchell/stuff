@@ -105,10 +105,10 @@ The design doc originally said "Uses `createFlyCamera` for forward movement" but
 ## Alignment with Implementation Plan
 
 Task 9 covers the Wireframe Flythrough with four files:
-- `docs/scenes/wireframe-flythrough/terrain.js` -- TerrainManager class (API specified, implementation left to agent)
-- `docs/scenes/wireframe-flythrough/objects.js` -- createTree, createPyramid, createColumn factory functions
-- `docs/scenes/wireframe-flythrough/main.js` -- scene setup with automatic camera movement (key code provided)
-- `docs/scenes/wireframe-flythrough/index.html` -- HTML shell
+- `docs/3d/scenes/wireframe-flythrough/terrain.js` -- TerrainManager class (API specified, implementation left to agent)
+- `docs/3d/scenes/wireframe-flythrough/objects.js` -- createTree, createPyramid, createColumn factory functions
+- `docs/3d/scenes/wireframe-flythrough/main.js` -- scene setup with automatic camera movement (key code provided)
+- `docs/3d/scenes/wireframe-flythrough/index.html` -- HTML shell
 
 Task 8 (Simplex Noise) is a prerequisite for this scene.
 

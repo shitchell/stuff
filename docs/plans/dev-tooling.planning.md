@@ -79,10 +79,10 @@ Diagram generation approach:
 > - **Class graph** -- class names, method signatures, extends relationships
 > - **Export graph** -- what each module exports (functions, classes, constants)
 >
-> Outputs two Mermaid files to `docs/diagrams/`:
+> Outputs two Mermaid files to `docs/3d/diagrams/`:
 >
 > ```
-> docs/diagrams/
+> docs/3d/diagrams/
 > +-- module-dependencies.mmd    # file-level import/export graph
 > +-- class-hierarchy.mmd        # class relationships + key methods
 > ```
@@ -127,8 +127,8 @@ Pre-commit hook details:
 
 > ```bash
 > #!/usr/bin/env bash
-> # Only run if JS files under docs/ changed
-> CHANGED=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^docs/.*\.js$')
+> # Only run if JS files under docs/3d/ changed
+> CHANGED=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^docs/3d/.*\.js$')
 > if [ -z "$CHANGED" ]; then
 >     exit 0
 > fi
@@ -144,7 +144,7 @@ Pre-commit hook details:
 > fi
 >
 > # Auto-stage updated diagram files
-> git add docs/diagrams/*.mmd
+> git add docs/3d/diagrams/*.mmd
 > ```
 -- Source: Claude, Task 14 Step 4
 

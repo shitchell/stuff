@@ -115,12 +115,12 @@ The design doc was amended to add detailed simulation.js specification (amendmen
 ## Alignment with Implementation Plan
 
 Task 11 covers the Reaction-Diffusion scene with six files:
-- `docs/scenes/reaction-diffusion/simulation.js` -- ReactionDiffusion class (API + detailed ping-pong setup code)
-- `docs/scenes/reaction-diffusion/main.js` -- scene setup (described, key details specified)
-- `docs/scenes/reaction-diffusion/reaction-diffusion.frag` -- complete Gray-Scott shader code provided
-- `docs/scenes/reaction-diffusion/reaction-diffusion.vert` -- fullscreen quad passthrough (code provided)
-- `docs/scenes/reaction-diffusion/display.frag` -- palette-based display shader (code provided with organic, thermal, monochrome palettes)
-- `docs/scenes/reaction-diffusion/index.html` -- HTML shell
+- `docs/3d/scenes/reaction-diffusion/simulation.js` -- ReactionDiffusion class (API + detailed ping-pong setup code)
+- `docs/3d/scenes/reaction-diffusion/main.js` -- scene setup (described, key details specified)
+- `docs/3d/scenes/reaction-diffusion/reaction-diffusion.frag` -- complete Gray-Scott shader code provided
+- `docs/3d/scenes/reaction-diffusion/reaction-diffusion.vert` -- fullscreen quad passthrough (code provided)
+- `docs/3d/scenes/reaction-diffusion/display.frag` -- palette-based display shader (code provided with organic, thermal, monochrome palettes)
+- `docs/3d/scenes/reaction-diffusion/index.html` -- HTML shell
 
 Task 10 (Shader utility) is a prerequisite.
 

@@ -80,7 +80,7 @@ Implementation specifications that cannot be directly mapped to a user requireme
 | Reaction-Diffusion preset F/k values | Task 11 | Standard values from Gray-Scott parameter space literature. |
 | CSS specifics (colors, font sizes, z-index) | Task 1 CSS | Reasonable choices matching existing site theme. |
 | package.json `name: "stuff-shitchell"` | Task 1 | Reasonable naming convention. |
-| `docs/scenes/_test/` temporary test page | Tasks 2-4 | Development aid, removed in Task 15. |
+| `docs/3d/scenes/_test/` temporary test page | Tasks 2-4 | Development aid, removed in Task 15. |
 | `serve` npm script | Task 1 | Development convenience. |
 
 All untraceable items are reasonable technical defaults or implementation details that do not conflict with any stated requirement.

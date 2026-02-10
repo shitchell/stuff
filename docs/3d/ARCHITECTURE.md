@@ -11,60 +11,61 @@ The scenes are:
 - **Wireframe Flythrough** -- A synthwave-inspired endless flythrough over noise-generated wireframe terrain with decorative objects.
 - **Reaction-Diffusion** -- A Gray-Scott reaction-diffusion simulation rendered onto a rotating sphere using GPU compute (ping-pong render targets).
 
-All scenes share a common library (`docs/lib/`) that provides scene lifecycle management, camera systems, UI controls, and math/color/noise/shader utilities. There is no build step -- everything is pure ES modules loaded via `<script type="importmap">` in each scene's HTML file.
+All scenes share a common library (`docs/3d/lib/`) that provides scene lifecycle management, camera systems, UI controls, and math/color/noise/shader utilities. There is no build step -- everything is pure ES modules loaded via `<script type="importmap">` in each scene's HTML file.
 
 ## Directory Structure
 
 ```
 docs/
-+-- ARCHITECTURE.md              # This file
 +-- index.html                   # Landing page with links to all scenes
-+-- css/
-|   +-- scene.css                # Shared styles (reset, canvas, chrome auto-hide)
-+-- diagrams/
-|   +-- module-dependencies.mmd  # Generated: file-level import graph (Mermaid)
-|   +-- class-hierarchy.mmd      # Generated: class relationships (Mermaid)
-|   +-- graph-data.json          # Generated: structured graph data for validation
-+-- lib/
-|   +-- core/
-|   |   +-- scene.js             # SceneManager -- renderer, camera, controls, animation loop
-|   |   +-- camera.js            # Camera factory functions (perspective, orthographic, fly)
-|   |   +-- auto-camera.js       # AutoCamera -- screensaver camera with orbit/drift/follow
-|   +-- ui/
-|   |   +-- settings.js          # SettingsPanel -- lil-gui wrapper with localStorage persistence
-|   |   +-- chrome.js            # ChromeController -- auto-hide UI on inactivity
-|   +-- utils/
-|       +-- math.js              # lerp, clamp, map, randomRange
-|       +-- color.js             # HSL-to-hex, palettes, color ramp interpolation
-|       +-- noise.js             # 2D/3D simplex noise (with optional seeding)
-|       +-- shader.js            # loadShader (fetch .vert/.frag) + createShaderMaterial
-+-- scenes/
-|   +-- line-walker/
-|   |   +-- index.html           # Entry point (import map + canvas)
-|   |   +-- main.js              # Scene setup, animation loop, settings wiring
-|   |   +-- walker.js            # Walker class -- random walk with direction bias
-|   +-- lorenz/
-|   |   +-- index.html
-|   |   +-- main.js
-|   |   +-- attractor.js         # LorenzTrail class -- RK4 integration, parameter presets
-|   +-- wireframe-flythrough/
-|   |   +-- index.html
-|   |   +-- main.js
-|   |   +-- terrain.js           # TerrainManager -- ring-buffer terrain chunks with noise
-|   |   +-- objects.js           # Decorative wireframe object factories (trees, pyramids, columns)
-|   +-- reaction-diffusion/
-|       +-- index.html
-|       +-- main.js
-|       +-- simulation.js        # ReactionDiffusion class -- GPU ping-pong Gray-Scott
-|       +-- reaction-diffusion.vert  # Fullscreen quad vertex shader
-|       +-- reaction-diffusion.frag  # Gray-Scott fragment shader
-|       +-- display.frag         # Display fragment shader (palette mapping)
-+-- vendor/
-|   +-- three.module.js          # Three.js r182 (standalone ESM bundle)
-|   +-- three-addons/
-|   |   +-- controls/
-|   |       +-- OrbitControls.js # OrbitControls from Three.js r182 examples
-|   +-- lil-gui.esm.js           # lil-gui 0.21.0
++-- 3d/
+|   +-- ARCHITECTURE.md          # This file
+|   +-- css/
+|   |   +-- scene.css            # Shared styles (reset, canvas, chrome auto-hide)
+|   +-- diagrams/
+|   |   +-- module-dependencies.mmd  # Generated: file-level import graph (Mermaid)
+|   |   +-- class-hierarchy.mmd      # Generated: class relationships (Mermaid)
+|   |   +-- graph-data.json          # Generated: structured graph data for validation
+|   +-- lib/
+|   |   +-- core/
+|   |   |   +-- scene.js             # SceneManager -- renderer, camera, controls, animation loop
+|   |   |   +-- camera.js            # Camera factory functions (perspective, orthographic, fly)
+|   |   |   +-- auto-camera.js       # AutoCamera -- screensaver camera with orbit/drift/follow
+|   |   +-- ui/
+|   |   |   +-- settings.js          # SettingsPanel -- lil-gui wrapper with localStorage persistence
+|   |   |   +-- chrome.js            # ChromeController -- auto-hide UI on inactivity
+|   |   +-- utils/
+|   |       +-- math.js              # lerp, clamp, map, randomRange
+|   |       +-- color.js             # HSL-to-hex, palettes, color ramp interpolation
+|   |       +-- noise.js             # 2D/3D simplex noise (with optional seeding)
+|   |       +-- shader.js            # loadShader (fetch .vert/.frag) + createShaderMaterial
+|   +-- scenes/
+|   |   +-- line-walker/
+|   |   |   +-- index.html           # Entry point (import map + canvas)
+|   |   |   +-- main.js              # Scene setup, animation loop, settings wiring
+|   |   |   +-- walker.js            # Walker class -- random walk with direction bias
+|   |   +-- lorenz/
+|   |   |   +-- index.html
+|   |   |   +-- main.js
+|   |   |   +-- attractor.js         # LorenzTrail class -- RK4 integration, parameter presets
+|   |   +-- wireframe-flythrough/
+|   |   |   +-- index.html
+|   |   |   +-- main.js
+|   |   |   +-- terrain.js           # TerrainManager -- ring-buffer terrain chunks with noise
+|   |   |   +-- objects.js           # Decorative wireframe object factories (trees, pyramids, columns)
+|   |   +-- reaction-diffusion/
+|   |       +-- index.html
+|   |       +-- main.js
+|   |       +-- simulation.js        # ReactionDiffusion class -- GPU ping-pong Gray-Scott
+|   |       +-- reaction-diffusion.vert  # Fullscreen quad vertex shader
+|   |       +-- reaction-diffusion.frag  # Gray-Scott fragment shader
+|   |       +-- display.frag         # Display fragment shader (palette mapping)
+|   +-- vendor/
+|       +-- three.module.js          # Three.js r182 (standalone ESM bundle)
+|       +-- three-addons/
+|       |   +-- controls/
+|       |       +-- OrbitControls.js  # OrbitControls from Three.js r182 examples
+|       +-- lil-gui.esm.js           # lil-gui 0.21.0
 
 tools/                           # Dev tooling (not served by GitHub Pages)
 +-- generate-diagrams.mjs        # AST parser (acorn) -> Mermaid diagram generation
@@ -387,7 +388,7 @@ Each scene directory contains:
 
 1. **Create the scene directory:**
    ```bash
-   mkdir docs/scenes/my-scene
+   mkdir docs/3d/scenes/my-scene
    ```
 
 2. **Create `index.html`** by copying from an existing scene. Update the `<title>` and the `<script>` src to `./main.js`. The import map and CSS link stay the same.
@@ -400,21 +401,21 @@ Each scene directory contains:
 
 4. **Create scene-specific modules** as needed. Export classes/functions and import them in `main.js`.
 
-5. **Add a link** in `docs/index.html` pointing to `scenes/my-scene/`.
+5. **Add a link** in `docs/index.html` pointing to `3d/scenes/my-scene/`.
 
 6. **Regenerate diagrams:**
    ```bash
    npm run diagrams
    ```
-   This updates the `.mmd` files and `graph-data.json` in `docs/diagrams/`.
+   This updates the `.mmd` files and `graph-data.json` in `docs/3d/diagrams/`.
 
-7. **Update this file** (`docs/ARCHITECTURE.md`) to describe the new scene. The pre-commit hook will block your commit if diagram changes are detected but this file is not staged.
+7. **Update this file** (`docs/3d/ARCHITECTURE.md`) to describe the new scene. The pre-commit hook will block your commit if diagram changes are detected but this file is not staged.
 
 8. **Test locally:**
    ```bash
    npm run serve
    ```
-   Open `http://localhost:3000/scenes/my-scene/` in a browser.
+   Open `http://localhost:3000/3d/scenes/my-scene/` in a browser.
 
 ## Dev Tooling
 
@@ -422,7 +423,7 @@ The project includes tooling to keep architecture documentation in sync with the
 
 ### Diagram Generation (`tools/generate-diagrams.mjs`)
 
-Uses **acorn** and **acorn-walk** to parse every `.js` file under `docs/lib/` and `docs/scenes/`. For each file, it extracts:
+Uses **acorn** and **acorn-walk** to parse every `.js` file under `docs/3d/lib/` and `docs/3d/scenes/`. For each file, it extracts:
 
 - **Import declarations** -- which files import which, resolved from relative paths.
 - **Class declarations** -- class names, public properties, public methods, and `extends` relationships. Private members (those using `#` syntax) are excluded.
@@ -430,9 +431,9 @@ Uses **acorn** and **acorn-walk** to parse every `.js` file under `docs/lib/` an
 
 From this AST data, it generates three outputs:
 
-- `docs/diagrams/module-dependencies.mmd` -- A Mermaid `graph LR` showing file-level import edges, grouped by directory.
-- `docs/diagrams/class-hierarchy.mmd` -- A Mermaid `classDiagram` showing all classes with their public API.
-- `docs/diagrams/graph-data.json` -- A structured JSON representation of the full module graph, used by the validation script for diffing.
+- `docs/3d/diagrams/module-dependencies.mmd` -- A Mermaid `graph LR` showing file-level import edges, grouped by directory.
+- `docs/3d/diagrams/class-hierarchy.mmd` -- A Mermaid `classDiagram` showing all classes with their public API.
+- `docs/3d/diagrams/graph-data.json` -- A structured JSON representation of the full module graph, used by the validation script for diffing.
 
 All outputs are deterministic: nodes and edges are sorted alphabetically, so the same source code always produces identical output. This makes `git diff` on the `.mmd` files meaningful.
 
@@ -451,13 +452,13 @@ Compares freshly generated diagrams against the committed versions. When differe
 3. **Shows connected modules** for each changed file -- which other files import from it.
 4. **Detects dead ends** -- modules that export symbols but are never imported by anything.
 5. **Detects orphans** -- modules that neither import nor export anything.
-6. **Checks if `docs/ARCHITECTURE.md` is staged** in the git index. If it is, validation passes. If not, the commit is blocked with instructions.
+6. **Checks if `docs/3d/ARCHITECTURE.md` is staged** in the git index. If it is, validation passes. If not, the commit is blocked with instructions.
 
 ### Pre-Commit Hook (`.githooks/pre-commit`)
 
 A Bash script that integrates the validation into the git workflow:
 
-1. Checks if any `.js` files under `docs/` are staged for commit. If not, exits immediately (no validation needed).
+1. Checks if any `.js` files under `docs/3d/` are staged for commit. If not, exits immediately (no validation needed).
 2. Verifies that `node` and `node_modules/acorn` are available. If not, warns and skips (does not block).
 3. Runs `validate-architecture.mjs`.
 4. If validation fails (exit code non-zero), blocks the commit with instructions.
@@ -475,7 +476,7 @@ git commit --no-verify
 
 ## Vendored Dependencies
 
-All runtime dependencies are vendored in `docs/vendor/` rather than loaded from a CDN or installed via npm:
+All runtime dependencies are vendored in `docs/3d/vendor/` rather than loaded from a CDN or installed via npm:
 
 - **Three.js r182** (`three.module.js`) -- The standalone ESM build of Three.js. This is the complete library in a single file, suitable for use with import maps.
 - **OrbitControls** (`three-addons/controls/OrbitControls.js`) -- The OrbitControls addon from Three.js r182 examples, for interactive camera rotation/zoom/pan.

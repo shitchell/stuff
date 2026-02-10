@@ -31,7 +31,7 @@ import * as walk from 'acorn-walk';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const PROJECT_ROOT = resolve(__dirname, '..');
-const DOCS_DIR = resolve(PROJECT_ROOT, 'docs');
+const DOCS_DIR = resolve(PROJECT_ROOT, 'docs', '3d');
 const DIAGRAMS_DIR = resolve(DOCS_DIR, 'diagrams');
 const SCAN_DIRS = [
     resolve(DOCS_DIR, 'lib'),

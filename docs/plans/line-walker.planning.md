@@ -74,9 +74,9 @@ The design doc was amended to remove "Line thickness" from settings and correct 
 ## Alignment with Implementation Plan
 
 Task 6 covers the Line Walker scene with three files:
-- `docs/scenes/line-walker/walker.js` -- complete Walker class code (~85 lines)
-- `docs/scenes/line-walker/main.js` -- complete scene setup code (~80 lines, amended to fix color modes)
-- `docs/scenes/line-walker/index.html` -- HTML shell with import map
+- `docs/3d/scenes/line-walker/walker.js` -- complete Walker class code (~85 lines)
+- `docs/3d/scenes/line-walker/main.js` -- complete scene setup code (~80 lines, amended to fix color modes)
+- `docs/3d/scenes/line-walker/index.html` -- HTML shell with import map
 
 The implementation plan includes:
 - Walker class with step(), tip getter, reset() methods

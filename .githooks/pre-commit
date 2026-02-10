@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
-# Pre-commit hook: Validate architecture diagrams when JS files under docs/ change
+# Pre-commit hook: Validate architecture diagrams when JS files under docs/3d/ change
 #
-# This hook checks if any .js files under docs/ are staged for commit.
+# This hook checks if any .js files under docs/3d/ are staged for commit.
 # If so, it runs the architecture validation script which:
 #   1. Regenerates Mermaid diagrams from the current source
 #   2. Compares against committed versions
@@ -64,14 +64,14 @@ function error() {
 # ---------------------------------------------------------------------------
 
 # Only run if JS files under docs/ are staged (Added, Copied, Modified)
-CHANGED_JS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^docs/.*\.js$' || true)
+CHANGED_JS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^docs/3d/.*\.js$' || true)
 
 if [[ -z "${CHANGED_JS}" ]]; then
     # No JS files under docs/ changed — nothing to validate
     exit 0
 fi
 
-info "JS files under docs/ changed, validating architecture diagrams..."
+info "JS files under docs/3d/ changed, validating architecture diagrams..."
 info "Changed files:"
 echo "${CHANGED_JS}" | while IFS= read -r f; do
     echo "  ${f}"
@@ -109,8 +109,8 @@ if [[ ${RESULT} -ne 0 ]]; then
     echo ""
     echo "To fix:"
     echo "  1. Review the changes above"
-    echo "  2. Update docs/ARCHITECTURE.md to reflect the changes"
-    echo "  3. Stage both: git add docs/ARCHITECTURE.md docs/diagrams/"
+    echo "  2. Update docs/3d/ARCHITECTURE.md to reflect the changes"
+    echo "  3. Stage both: git add docs/3d/ARCHITECTURE.md docs/3d/diagrams/"
     echo "  4. Retry your commit"
     echo ""
     echo "Or run: npm run update-docs"
@@ -120,9 +120,9 @@ if [[ ${RESULT} -ne 0 ]]; then
 fi
 
 # Auto-stage updated diagram files
-if [[ -d "${REPO_ROOT}/docs/diagrams" ]]; then
-    git add "${REPO_ROOT}"/docs/diagrams/*.mmd 2>/dev/null || true
-    git add "${REPO_ROOT}"/docs/diagrams/graph-data.json 2>/dev/null || true
+if [[ -d "${REPO_ROOT}/docs/3d/diagrams" ]]; then
+    git add "${REPO_ROOT}"/docs/3d/diagrams/*.mmd 2>/dev/null || true
+    git add "${REPO_ROOT}"/docs/3d/diagrams/graph-data.json 2>/dev/null || true
     success "Auto-staged updated diagram files"
 fi
 

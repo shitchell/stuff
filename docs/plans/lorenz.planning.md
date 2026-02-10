@@ -93,9 +93,9 @@ The design doc was amended to add preset/slider interaction details and remove l
 ## Alignment with Implementation Plan
 
 Task 7 covers the Lorenz scene with three files:
-- `docs/scenes/lorenz/attractor.js` -- complete LorenzTrail class with RK4 integration (~90 lines)
-- `docs/scenes/lorenz/main.js` -- complete scene code with preset handling, multi-trail management, all three color modes (~130 lines, added during amendment)
-- `docs/scenes/lorenz/index.html` -- HTML shell
+- `docs/3d/scenes/lorenz/attractor.js` -- complete LorenzTrail class with RK4 integration (~90 lines)
+- `docs/3d/scenes/lorenz/main.js` -- complete scene code with preset handling, multi-trail management, all three color modes (~130 lines, added during amendment)
+- `docs/3d/scenes/lorenz/index.html` -- HTML shell
 
 The implementation plan includes complete code for the attractor class with RK4 integration, the preset-to-slider locking mechanism, trail rebuild on count change, and all three color modes with actual computation logic (velocity magnitude mapping, time-based hue cycling, fixed per-trail colors).
 
