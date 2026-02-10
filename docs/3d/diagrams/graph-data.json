@@ -273,6 +273,44 @@
     "classes": [],
     "functions": []
   },
+  "scenes/fractal-dreamscape/main.js": {
+    "exports": [],
+    "imports": [
+      {
+        "target": "lib/core/scene.js",
+        "specifiers": [
+          "SceneManager"
+        ]
+      },
+      {
+        "target": "lib/ui/settings.js",
+        "specifiers": [
+          "SettingsPanel"
+        ]
+      },
+      {
+        "target": "lib/ui/chrome.js",
+        "specifiers": [
+          "ChromeController"
+        ]
+      },
+      {
+        "target": "lib/core/auto-camera.js",
+        "specifiers": [
+          "AutoCamera"
+        ]
+      },
+      {
+        "target": "lib/utils/shader.js",
+        "specifiers": [
+          "loadShader",
+          "createShaderMaterial"
+        ]
+      }
+    ],
+    "classes": [],
+    "functions": []
+  },
   "scenes/line-walker/main.js": {
     "exports": [],
     "imports": [

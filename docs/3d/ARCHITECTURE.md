@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project contains five interactive 3D scenes served as static files on GitHub Pages. Each scene is a standalone web page built with Three.js, featuring configurable settings with localStorage persistence, auto-hide UI chrome, and an automatic screensaver camera.
+This project contains six interactive 3D scenes served as static files on GitHub Pages. Each scene is a standalone web page built with Three.js, featuring configurable settings with localStorage persistence, auto-hide UI chrome, and an automatic screensaver camera.
 
 The scenes are:
 
@@ -11,6 +11,7 @@ The scenes are:
 - **Wireframe Flythrough** -- A synthwave-inspired endless flythrough over noise-generated wireframe terrain with decorative objects.
 - **Reaction-Diffusion** -- A Gray-Scott reaction-diffusion simulation rendered onto a rotating sphere using GPU compute (ping-pong render targets).
 - **Boids** -- A flocking simulation using Craig Reynolds' boids algorithm with separation, alignment, and cohesion forces, spatial hashing for efficient neighbor lookups, and instanced rendering in toroidal space.
+- **Fractal Dreamscape** -- An animated Julia set fractal with kaleidoscope symmetry, dynamic zoom, color palettes, and morphing Julia c parameter tracing a figure-8 path.
 
 All scenes share a common library (`docs/3d/lib/`) that provides scene lifecycle management, camera systems, UI controls, and math/color/noise/shader utilities. There is no build step -- everything is pure ES modules loaded via `<script type="importmap">` in each scene's HTML file.
 
@@ -62,9 +63,14 @@ docs/
 |   |   |   +-- reaction-diffusion.frag  # Gray-Scott fragment shader
 |   |   |   +-- display.frag         # Display fragment shader (palette mapping)
 |   |   +-- boids/
+|   |   |   +-- index.html
+|   |   |   +-- main.js
+|   |   |   +-- boids.js             # BoidSimulation class -- flocking with spatial hash grid
+|   |   +-- fractal-dreamscape/
 |   |       +-- index.html
 |   |       +-- main.js
-|   |       +-- boids.js             # BoidSimulation class -- flocking with spatial hash grid
+|   |       +-- fractal.vert          # Fullscreen quad vertex shader
+|   |       +-- fractal.frag          # Julia set fractal fragment shader with kaleidoscope
 |   +-- vendor/
 |       +-- three.module.js          # Three.js r182 (standalone ESM bundle)
 |       +-- three-addons/
@@ -107,6 +113,9 @@ graph LR
         scenes_boids_boids_js["boids.js"]
         scenes_boids_main_js["main.js"]
     end
+    subgraph scenes/fractal-dreamscape
+        scenes_fractal_dreamscape_main_js["main.js"]
+    end
     subgraph scenes/line-walker
         scenes_line_walker_main_js["main.js"]
         scenes_line_walker_walker_js["walker.js"]
@@ -132,6 +141,11 @@ graph LR
     scenes_boids_main_js --> lib_utils_color_js
     scenes_boids_main_js --> lib_utils_math_js
     scenes_boids_main_js --> scenes_boids_boids_js
+    scenes_fractal_dreamscape_main_js --> lib_core_auto_camera_js
+    scenes_fractal_dreamscape_main_js --> lib_core_scene_js
+    scenes_fractal_dreamscape_main_js --> lib_ui_chrome_js
+    scenes_fractal_dreamscape_main_js --> lib_ui_settings_js
+    scenes_fractal_dreamscape_main_js --> lib_utils_shader_js
     scenes_line_walker_main_js --> lib_core_auto_camera_js
     scenes_line_walker_main_js --> lib_core_scene_js
     scenes_line_walker_main_js --> lib_ui_chrome_js

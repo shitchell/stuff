@@ -1,2 +1,4 @@
 node_modules/
 docs/diagrams/*.svg
+docs/3d/diagrams/*.svg
+test-results/
