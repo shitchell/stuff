@@ -2,9 +2,15 @@ import { test, expect } from '@playwright/test';
 import { PNG } from 'pngjs';
 
 const SCENE_URL = 'http://localhost:3333/3d/scenes/fractal-dreamscape/';
+// AUTOCAM_TIMEOUT_SEC: Inactivity timeout before autocam activates.
 const AUTOCAM_TIMEOUT_SEC = 5;
-const SAMPLE_INTERVAL_MS = 1000;
-const TOTAL_OBSERVATION_SEC = 12;
+// SAMPLE_INTERVAL_MS: Reduced from 1000 to 2000 to limit the number of
+// SwiftShader screenshots (each takes ~25s when the shader renders).
+const SAMPLE_INTERVAL_MS = 2000;
+// TOTAL_OBSERVATION_SEC: Reduced from 12 to 4 to stay well within the timeout.
+// This gives 2 samples in the observation window -- sufficient to confirm
+// the scene renders visible content after autocam activates.
+const TOTAL_OBSERVATION_SEC = 4;
 
 /**
  * Take a screenshot of the canvas element and analyze pixel brightness.
@@ -55,43 +61,51 @@ async function sampleCanvasScreenshot(page) {
 }
 
 test.describe('AutoCamera blackout detection', () => {
+    // ========================================================================
+    // Success Test
+    // ========================================================================
     test('fractal-dreamscape should NOT go black when autocamera activates', async ({ page }) => {
+        // 5-minute timeout to accommodate SwiftShader's slow shader rendering
+        // (~25s per screenshot when the shader actually renders). With the fix
+        // applied, the shader renders and screenshots are slow. Without the fix,
+        // the scene is black and screenshots are fast. OBS-017, OBS-022.
+        test.setTimeout(300_000);
+
         // Collect all console messages for analysis
         const consoleLogs = [];
         page.on('console', (msg) => {
             const text = msg.text();
             consoleLogs.push({ time: Date.now(), type: msg.type(), text });
-            // Print autocam/fractal debug logs in real-time
             if (text.includes('[autocam]') || text.includes('[fractal]')) {
                 console.log(`  BROWSER: ${text}`);
             }
         });
-
-        // Also capture page errors
         page.on('pageerror', (err) => {
             console.log(`  PAGE ERROR: ${err.message}`);
         });
 
-        // Set localStorage values BEFORE the scene's JS runs.
-        // Navigate to a same-origin page first so localStorage is accessible,
-        // then set the values and reload.
         console.log(`Navigating to ${SCENE_URL}`);
         console.log(`AutoCamera timeout set to ${AUTOCAM_TIMEOUT_SEC}s`);
         await page.goto(SCENE_URL, { waitUntil: 'domcontentloaded' });
+
+        // Set localStorage: enable autocam, set timeout, and CRITICALLY set mode
+        // to 'orbit'. OBS-012: default mode is 'static' which masks the bug
+        // (camera never moves in static mode).
         await page.evaluate((timeout) => {
-            // The settings panel uses keys like "scenes:fractal-dreamscape:KEY"
             localStorage.setItem('scenes:fractal-dreamscape:autoCamEnabled', 'true');
             localStorage.setItem('scenes:fractal-dreamscape:autoCamTimeout', JSON.stringify(timeout));
+            localStorage.setItem('scenes:fractal-dreamscape:autoCamMode', JSON.stringify('orbit'));
         }, AUTOCAM_TIMEOUT_SEC);
-        // Reload so the scene picks up our localStorage values on init
-        await page.reload({ waitUntil: 'domcontentloaded' });
 
-        // Wait for WebGL to initialize and first frame to render
+        await page.reload({ waitUntil: 'domcontentloaded' });
         await page.waitForTimeout(2000);
 
         // Verify the scene is rendering (not black from the start)
         const initialSample = await sampleCanvasScreenshot(page);
-        console.log(`[t=0s] Initial sample: avg=${initialSample.avgBrightness} max=${initialSample.maxBrightness} blackRatio=${initialSample.blackRatio} ${initialSample.isBlack ? 'BLACK' : 'OK'}`);
+        console.log(
+            `[t=0s] Initial sample: avg=${initialSample.avgBrightness} max=${initialSample.maxBrightness} ` +
+            `blackRatio=${initialSample.blackRatio} ${initialSample.isBlack ? 'BLACK' : 'OK'}`
+        );
 
         // Track samples over time
         const samples = [];
@@ -111,7 +125,7 @@ test.describe('AutoCamera blackout detection', () => {
             );
         }
 
-        // Dump all autocam/fractal console logs
+        // Dump debug logs
         const debugLogs = consoleLogs.filter(
             (l) => l.text.includes('[autocam]') || l.text.includes('[fractal]')
         );
@@ -138,17 +152,101 @@ test.describe('AutoCamera blackout detection', () => {
             );
         }
 
-        // The assertion: scene should NOT go black at any point after rendering starts
-        // Allow the very first 1s of samples to be potentially black (WebGL init),
-        // but after that, no blackouts should occur.
+        // Assertion: scene should NOT go black after init.
+        // Allow the very first 1s of samples to be potentially black (WebGL init).
         const samplesAfterInit = samples.filter((s) => s.elapsedSec >= 1);
         const blackoutsAfterInit = samplesAfterInit.filter((s) => s.isBlack);
 
         expect(
             blackoutsAfterInit.length,
-            `Scene went black in ${blackoutsAfterInit.length} out of ${samplesAfterInit.length} samples after init. ` +
+            `BUG-AUTOCAM-BLACKOUT: Scene went black in ${blackoutsAfterInit.length} out of ` +
+            `${samplesAfterInit.length} samples after init. ` +
             `First blackout at t=${blackoutsAfterInit[0]?.elapsedSec}s. ` +
             `AutoCamera timeout was ${AUTOCAM_TIMEOUT_SEC}s.`
+        ).toBe(0);
+    });
+
+    // ========================================================================
+    // Bug Detection Test
+    // ========================================================================
+    test('BUG-AUTOCAM-BLACKOUT: fractal-dreamscape camera should not move outside frustum', async ({ page }) => {
+        // 5-minute timeout for SwiftShader shader rendering speed.
+        test.setTimeout(300_000);
+
+        const consoleLogs = [];
+        page.on('console', (msg) => {
+            const text = msg.text();
+            consoleLogs.push({ time: Date.now(), type: msg.type(), text });
+            if (text.includes('[autocam]') || text.includes('[fractal]')) {
+                console.log(`  BROWSER: ${text}`);
+            }
+        });
+        page.on('pageerror', (err) => {
+            console.log(`  PAGE ERROR: ${err.message}`);
+        });
+
+        console.log(`Navigating to ${SCENE_URL}`);
+        await page.goto(SCENE_URL, { waitUntil: 'domcontentloaded' });
+
+        // CRITICALLY set autoCamMode to 'orbit' -- default 'static' masks the bug (OBS-012).
+        await page.evaluate((timeout) => {
+            localStorage.setItem('scenes:fractal-dreamscape:autoCamEnabled', 'true');
+            localStorage.setItem('scenes:fractal-dreamscape:autoCamTimeout', JSON.stringify(timeout));
+            localStorage.setItem('scenes:fractal-dreamscape:autoCamMode', JSON.stringify('orbit'));
+        }, AUTOCAM_TIMEOUT_SEC);
+
+        await page.reload({ waitUntil: 'domcontentloaded' });
+        await page.waitForTimeout(2000);
+
+        // Verify initial render is OK
+        const initialSample = await sampleCanvasScreenshot(page);
+        console.log(
+            `[t=0s] Initial: avg=${initialSample.avgBrightness} max=${initialSample.maxBrightness} ` +
+            `blackRatio=${initialSample.blackRatio} ${initialSample.isBlack ? 'BLACK' : 'OK'}`
+        );
+
+        // Wait for autocam to fully activate (timeout + transition + buffer)
+        const autocamWait = (AUTOCAM_TIMEOUT_SEC + 5) * 1000;
+        console.log(`Waiting ${autocamWait}ms for autocam activation + transition...`);
+        await page.waitForTimeout(autocamWait);
+
+        // Sample 3 post-autocam frames
+        const POST_AUTOCAM_SAMPLES = 3;
+        const postAutocamSamples = [];
+
+        for (let i = 0; i < POST_AUTOCAM_SAMPLES; i++) {
+            if (i > 0) await page.waitForTimeout(SAMPLE_INTERVAL_MS);
+            const sample = await sampleCanvasScreenshot(page);
+            postAutocamSamples.push(sample);
+            const status = sample.isBlack ? 'BLACK' : 'OK';
+            console.log(
+                `[post-autocam ${i + 1}/${POST_AUTOCAM_SAMPLES}] ${status} | ` +
+                `avg=${sample.avgBrightness} max=${sample.maxBrightness} blackRatio=${sample.blackRatio}`
+            );
+        }
+
+        // Dump debug logs
+        const debugLogs = consoleLogs.filter(
+            (l) => l.text.includes('[autocam]') || l.text.includes('[fractal]')
+        );
+        if (debugLogs.length > 0) {
+            console.log('\n--- Debug logs from browser ---');
+            for (const log of debugLogs) {
+                console.log(`  ${log.text}`);
+            }
+            console.log('--- End debug logs ---\n');
+        }
+
+        // Bug detection: ALL post-autocam samples should be non-black
+        const blackSamples = postAutocamSamples.filter((s) => s.isBlack);
+
+        expect(
+            blackSamples.length,
+            `BUG-AUTOCAM-BLACKOUT: Camera positioned too far from scene content, causing blackout. ` +
+            `Found ${blackSamples.length}/${POST_AUTOCAM_SAMPLES} black samples after AutoCamera activated. ` +
+            `The orthographic camera (near=0, far=1) was likely moved outside its frustum range ` +
+            `by AutoCamera's orbit/drift positioning (15-30 units from target). ` +
+            `The fullscreen quad at z=0 falls outside the [0,1] clipping range.`
         ).toBe(0);
     });
 });

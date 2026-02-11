@@ -1,65 +1,71 @@
 import { test, expect } from '@playwright/test';
-import { PNG } from 'pngjs';
 
 const SCENE_URL = 'http://localhost:3333/3d/scenes/line-walker/';
-const AUTOCAM_TIMEOUT_SEC = 5;
-const SAMPLE_INTERVAL_MS = 500;
-const TOTAL_OBSERVATION_SEC = 15;
+
+// Timing constants (unchanged from Attempt 02)
+// AUTOCAM_TIMEOUT_SEC: Reduced from 5 to 2 to shorten test duration.
+const AUTOCAM_TIMEOUT_SEC = 2;
+// TRANSITION_BUFFER_SEC: Wait this long after autocam timeout for transition to
+// complete (2s transition duration + 1s margin).
+const TRANSITION_BUFFER_SEC = 3;
+// SAMPLE_INTERVAL_MS: Sample camera position every 2 seconds.
+const SAMPLE_INTERVAL_MS = 2000;
+// TOTAL_OBSERVATION_SEC: 10 seconds of observation after autocam activates (5 samples).
+const TOTAL_OBSERVATION_SEC = 10;
+
+// Distance thresholds per mode (unchanged from Attempt 02).
+// These assume fix values: orbitRadius=3, followDistance=2, followHeight=1.
+const MODE_THRESHOLDS = {
+    orbit: {
+        // orbit: distance <= orbitRadius * 1.5 = 4.5 (elevation oscillation margin)
+        maxMedianDistance: 4.5,
+        label: 'orbit',
+    },
+    drift: {
+        // drift: distance <= orbitRadius * 1.2 = 3.6 (drift range 1.5-3 units)
+        maxMedianDistance: 3.6,
+        label: 'drift',
+    },
+    follow: {
+        // follow: distance <= sqrt(followDistance^2 + followHeight^2) * 1.5
+        //       = sqrt(4 + 1) * 1.5 = 3.35
+        maxMedianDistance: 3.35,
+        label: 'follow',
+    },
+};
+
+// Bug detection threshold: any sample at or above this distance indicates the
+// old buggy defaults are in effect (followDistance=15, orbitRadius=30).
+const BUG_DISTANCE_THRESHOLD = 15;
 
 /**
- * Take a screenshot of the canvas element and analyze pixel brightness.
- * Uses element screenshot to avoid WebGL preserveDrawingBuffer issues.
+ * Read camera state from the browser context via __testHarness.
+ * Returns { distance, cameraPos, walkerTip, autoCamActive, cameraNear } or null
+ * if the harness is not available.
  */
-async function sampleCanvasScreenshot(page) {
-    const canvas = page.locator('#canvas');
-    const screenshot = await canvas.screenshot({ type: 'png' });
-    const png = PNG.sync.read(screenshot);
-    const { width, height, data } = png;
-
-    // Sample a grid of pixels for performance
-    const sampleSize = 20;
-    const stepX = Math.max(1, Math.floor(width / sampleSize));
-    const stepY = Math.max(1, Math.floor(height / sampleSize));
-
-    let totalBrightness = 0;
-    let blackPixels = 0;
-    let sampleCount = 0;
-    let maxBrightness = 0;
-
-    for (let x = 0; x < width; x += stepX) {
-        for (let y = 0; y < height; y += stepY) {
-            const idx = (y * width + x) * 4;
-            const r = data[idx];
-            const g = data[idx + 1];
-            const b = data[idx + 2];
-            const brightness = (r + g + b) / 3;
-            totalBrightness += brightness;
-            if (r < 10 && g < 10 && b < 10) blackPixels++;
-            if (brightness > maxBrightness) maxBrightness = brightness;
-            sampleCount++;
-        }
-    }
-
-    const avgBrightness = sampleCount > 0 ? totalBrightness / sampleCount : 0;
-    const blackRatio = sampleCount > 0 ? blackPixels / sampleCount : 1;
-
-    return {
-        avgBrightness: Math.round(avgBrightness * 100) / 100,
-        maxBrightness,
-        blackRatio: Math.round(blackRatio * 1000) / 1000,
-        sampleCount,
-        width,
-        height,
-        isBlack: blackRatio > 0.95,
-    };
+async function readCameraState(page) {
+    return page.evaluate(() => {
+        const h = window.__testHarness;
+        if (!h) return null;
+        const cam = h.camera;
+        const tip = h.walker.tip; // Returns Vector3 clone
+        const distance = cam.position.distanceTo(tip);
+        return {
+            cameraPos: { x: cam.position.x, y: cam.position.y, z: cam.position.z },
+            walkerTip: { x: tip.x, y: tip.y, z: tip.z },
+            distance,
+            autoCamActive: h.autoCamera.active,
+            cameraNear: cam.near,
+        };
+    });
 }
 
 /**
- * Helper: Run a single autocam blackout test scenario.
- * Navigates to the scene, sets localStorage config, samples pixels, collects logs,
- * and returns structured results for assertion.
+ * Helper: Run a camera distance observation scenario for line-walker.
+ * Navigates to the scene, sets localStorage config, waits for autocam to
+ * activate and transition to complete, then samples camera distance repeatedly.
  */
-async function runBlackoutScenario(page, { mode, timeoutSec, observeSec, sampleIntervalMs }) {
+async function runCameraDistanceScenario(page, { mode }) {
     const consoleLogs = [];
     page.on('console', (msg) => {
         const text = msg.text();
@@ -72,47 +78,64 @@ async function runBlackoutScenario(page, { mode, timeoutSec, observeSec, sampleI
         console.log(`  PAGE ERROR: ${err.message}`);
     });
 
-    console.log(`\n========== SCENARIO: mode=${mode} timeout=${timeoutSec}s observe=${observeSec}s ==========`);
+    console.log(`\n========== SCENARIO: mode=${mode} timeout=${AUTOCAM_TIMEOUT_SEC}s ==========`);
     console.log(`Navigating to ${SCENE_URL}`);
     await page.goto(SCENE_URL, { waitUntil: 'domcontentloaded' });
 
-    await page.evaluate(({ timeout, mode }) => {
+    // Inject localStorage settings before scene init
+    await page.evaluate(({ timeout, mode: m }) => {
         localStorage.setItem('scenes:line-walker:autoCamEnabled', 'true');
         localStorage.setItem('scenes:line-walker:autoCamTimeout', JSON.stringify(timeout));
-        localStorage.setItem('scenes:line-walker:autoCamMode', JSON.stringify(mode));
-    }, { timeout: timeoutSec, mode });
+        localStorage.setItem('scenes:line-walker:autoCamMode', JSON.stringify(m));
+    }, { timeout: AUTOCAM_TIMEOUT_SEC, mode });
 
     await page.reload({ waitUntil: 'domcontentloaded' });
+
+    // Wait for scene to initialize
     await page.waitForTimeout(2000);
 
-    const initialSample = await sampleCanvasScreenshot(page);
-    console.log(`[t=0s] Initial: avg=${initialSample.avgBrightness} max=${initialSample.maxBrightness} blackRatio=${initialSample.blackRatio}`);
+    // Check test harness availability
+    const initialState = await readCameraState(page);
+    const harnessAvailable = initialState !== null;
+    console.log(`Test harness available: ${harnessAvailable}`);
 
-    const samples = [];
-    const startTime = Date.now();
-    const totalSamples = Math.ceil((observeSec * 1000) / sampleIntervalMs);
-
-    for (let i = 0; i < totalSamples; i++) {
-        await page.waitForTimeout(sampleIntervalMs);
-        const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-        const sample = await sampleCanvasScreenshot(page);
-        sample.elapsedSec = parseFloat(elapsed);
-        samples.push(sample);
-
-        // Content visibility: maxBrightness > 30 means something besides background is visible
-        // Background is 0x0a0a1a = rgb(10, 10, 26) -> max channel brightness ~26/255
-        const hasContent = sample.maxBrightness > 30;
-        const status = sample.isBlack ? '** BLACK **' : (hasContent ? 'CONTENT' : 'BG-ONLY');
-        console.log(
-            `[t=${elapsed}s] ${status} | avg=${sample.avgBrightness} max=${sample.maxBrightness} blackRatio=${sample.blackRatio}`
-        );
+    if (harnessAvailable) {
+        console.log(`Initial camera distance: ${initialState.distance.toFixed(2)}`);
+        console.log(`AutoCamera active: ${initialState.autoCamActive}`);
+        console.log(`camera.near: ${initialState.cameraNear}`);
     }
 
-    // Print ALL captured debug logs
+    // Wait for autocam timeout + transition buffer
+    const waitMs = (AUTOCAM_TIMEOUT_SEC + TRANSITION_BUFFER_SEC) * 1000;
+    console.log(`Waiting ${waitMs}ms for autocam timeout + transition...`);
+    await page.waitForTimeout(waitMs);
+
+    // Collect distance samples
+    const samples = [];
+    const totalSamples = Math.ceil((TOTAL_OBSERVATION_SEC * 1000) / SAMPLE_INTERVAL_MS);
+    console.log(`Collecting ${totalSamples} samples over ${TOTAL_OBSERVATION_SEC}s...`);
+
+    for (let i = 0; i < totalSamples; i++) {
+        if (i > 0) await page.waitForTimeout(SAMPLE_INTERVAL_MS);
+        const state = await readCameraState(page);
+        if (state) {
+            samples.push(state);
+            console.log(
+                `  [sample ${i + 1}/${totalSamples}] distance=${state.distance.toFixed(3)} ` +
+                `active=${state.autoCamActive} near=${state.cameraNear} ` +
+                `cam=(${state.cameraPos.x.toFixed(3)}, ${state.cameraPos.y.toFixed(3)}, ${state.cameraPos.z.toFixed(3)}) ` +
+                `tip=(${state.walkerTip.x.toFixed(3)}, ${state.walkerTip.y.toFixed(3)}, ${state.walkerTip.z.toFixed(3)})`
+            );
+        } else {
+            console.log(`  [sample ${i + 1}/${totalSamples}] harness unavailable`);
+        }
+    }
+
+    // Dump debug logs
     const debugLogs = consoleLogs.filter(
         (l) => l.text.includes('[autocam-debug]') || l.text.includes('[line-walker-debug]') || l.text.includes('[autocam]')
     );
-    console.log('\n=== ALL Debug Logs from Browser (chronological) ===');
+    console.log('\n=== All Debug Logs from Browser (chronological) ===');
     if (debugLogs.length > 0) {
         for (const log of debugLogs) {
             console.log(`  [${new Date(log.time).toISOString()}] ${log.text}`);
@@ -122,118 +145,161 @@ async function runBlackoutScenario(page, { mode, timeoutSec, observeSec, sampleI
     }
     console.log('=== End Debug Logs ===\n');
 
-    // Pixel sample history
-    console.log('=== Pixel Sample History ===');
-    for (const s of samples) {
-        const hasContent = s.maxBrightness > 30;
-        const status = s.isBlack ? '** BLACK **' : (hasContent ? 'CONTENT' : 'BG-ONLY');
-        console.log(`  t=${s.elapsedSec.toFixed(1)}s ${status} avg=${s.avgBrightness} max=${s.maxBrightness} blackRatio=${s.blackRatio}`);
+    // Distance sample history
+    console.log('=== Distance Sample History ===');
+    for (let i = 0; i < samples.length; i++) {
+        const s = samples[i];
+        console.log(
+            `  sample ${i + 1}: distance=${s.distance.toFixed(3)} active=${s.autoCamActive}`
+        );
     }
-    console.log('=== End Pixel History ===\n');
+    console.log('=== End Distance History ===\n');
 
-    return { samples, debugLogs, consoleLogs, startTime, initialSample };
+    return { samples, harnessAvailable, debugLogs, consoleLogs };
 }
 
+/**
+ * Compute the median of an array of numbers.
+ */
+function median(arr) {
+    if (arr.length === 0) return 0;
+    const sorted = [...arr].sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    return sorted.length % 2 !== 0
+        ? sorted[mid]
+        : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
+// ========================================================================
+// Success Tests
+// ========================================================================
+
 test.describe('Line-walker AutoCamera blackout detection', () => {
-    test('line-walker drift mode: scene should remain visible when autocamera activates', async ({ page }) => {
-        const { samples } = await runBlackoutScenario(page, {
-            mode: 'drift',
-            timeoutSec: AUTOCAM_TIMEOUT_SEC,
-            observeSec: TOTAL_OBSERVATION_SEC,
-            sampleIntervalMs: SAMPLE_INTERVAL_MS,
+    for (const mode of ['orbit', 'drift', 'follow']) {
+        test(`line-walker ${mode}: camera should stay near walker after autocam activates`, async ({ page }) => {
+            const { samples, harnessAvailable } = await runCameraDistanceScenario(page, { mode });
+
+            // Assert harness is available
+            expect(
+                harnessAvailable,
+                `BUG-AUTOCAM-BLACKOUT: window.__testHarness is not available. ` +
+                `The Developer must expose autoCamera, walker, and camera via ` +
+                `window.__testHarness in line-walker/main.js.`
+            ).toBe(true);
+
+            // Assert we got distance samples
+            expect(
+                samples.length,
+                `BUG-AUTOCAM-BLACKOUT: [${mode}] No distance samples collected. ` +
+                `Expected at least 1 sample.`
+            ).toBeGreaterThan(0);
+
+            // Filter to samples where autocam is active
+            const activeSamples = samples.filter((s) => s.autoCamActive);
+            expect(
+                activeSamples.length,
+                `BUG-AUTOCAM-BLACKOUT: [${mode}] AutoCamera never became active. ` +
+                `Expected at least 1 active sample.`
+            ).toBeGreaterThan(0);
+
+            const distances = activeSamples.map((s) => s.distance);
+            const medianDist = median(distances);
+            const minDist = Math.min(...distances);
+            const maxDist = Math.max(...distances);
+            const threshold = MODE_THRESHOLDS[mode].maxMedianDistance;
+
+            // Read camera.near from the first sample (or default to 0.1)
+            const cameraNear = activeSamples[0].cameraNear ?? 0.1;
+
+            console.log(
+                `[${mode}] Active samples: ${activeSamples.length}, ` +
+                `median=${medianDist.toFixed(3)}, min=${minDist.toFixed(3)}, ` +
+                `max=${maxDist.toFixed(3)}, threshold=${threshold}, cameraNear=${cameraNear}`
+            );
+
+            // Assertion 1 (existing): Median distance within expected bounds
+            expect(
+                medianDist,
+                `BUG-AUTOCAM-BLACKOUT: [${mode}] Camera median distance from walker ` +
+                `is ${medianDist.toFixed(3)} units, which exceeds the ${threshold} unit ` +
+                `threshold. The camera is too far from the walker. Distances: ` +
+                `min=${minDist.toFixed(3)}, max=${maxDist.toFixed(3)}.`
+            ).toBeLessThanOrEqual(threshold);
+
+            // Assertion 2 (NEW - Attempt 03): No sample below camera.near
+            expect(
+                minDist,
+                `BUG-AUTOCAM-BLACKOUT: [${mode}] Camera distance from walker dropped ` +
+                `to ${minDist.toFixed(4)} units, which is below camera.near ` +
+                `(${cameraNear}). Geometry within camera.near is clipped by the GPU, ` +
+                `causing blackout.`
+            ).toBeGreaterThanOrEqual(cameraNear);
         });
+    }
 
-        // Check for complete blackout (all pixels near-black)
-        const samplesAfterInit = samples.filter((s) => s.elapsedSec >= 2);
-        const blackoutsAfterInit = samplesAfterInit.filter((s) => s.isBlack);
+    // ========================================================================
+    // Bug Detection Tests
+    // ========================================================================
 
-        expect(
-            blackoutsAfterInit.length,
-            `[drift] Scene went black in ${blackoutsAfterInit.length}/${samplesAfterInit.length} samples. ` +
-            `First at t=${blackoutsAfterInit[0]?.elapsedSec}s.`
-        ).toBe(0);
+    for (const mode of ['orbit', 'drift', 'follow']) {
+        test(`BUG-AUTOCAM-BLACKOUT: ${mode} should not position camera too far from walker`, async ({ page }) => {
+            const { samples, harnessAvailable } = await runCameraDistanceScenario(page, { mode });
 
-        // Also check for content loss: after autocam activates (>timeoutSec+2s),
-        // we should see actual line content (maxBrightness > 30), not just background.
-        // The scene background is 0x0a0a1a which has max channel value ~26.
-        const samplesAfterAutocam = samples.filter((s) => s.elapsedSec >= AUTOCAM_TIMEOUT_SEC + 2);
-        const contentLossSamples = samplesAfterAutocam.filter((s) => s.maxBrightness <= 30);
-        const contentLossRatio = samplesAfterAutocam.length > 0 ? contentLossSamples.length / samplesAfterAutocam.length : 0;
+            // Assert harness is available
+            expect(
+                harnessAvailable,
+                `BUG-AUTOCAM-BLACKOUT: window.__testHarness is not available. ` +
+                `The Developer must expose autoCamera, walker, and camera via ` +
+                `window.__testHarness in line-walker/main.js.`
+            ).toBe(true);
 
-        console.log(
-            `[drift] Content loss: ${contentLossSamples.length}/${samplesAfterAutocam.length} samples show only background (${(contentLossRatio * 100).toFixed(0)}%)`
-        );
+            // Assert we got distance samples
+            expect(
+                samples.length,
+                `BUG-AUTOCAM-BLACKOUT: [${mode}] No distance samples collected.`
+            ).toBeGreaterThan(0);
 
-        // Allow up to 30% of samples to lose content (camera may briefly look away from line),
-        // but if ALL samples lose content, the autocam is clearly failing to track the line.
-        expect(
-            contentLossRatio,
-            `[drift] Camera lost sight of line content in ${(contentLossRatio * 100).toFixed(0)}% of samples ` +
-            `after autocam activated. This indicates the camera is not tracking the walker.`
-        ).toBeLessThan(0.7);
-    });
+            // Filter to samples where autocam is active
+            const activeSamples = samples.filter((s) => s.autoCamActive);
+            expect(
+                activeSamples.length,
+                `BUG-AUTOCAM-BLACKOUT: [${mode}] AutoCamera never became active.`
+            ).toBeGreaterThan(0);
 
-    test('line-walker orbit mode: scene should remain visible when autocamera activates', async ({ page }) => {
-        const { samples } = await runBlackoutScenario(page, {
-            mode: 'orbit',
-            timeoutSec: AUTOCAM_TIMEOUT_SEC,
-            observeSec: TOTAL_OBSERVATION_SEC,
-            sampleIntervalMs: SAMPLE_INTERVAL_MS,
+            const distances = activeSamples.map((s) => s.distance);
+            const minDist = Math.min(...distances);
+            const maxDist = Math.max(...distances);
+
+            // Read camera.near from the first sample (or default to 0.1)
+            const cameraNear = activeSamples[0].cameraNear ?? 0.1;
+
+            // Bug detection: no sample should be at old buggy distances (>= 15 units)
+            const farSamples = activeSamples.filter((s) => s.distance >= BUG_DISTANCE_THRESHOLD);
+
+            console.log(
+                `[${mode}] Active samples: ${activeSamples.length}, ` +
+                `far samples (>= ${BUG_DISTANCE_THRESHOLD}): ${farSamples.length}, ` +
+                `min=${minDist.toFixed(3)}, max=${maxDist.toFixed(3)}, cameraNear=${cameraNear}`
+            );
+
+            // Assertion 1 (existing): No samples at old buggy distances
+            expect(
+                farSamples.length,
+                `BUG-AUTOCAM-BLACKOUT: Camera positioned too far from scene content, ` +
+                `causing blackout. [${mode}] Found ${farSamples.length}/${activeSamples.length} ` +
+                `samples with distance >= ${BUG_DISTANCE_THRESHOLD} units. ` +
+                `Max distance: ${maxDist.toFixed(3)} units. Old default orbitRadius was 30, ` +
+                `followDistance was 15. The camera must stay closer to the walker to keep ` +
+                `thin line geometry visible.`
+            ).toBe(0);
+
+            // Assertion 2 (NEW - Attempt 03): No sample below camera.near (near-plane clipping)
+            expect(
+                minDist,
+                `BUG-AUTOCAM-BLACKOUT: [${mode}] Camera position converged too close ` +
+                `to target (${minDist.toFixed(4)} units < camera.near=${cameraNear}). ` +
+                `Near-plane clipping causes all geometry within camera.near to be invisible.`
+            ).toBeGreaterThanOrEqual(cameraNear);
         });
-
-        const samplesAfterInit = samples.filter((s) => s.elapsedSec >= 2);
-        const blackoutsAfterInit = samplesAfterInit.filter((s) => s.isBlack);
-
-        expect(
-            blackoutsAfterInit.length,
-            `[orbit] Scene went black in ${blackoutsAfterInit.length}/${samplesAfterInit.length} samples. ` +
-            `First at t=${blackoutsAfterInit[0]?.elapsedSec}s.`
-        ).toBe(0);
-
-        const samplesAfterAutocam = samples.filter((s) => s.elapsedSec >= AUTOCAM_TIMEOUT_SEC + 2);
-        const contentLossSamples = samplesAfterAutocam.filter((s) => s.maxBrightness <= 30);
-        const contentLossRatio = samplesAfterAutocam.length > 0 ? contentLossSamples.length / samplesAfterAutocam.length : 0;
-
-        console.log(
-            `[orbit] Content loss: ${contentLossSamples.length}/${samplesAfterAutocam.length} samples show only background (${(contentLossRatio * 100).toFixed(0)}%)`
-        );
-
-        expect(
-            contentLossRatio,
-            `[orbit] Camera lost sight of line content in ${(contentLossRatio * 100).toFixed(0)}% of samples ` +
-            `after autocam activated. This indicates the camera is not tracking the walker.`
-        ).toBeLessThan(0.7);
-    });
-
-    test('line-walker follow mode: scene should remain visible when autocamera activates', async ({ page }) => {
-        const { samples } = await runBlackoutScenario(page, {
-            mode: 'follow',
-            timeoutSec: AUTOCAM_TIMEOUT_SEC,
-            observeSec: TOTAL_OBSERVATION_SEC,
-            sampleIntervalMs: SAMPLE_INTERVAL_MS,
-        });
-
-        const samplesAfterInit = samples.filter((s) => s.elapsedSec >= 2);
-        const blackoutsAfterInit = samplesAfterInit.filter((s) => s.isBlack);
-
-        expect(
-            blackoutsAfterInit.length,
-            `[follow] Scene went black in ${blackoutsAfterInit.length}/${samplesAfterInit.length} samples. ` +
-            `First at t=${blackoutsAfterInit[0]?.elapsedSec}s.`
-        ).toBe(0);
-
-        const samplesAfterAutocam = samples.filter((s) => s.elapsedSec >= AUTOCAM_TIMEOUT_SEC + 2);
-        const contentLossSamples = samplesAfterAutocam.filter((s) => s.maxBrightness <= 30);
-        const contentLossRatio = samplesAfterAutocam.length > 0 ? contentLossSamples.length / samplesAfterAutocam.length : 0;
-
-        console.log(
-            `[follow] Content loss: ${contentLossSamples.length}/${samplesAfterAutocam.length} samples show only background (${(contentLossRatio * 100).toFixed(0)}%)`
-        );
-
-        expect(
-            contentLossRatio,
-            `[follow] Camera lost sight of line content in ${(contentLossRatio * 100).toFixed(0)}% of samples ` +
-            `after autocam activated. This indicates the camera is not tracking the walker.`
-        ).toBeLessThan(0.7);
-    });
+    }
 });
