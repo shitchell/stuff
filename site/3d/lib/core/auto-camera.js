@@ -10,6 +10,7 @@ import { lerp } from '../utils/math.js';
  * @property {number} [driftSpeed=0.3] - movement speed for drift mode
  * @property {number} [followDistance=15] - distance behind target for follow mode
  * @property {number} [followHeight=5] - height above target for follow mode
+ * @property {number} [followSmoothing=0] - camera position smoothing (0=instant, higher=lazier)
  */
 
 export class AutoCamera {
@@ -39,6 +40,7 @@ export class AutoCamera {
     #driftSpeed;
     #followDistance;
     #followHeight;
+    #followSmoothing;
 
     /**
      * @param {THREE.Camera} camera
@@ -54,6 +56,7 @@ export class AutoCamera {
         this.#driftSpeed = options.driftSpeed ?? 0.3;
         this.#followDistance = options.followDistance ?? 15;
         this.#followHeight = options.followHeight ?? 5;
+        this.#followSmoothing = options.followSmoothing ?? 0;
     }
 
     /**
@@ -69,6 +72,12 @@ export class AutoCamera {
 
     /** @param {AutoCameraMode} mode */
     setMode(mode) { this.#mode = mode; }
+
+    /** @param {number} speed - drift interpolation speed (higher = snappier, lower = lazier) */
+    setDriftSpeed(speed) { this.#driftSpeed = speed; }
+
+    /** @param {number} smoothing - camera position smoothing (0=instant, higher=lazier) */
+    setFollowSmoothing(smoothing) { this.#followSmoothing = smoothing; }
 
     activate() {
         if (this.active) return;
@@ -168,6 +177,8 @@ export class AutoCamera {
             }
             const t = smoothstep(this.#transitionProgress);
             this.#camera.position.lerpVectors(this.#savedPosition, desiredPos, t);
+        } else if (this.#followSmoothing > 0) {
+            this.#camera.position.lerp(desiredPos, 1 - Math.exp(-this.#followSmoothing * dt));
         } else {
             this.#camera.position.copy(desiredPos);
         }

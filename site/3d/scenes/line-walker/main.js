@@ -28,6 +28,7 @@ settings
         'Random Per Segment': 'random',
     }, 'rainbow')
     .addColor('singleColor', 'Color (single mode)', '#00aaff')
+    .addSlider('rainbowCycle', 'Rainbow Cycle (pts)', 100, 5000, 50, 1000)
     .addSlider('trailLength', 'Trail Length (0=inf)', 0, 10000, 100, 0)
     .addToggle('paused', 'Paused', false)
     .addButton('Reset', () => {
@@ -36,7 +37,8 @@ settings
     })
     .addToggle('autoCamEnabled', 'Auto-Camera', true)
     .addSlider('autoCamTimeout', 'Inactivity (sec)', 5, 120, 1, 30)
-    .addDropdown('autoCamMode', 'Auto-Camera Mode', ['orbit', 'drift', 'follow'], 'drift');
+    .addDropdown('autoCamMode', 'Auto-Camera Mode', ['orbit', 'drift', 'follow'], 'drift')
+    .addSlider('camSmoothing', 'Camera Smoothing', 0, 20, 0.5, 0);
 
 // Color mode note: The three modes work as follows:
 // - 'rainbow': Hue cycles smoothly as the line grows (uses colorRamp with 'rainbow' palette)
@@ -44,11 +46,14 @@ settings
 // - 'random': Each segment gets a random hue (randomRange(0, 360) → hslToHex)
 
 // --- Auto-Camera ---
-const autoCamera = new AutoCamera(mgr.camera, mgr.controls);
+const autoCamera = new AutoCamera(mgr.camera, mgr.controls, {
+    followSmoothing: settings.get('camSmoothing'),
+});
 autoCamera.setTarget(() => ({ position: walker.tip }));
 autoCamera.setMode(settings.get('autoCamMode'));
 
 settings.onChange('autoCamMode', (v) => autoCamera.setMode(v));
+settings.onChange('camSmoothing', (v) => autoCamera.setFollowSmoothing(v));
 
 function updateAutoCamUI(enabled) {
     const timeoutCtrl = settings.controller('autoCamTimeout');
@@ -184,7 +189,7 @@ mgr.start((dt) => {
         const mode = settings.get('colorMode');
         let c;
         if (mode === 'rainbow') {
-            const t = (walker.pointCount / walker.maxPoints) % 1;
+            const t = (walker.pointCount / settings.get('rainbowCycle')) % 1;
             c = new THREE.Color(colorRamp(t, 'rainbow'));
         } else if (mode === 'single') {
             c = new THREE.Color(settings.get('singleColor'));
