@@ -30,6 +30,7 @@ export class AutoCamera {
     // Auto-movement state
     #time = 0;
     #driftTarget = new THREE.Vector3();
+    #driftOffset = new THREE.Vector3();
     #driftTimer = 0;
 
     // Options
@@ -119,16 +120,20 @@ export class AutoCamera {
                     const angle = Math.random() * Math.PI * 2;
                     const elev = Math.random() * 0.8 + 0.2;
                     const r = this.#orbitRadius * (0.5 + Math.random() * 0.5);
+                    // Store as offset from target, not absolute position
                     this.#driftTarget.set(
-                        targetPos.x + Math.cos(angle) * r,
-                        targetPos.y + r * elev,
-                        targetPos.z + Math.sin(angle) * r,
+                        Math.cos(angle) * r,
+                        r * elev,
+                        Math.sin(angle) * r,
                     );
                     this.#driftTimer = 3 + Math.random() * 4;
                 }
-                desiredPos = this.#camera.position.clone().lerp(
+                // Smoothly interpolate offset, then apply to current target
+                // so the camera tracks moving targets while drifting lazily
+                this.#driftOffset.lerp(
                     this.#driftTarget, 1 - Math.exp(-this.#driftSpeed * dt)
                 );
+                desiredPos = targetPos.clone().add(this.#driftOffset);
                 break;
             }
             case 'follow': {
