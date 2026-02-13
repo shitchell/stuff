@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { SceneManager } from '../../lib/core/scene.js';
 import { loadShader, createShaderMaterial } from '../../lib/utils/shader.js';
+import { simplex3D } from '../../lib/utils/noise.js';
 
 // --- Load shaders ---
 const [vertSrc, fragSrc] = await Promise.all([
@@ -60,7 +61,51 @@ const origResize = mgr.resize.bind(mgr);
 mgr.resize = () => { origResize(); updateResolution(); };
 updateResolution();
 
+// --- Autopilot ---
+// Noise-based path that wanders through the fractal's bounding volume.
+// Three noise channels at different offsets produce an organic 3D path.
+
+const AUTOPILOT_SCALE = 0.015;  // How fast the path evolves
+const AUTOPILOT_RADIUS = 1.8;   // How far from origin the path wanders
+
+function getAutopilotPos(t) {
+    const s = t * AUTOPILOT_SCALE;
+    return new THREE.Vector3(
+        simplex3D(s, 0.0, 0.0) * AUTOPILOT_RADIUS,
+        simplex3D(0.0, s, 100.0) * AUTOPILOT_RADIUS * 0.6,
+        simplex3D(0.0, 100.0, s) * AUTOPILOT_RADIUS,
+    );
+}
+
+function getAutopilotDir(t) {
+    const dt = 0.5;
+    const p0 = getAutopilotPos(t);
+    const p1 = getAutopilotPos(t + dt);
+    return p1.sub(p0).normalize();
+}
+
+let autopilotTime = 0;
+const speed = 0.8; // units/sec -- slow and contemplative
+
 // --- Animation loop ---
 mgr.start((dt) => {
-    uniforms.uTime.value += dt;
+    const clampedDt = Math.min(dt, 0.1);
+    uniforms.uTime.value += clampedDt;
+
+    // Advance autopilot
+    autopilotTime += speed * clampedDt;
+
+    // Set camera from autopilot path
+    const pos = getAutopilotPos(autopilotTime);
+    const dir = getAutopilotDir(autopilotTime);
+    const up = new THREE.Vector3(0, 1, 0);
+
+    // Gentle roll oscillation for cinematic feel
+    const rollAngle = Math.sin(autopilotTime * 0.1) * 0.15;
+    const right = new THREE.Vector3().crossVectors(dir, up).normalize();
+    up.applyAxisAngle(dir, rollAngle);
+
+    uniforms.uCameraPos.value.copy(pos);
+    uniforms.uCameraDir.value.copy(dir);
+    uniforms.uCameraUp.value.copy(up);
 });
