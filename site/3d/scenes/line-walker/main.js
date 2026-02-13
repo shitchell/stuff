@@ -38,7 +38,7 @@ settings
     .addToggle('autoCamEnabled', 'Auto-Camera', true)
     .addSlider('autoCamTimeout', 'Inactivity (sec)', 5, 120, 1, 30)
     .addDropdown('autoCamMode', 'Auto-Camera Mode', ['orbit', 'drift', 'follow'], 'drift')
-    .addSlider('camSmoothing', 'Camera Smoothing', 0, 20, 0.5, 0);
+    .addSlider('camSmoothing', 'Camera Smoothing', 0, 5, 0.1, 1);
 
 // Color mode note: The three modes work as follows:
 // - 'rainbow': Hue cycles smoothly as the line grows (uses colorRamp with 'rainbow' palette)
@@ -47,13 +47,13 @@ settings
 
 // --- Auto-Camera ---
 const autoCamera = new AutoCamera(mgr.camera, mgr.controls, {
-    followSmoothing: settings.get('camSmoothing'),
+    smoothing: settings.get('camSmoothing'),
 });
 autoCamera.setTarget(() => ({ position: walker.tip }));
 autoCamera.setMode(settings.get('autoCamMode'));
 
 settings.onChange('autoCamMode', (v) => autoCamera.setMode(v));
-settings.onChange('camSmoothing', (v) => autoCamera.setFollowSmoothing(v));
+settings.onChange('camSmoothing', (v) => autoCamera.setSmoothing(v));
 
 function updateAutoCamUI(enabled) {
     const timeoutCtrl = settings.controller('autoCamTimeout');
@@ -83,9 +83,11 @@ function resetAutoCamTimer() {
 }
 
 // --- Chrome ---
-const chrome = new ChromeController([settings.domElement], {
-    onActive: () => resetAutoCamTimer(),
-});
+const chrome = new ChromeController([settings.domElement]);
+
+// Reset auto-camera on canvas interaction (not settings panel)
+canvas.addEventListener('mousemove', () => resetAutoCamTimer());
+canvas.addEventListener('touchstart', () => resetAutoCamTimer());
 
 // Start auto-camera timer on load
 resetAutoCamTimer();

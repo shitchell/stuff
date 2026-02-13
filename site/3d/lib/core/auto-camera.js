@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { lerp } from '../utils/math.js';
 
 /**
  * @typedef {'orbit'|'drift'|'follow'} AutoCameraMode
@@ -7,10 +6,10 @@ import { lerp } from '../utils/math.js';
  * @property {number} [transitionDuration=2] - seconds to smoothly transition in/out
  * @property {number} [orbitRadius=30] - radius for orbit mode
  * @property {number} [orbitSpeed=0.15] - radians/sec for orbit mode
- * @property {number} [driftSpeed=0.3] - movement speed for drift mode
  * @property {number} [followDistance=15] - distance behind target for follow mode
  * @property {number} [followHeight=5] - height above target for follow mode
- * @property {number} [followSmoothing=0] - camera position smoothing (0=instant, higher=lazier)
+ * @property {number} [smoothing=0] - camera position smoothing as time constant in seconds
+ *     (0=instant, higher=lazier). Applied uniformly to all modes.
  */
 
 export class AutoCamera {
@@ -31,16 +30,14 @@ export class AutoCamera {
     // Auto-movement state
     #time = 0;
     #driftTarget = new THREE.Vector3();
-    #driftOffset = new THREE.Vector3();
     #driftTimer = 0;
 
     // Options
     #orbitRadius;
     #orbitSpeed;
-    #driftSpeed;
     #followDistance;
     #followHeight;
-    #followSmoothing;
+    #smoothing;
 
     /**
      * @param {THREE.Camera} camera
@@ -53,10 +50,9 @@ export class AutoCamera {
         this.#transitionDuration = options.transitionDuration ?? 2;
         this.#orbitRadius = options.orbitRadius ?? 30;
         this.#orbitSpeed = options.orbitSpeed ?? 0.15;
-        this.#driftSpeed = options.driftSpeed ?? 0.3;
         this.#followDistance = options.followDistance ?? 15;
         this.#followHeight = options.followHeight ?? 5;
-        this.#followSmoothing = options.followSmoothing ?? 0;
+        this.#smoothing = options.smoothing ?? 0;
     }
 
     /**
@@ -73,11 +69,8 @@ export class AutoCamera {
     /** @param {AutoCameraMode} mode */
     setMode(mode) { this.#mode = mode; }
 
-    /** @param {number} speed - drift interpolation speed (higher = snappier, lower = lazier) */
-    setDriftSpeed(speed) { this.#driftSpeed = speed; }
-
-    /** @param {number} smoothing - camera position smoothing (0=instant, higher=lazier) */
-    setFollowSmoothing(smoothing) { this.#followSmoothing = smoothing; }
+    /** @param {number} smoothing - time constant in seconds (0=instant, higher=lazier) */
+    setSmoothing(smoothing) { this.#smoothing = smoothing; }
 
     activate() {
         if (this.active) return;
@@ -137,12 +130,9 @@ export class AutoCamera {
                     );
                     this.#driftTimer = 3 + Math.random() * 4;
                 }
-                // Smoothly interpolate offset, then apply to current target
-                // so the camera tracks moving targets while drifting lazily
-                this.#driftOffset.lerp(
-                    this.#driftTarget, 1 - Math.exp(-this.#driftSpeed * dt)
-                );
-                desiredPos = targetPos.clone().add(this.#driftOffset);
+                // Desired position = target + drift offset.
+                // Shared smoothing (below) handles the lazy camera transition.
+                desiredPos = targetPos.clone().add(this.#driftTarget);
                 break;
             }
             case 'follow': {
@@ -177,8 +167,8 @@ export class AutoCamera {
             }
             const t = smoothstep(this.#transitionProgress);
             this.#camera.position.lerpVectors(this.#savedPosition, desiredPos, t);
-        } else if (this.#followSmoothing > 0) {
-            this.#camera.position.lerp(desiredPos, 1 - Math.exp(-this.#followSmoothing * dt));
+        } else if (this.#smoothing > 0) {
+            this.#camera.position.lerp(desiredPos, 1 - Math.exp(-dt / this.#smoothing));
         } else {
             this.#camera.position.copy(desiredPos);
         }
