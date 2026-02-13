@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project contains six interactive 3D scenes served as static files on GitHub Pages. Each scene is a standalone web page built with Three.js, featuring configurable settings with localStorage persistence, auto-hide UI chrome, and an automatic screensaver camera.
+This project contains seven interactive 3D scenes served as static files on GitHub Pages. Each scene is a standalone web page built with Three.js, featuring configurable settings with localStorage persistence, auto-hide UI chrome, and an automatic screensaver camera.
 
 The scenes are:
 
@@ -12,6 +12,7 @@ The scenes are:
 - **Reaction-Diffusion** -- A Gray-Scott reaction-diffusion simulation rendered onto a rotating sphere using GPU compute (ping-pong render targets).
 - **Boids** -- A flocking simulation using Craig Reynolds' boids algorithm with separation, alignment, and cohesion forces, spatial hashing for efficient neighbor lookups, and instanced rendering in toroidal space.
 - **Fractal Dreamscape** -- An animated Julia set fractal with kaleidoscope symmetry, dynamic zoom, color palettes, and morphing Julia c parameter tracing a figure-8 path.
+- **Raymarched Fractal** -- A GPU-raymarched 3D fractal flythrough with four fractal types (Mandelbulb, Mandelbox, Menger Sponge, Hybrid morph), four visual styles, quality presets, and a cockpit-style camera with noise-driven autopilot.
 
 All scenes share a common library (`site/3d/lib/`) that provides scene lifecycle management, camera systems, UI controls, and math/color/noise/shader utilities. There is no build step -- everything is pure ES modules loaded via `<script type="importmap">` in each scene's HTML file.
 
@@ -67,10 +68,15 @@ site/
 |   |   |   +-- main.js
 |   |   |   +-- boids.js             # BoidSimulation class -- flocking with spatial hash grid
 |   |   +-- fractal-dreamscape/
+|   |   |   +-- index.html
+|   |   |   +-- main.js
+|   |   |   +-- fractal.vert          # Fullscreen quad vertex shader
+|   |   |   +-- fractal.frag          # Julia set fractal fragment shader with kaleidoscope
+|   |   +-- raymarched-fractal/
 |   |       +-- index.html
 |   |       +-- main.js
-|   |       +-- fractal.vert          # Fullscreen quad vertex shader
-|   |       +-- fractal.frag          # Julia set fractal fragment shader with kaleidoscope
+|   |       +-- fractal.vert          # Passthrough vertex shader (fullscreen quad)
+|   |       +-- fractal.frag          # Raymarching engine: 4 DEs + lighting + styles
 |   +-- vendor/
 |       +-- three.module.js          # Three.js r182 (standalone ESM bundle)
 |       +-- three-addons/
@@ -124,6 +130,9 @@ graph LR
         scenes_lorenz_attractor_js["attractor.js"]
         scenes_lorenz_main_js["main.js"]
     end
+    subgraph scenes/raymarched-fractal
+        scenes_raymarched_fractal_main_js["main.js"]
+    end
     subgraph scenes/reaction-diffusion
         scenes_reaction_diffusion_main_js["main.js"]
         scenes_reaction_diffusion_simulation_js["simulation.js"]
@@ -133,7 +142,6 @@ graph LR
         scenes_wireframe_flythrough_objects_js["objects.js"]
         scenes_wireframe_flythrough_terrain_js["terrain.js"]
     end
-    lib_core_auto_camera_js --> lib_utils_math_js
     scenes_boids_main_js --> lib_core_auto_camera_js
     scenes_boids_main_js --> lib_core_scene_js
     scenes_boids_main_js --> lib_ui_chrome_js
@@ -160,6 +168,12 @@ graph LR
     scenes_lorenz_main_js --> lib_ui_settings_js
     scenes_lorenz_main_js --> lib_utils_color_js
     scenes_lorenz_main_js --> scenes_lorenz_attractor_js
+    scenes_raymarched_fractal_main_js --> lib_core_auto_camera_js
+    scenes_raymarched_fractal_main_js --> lib_core_scene_js
+    scenes_raymarched_fractal_main_js --> lib_ui_chrome_js
+    scenes_raymarched_fractal_main_js --> lib_ui_settings_js
+    scenes_raymarched_fractal_main_js --> lib_utils_noise_js
+    scenes_raymarched_fractal_main_js --> lib_utils_shader_js
     scenes_reaction_diffusion_main_js --> lib_core_auto_camera_js
     scenes_reaction_diffusion_main_js --> lib_core_scene_js
     scenes_reaction_diffusion_main_js --> lib_ui_chrome_js
@@ -188,6 +202,7 @@ classDiagram
         +constructor()
         +deactivate()
         +setMode()
+        +setSmoothing()
         +setTarget()
         +update()
     }
@@ -435,7 +450,7 @@ Each scene directory contains:
 
 3. **Scene-specific modules** -- Classes and functions particular to that scene (e.g., `walker.js`, `attractor.js`, `terrain.js`, `simulation.js`). These typically manage geometry buffers, physics integration, or GPU compute.
 
-4. **Shader files** (reaction-diffusion only) -- `.vert` and `.frag` GLSL files loaded at runtime via `loadShader()`.
+4. **Shader files** (reaction-diffusion, fractal-dreamscape, raymarched-fractal) -- `.vert` and `.frag` GLSL files loaded at runtime via `loadShader()`.
 
 ## How to Add a New Scene
 

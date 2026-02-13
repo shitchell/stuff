@@ -29,6 +29,9 @@ graph LR
         scenes_lorenz_attractor_js["attractor.js"]
         scenes_lorenz_main_js["main.js"]
     end
+    subgraph scenes/raymarched-fractal
+        scenes_raymarched_fractal_main_js["main.js"]
+    end
     subgraph scenes/reaction-diffusion
         scenes_reaction_diffusion_main_js["main.js"]
         scenes_reaction_diffusion_simulation_js["simulation.js"]
@@ -38,7 +41,6 @@ graph LR
         scenes_wireframe_flythrough_objects_js["objects.js"]
         scenes_wireframe_flythrough_terrain_js["terrain.js"]
     end
-    lib_core_auto_camera_js --> lib_utils_math_js
     scenes_boids_main_js --> lib_core_auto_camera_js
     scenes_boids_main_js --> lib_core_scene_js
     scenes_boids_main_js --> lib_ui_chrome_js
@@ -65,6 +67,12 @@ graph LR
     scenes_lorenz_main_js --> lib_ui_settings_js
     scenes_lorenz_main_js --> lib_utils_color_js
     scenes_lorenz_main_js --> scenes_lorenz_attractor_js
+    scenes_raymarched_fractal_main_js --> lib_core_auto_camera_js
+    scenes_raymarched_fractal_main_js --> lib_core_scene_js
+    scenes_raymarched_fractal_main_js --> lib_ui_chrome_js
+    scenes_raymarched_fractal_main_js --> lib_ui_settings_js
+    scenes_raymarched_fractal_main_js --> lib_utils_noise_js
+    scenes_raymarched_fractal_main_js --> lib_utils_shader_js
     scenes_reaction_diffusion_main_js --> lib_core_auto_camera_js
     scenes_reaction_diffusion_main_js --> lib_core_scene_js
     scenes_reaction_diffusion_main_js --> lib_ui_chrome_js

@@ -3,14 +3,7 @@
     "exports": [
       "AutoCamera"
     ],
-    "imports": [
-      {
-        "target": "lib/utils/math.js",
-        "specifiers": [
-          "lerp"
-        ]
-      }
-    ],
+    "imports": [],
     "classes": [
       {
         "name": "AutoCamera",
@@ -20,6 +13,7 @@
           "constructor()",
           "deactivate()",
           "setMode()",
+          "setSmoothing()",
           "setTarget()",
           "update()"
         ],
@@ -462,6 +456,50 @@
         "specifiers": [
           "LorenzTrail",
           "PRESETS"
+        ]
+      }
+    ],
+    "classes": [],
+    "functions": []
+  },
+  "scenes/raymarched-fractal/main.js": {
+    "exports": [],
+    "imports": [
+      {
+        "target": "lib/core/scene.js",
+        "specifiers": [
+          "SceneManager"
+        ]
+      },
+      {
+        "target": "lib/ui/settings.js",
+        "specifiers": [
+          "SettingsPanel"
+        ]
+      },
+      {
+        "target": "lib/ui/chrome.js",
+        "specifiers": [
+          "ChromeController"
+        ]
+      },
+      {
+        "target": "lib/core/auto-camera.js",
+        "specifiers": [
+          "AutoCamera"
+        ]
+      },
+      {
+        "target": "lib/utils/shader.js",
+        "specifiers": [
+          "loadShader",
+          "createShaderMaterial"
+        ]
+      },
+      {
+        "target": "lib/utils/noise.js",
+        "specifiers": [
+          "simplex3D"
         ]
       }
     ],
