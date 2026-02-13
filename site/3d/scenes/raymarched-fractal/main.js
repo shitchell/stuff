@@ -260,14 +260,25 @@ settings.onChange('autoCamTimeout', () => resetAutoCamTimer());
 // Three noise channels at different offsets produce an organic 3D path.
 
 const AUTOPILOT_SCALE = 0.015;  // How fast the path evolves
-const AUTOPILOT_RADIUS = 1.8;   // How far from origin the path wanders
+
+function getAutopilotRadius() {
+    const type = settings.get('fractalType');
+    switch (type) {
+        case 'Mandelbulb':    return 1.8;
+        case 'Mandelbox':     return 4.0;
+        case 'Menger Sponge': return 1.2;
+        case 'Hybrid':        return 2.5;
+        default:              return 2.0;
+    }
+}
 
 function getAutopilotPos(t) {
     const s = t * AUTOPILOT_SCALE;
+    const r = getAutopilotRadius();
     return new THREE.Vector3(
-        simplex3D(s, 0.0, 0.0) * AUTOPILOT_RADIUS,
-        simplex3D(0.0, s, 100.0) * AUTOPILOT_RADIUS * 0.6,
-        simplex3D(0.0, 100.0, s) * AUTOPILOT_RADIUS,
+        simplex3D(s, 0.0, 0.0) * r,
+        simplex3D(0.0, s, 100.0) * r * 0.4,
+        simplex3D(0.0, 100.0, s) * r,
     );
 }
 
@@ -282,7 +293,7 @@ let autopilotTime = 0;
 let morphPhase = 0;
 
 // --- Animation loop ---
-mgr.start((dt) => {
+const animationLoop = (dt) => {
     const clampedDt = Math.min(dt, 0.1);
     uniforms.uTime.value += clampedDt;
 
@@ -385,4 +396,14 @@ mgr.start((dt) => {
     uniforms.uPower.value = settings.get('power');
     uniforms.uFoldLimit.value = settings.get('foldLimit');
     uniforms.uBoxScale.value = settings.get('boxScale');
+};
+
+mgr.start(animationLoop);
+
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        mgr.stop();
+    } else {
+        mgr.start(animationLoop);
+    }
 });
