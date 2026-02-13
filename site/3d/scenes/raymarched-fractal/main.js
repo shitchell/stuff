@@ -6,6 +6,10 @@ import { AutoCamera } from '../../lib/core/auto-camera.js';
 import { loadShader, createShaderMaterial } from '../../lib/utils/shader.js';
 import { simplex3D } from '../../lib/utils/noise.js';
 
+function smoothstep(t) {
+    return t * t * (3 - 2 * t);
+}
+
 // --- Load shaders ---
 const [vertSrc, fragSrc] = await Promise.all([
     loadShader('./fractal.vert'),
@@ -180,15 +184,67 @@ function updateAutoCamUI(enabled) {
 updateAutoCamUI(settings.get('autoCamEnabled'));
 settings.onChange('autoCamEnabled', (v) => updateAutoCamUI(v));
 
+// --- Keyboard input ---
+const keys = {};
+document.addEventListener('keydown', (e) => {
+    const tag = document.activeElement?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    keys[e.code] = true;
+});
+document.addEventListener('keyup', (e) => {
+    keys[e.code] = false;
+});
+
+// --- Mouse freelook ---
+let freelookYaw = 0;
+let freelookPitch = 0;
+let mouseDown = false;
+const MOUSE_SENSITIVITY = 0.003;
+
+canvas.addEventListener('mousedown', (e) => {
+    if (e.button === 0) mouseDown = true;
+});
+document.addEventListener('mouseup', () => {
+    mouseDown = false;
+});
+document.addEventListener('mousemove', (e) => {
+    if (!mouseDown) return;
+    freelookYaw -= e.movementX * MOUSE_SENSITIVITY;
+    freelookPitch -= e.movementY * MOUSE_SENSITIVITY;
+    freelookPitch = Math.max(-Math.PI * 0.45, Math.min(Math.PI * 0.45, freelookPitch));
+});
+
+// --- Plane state ---
+const planeQuat = new THREE.Quaternion();
+const planePos = new THREE.Vector3();
+let manualControl = false;
+
+// --- Autopilot transition ---
+let returningToAutopilot = false;
+let transitionProgress = 0;
+const TRANSITION_DURATION = 2.0;
+let transitionStartPos = new THREE.Vector3();
+let transitionStartQuat = new THREE.Quaternion();
+
 let autoCamTimer = null;
 function resetAutoCamTimer() {
     if (autoCamTimer) clearTimeout(autoCamTimer);
-    if (settings.get('autoCamEnabled')) {
-        autoCamTimer = setTimeout(
-            () => { /* autopilot return -- wired in Task 6 */ },
-            settings.get('autoCamTimeout') * 1000,
-        );
+    if (returningToAutopilot) {
+        returningToAutopilot = false;
     }
+    if (settings.get('autoCamEnabled')) {
+        autoCamTimer = setTimeout(() => {
+            beginReturnToAutopilot();
+        }, settings.get('autoCamTimeout') * 1000);
+    }
+}
+
+function beginReturnToAutopilot() {
+    if (!manualControl && freelookYaw === 0 && freelookPitch === 0) return;
+    returningToAutopilot = true;
+    transitionProgress = 0;
+    transitionStartPos.copy(planePos);
+    transitionStartQuat.copy(planeQuat);
 }
 
 // --- Chrome ---
@@ -234,21 +290,96 @@ mgr.start((dt) => {
     morphPhase += clampedDt * settings.get('morphSpeed');
     uniforms.uMorphProgress.value = 0.5 + 0.5 * Math.sin(morphPhase);
 
-    // Autopilot
+    // --- Keyboard steering ---
+    const yawRate = settings.get('yawSensitivity') * clampedDt;
+    const pitchRate = settings.get('pitchSensitivity') * clampedDt;
+    let steering = false;
+
+    if (keys['ArrowLeft'] || keys['KeyA']) {
+        planeQuat.multiply(new THREE.Quaternion().setFromAxisAngle(
+            new THREE.Vector3(0, 1, 0), yawRate));
+        planeQuat.multiply(new THREE.Quaternion().setFromAxisAngle(
+            new THREE.Vector3(0, 0, 1), yawRate * 0.3));
+        steering = true;
+    }
+    if (keys['ArrowRight'] || keys['KeyD']) {
+        planeQuat.multiply(new THREE.Quaternion().setFromAxisAngle(
+            new THREE.Vector3(0, 1, 0), -yawRate));
+        planeQuat.multiply(new THREE.Quaternion().setFromAxisAngle(
+            new THREE.Vector3(0, 0, 1), -yawRate * 0.3));
+        steering = true;
+    }
+    if (keys['ArrowUp'] || keys['KeyW']) {
+        planeQuat.multiply(new THREE.Quaternion().setFromAxisAngle(
+            new THREE.Vector3(1, 0, 0), pitchRate));
+        steering = true;
+    }
+    if (keys['ArrowDown'] || keys['KeyS']) {
+        planeQuat.multiply(new THREE.Quaternion().setFromAxisAngle(
+            new THREE.Vector3(1, 0, 0), -pitchRate));
+        steering = true;
+    }
+
+    if (steering && !manualControl) {
+        manualControl = true;
+    }
+
+    // --- Camera ---
     const currentSpeed = settings.get('speed');
     autopilotTime += currentSpeed * clampedDt;
 
-    const pos = getAutopilotPos(autopilotTime);
-    const dir = getAutopilotDir(autopilotTime);
-    const up = new THREE.Vector3(0, 1, 0);
-
-    // Gentle roll oscillation for cinematic feel
+    // Autopilot target (always computed so we have a return target)
+    const autopilotPos = getAutopilotPos(autopilotTime);
+    const autopilotDir = getAutopilotDir(autopilotTime);
+    const autopilotQuat = new THREE.Quaternion();
+    const lookMat = new THREE.Matrix4().lookAt(
+        new THREE.Vector3(), autopilotDir, new THREE.Vector3(0, 1, 0));
+    autopilotQuat.setFromRotationMatrix(lookMat);
     const rollAngle = Math.sin(autopilotTime * 0.1) * 0.15;
-    up.applyAxisAngle(dir, rollAngle);
+    autopilotQuat.multiply(new THREE.Quaternion().setFromAxisAngle(
+        new THREE.Vector3(0, 0, 1), rollAngle));
 
-    uniforms.uCameraPos.value.copy(pos);
-    uniforms.uCameraDir.value.copy(dir);
-    uniforms.uCameraUp.value.copy(up);
+    if (returningToAutopilot) {
+        transitionProgress += clampedDt / TRANSITION_DURATION;
+        const t = smoothstep(Math.min(transitionProgress, 1.0));
+
+        planePos.lerpVectors(transitionStartPos, autopilotPos, t);
+        planeQuat.slerpQuaternions(transitionStartQuat, autopilotQuat, t);
+
+        freelookYaw *= (1.0 - t);
+        freelookPitch *= (1.0 - t);
+
+        if (transitionProgress >= 1.0) {
+            returningToAutopilot = false;
+            manualControl = false;
+            freelookYaw = 0;
+            freelookPitch = 0;
+        }
+    } else if (!manualControl) {
+        planePos.copy(autopilotPos);
+        planeQuat.copy(autopilotQuat);
+    } else {
+        const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(planeQuat);
+        planePos.addScaledVector(forward, currentSpeed * clampedDt);
+    }
+
+    // Extract camera vectors from plane quaternion
+    const camDir = new THREE.Vector3(0, 0, -1).applyQuaternion(planeQuat);
+    const camUp = new THREE.Vector3(0, 1, 0).applyQuaternion(planeQuat);
+
+    // Apply freelook offset (view only, not flight path)
+    if (freelookYaw !== 0 || freelookPitch !== 0) {
+        const freelookQuat = new THREE.Quaternion();
+        freelookQuat.multiply(new THREE.Quaternion().setFromAxisAngle(camUp.clone(), freelookYaw));
+        const camRight = new THREE.Vector3().crossVectors(camDir, camUp).normalize();
+        freelookQuat.multiply(new THREE.Quaternion().setFromAxisAngle(camRight, freelookPitch));
+        camDir.applyQuaternion(freelookQuat);
+        camUp.applyQuaternion(freelookQuat);
+    }
+
+    uniforms.uCameraPos.value.copy(planePos);
+    uniforms.uCameraDir.value.copy(camDir);
+    uniforms.uCameraUp.value.copy(camUp);
 
     // Sync per-frame uniforms from settings
     uniforms.uPower.value = settings.get('power');
