@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unturned Crafting Viewer</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        a { color: #6db3f2; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* --- Layout: sidebar + main --- */
+        .page-layout {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* --- Sidebar --- */
+        #sidebar {
+            width: 250px;
+            min-width: 250px;
+            height: 100vh;
+            background: #141428;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            font-size: 0.8rem;
+            overflow: hidden;
+        }
+
+        .sidebar-settings {
+            padding: 12px;
+            overflow-y: auto;
+            flex-shrink: 0;
+            max-height: 55vh;
+            scrollbar-width: thin;
+            scrollbar-color: #333 transparent;
+        }
+
+        .sidebar-settings::-webkit-scrollbar { width: 5px; }
+        .sidebar-settings::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+        .sidebar-section {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-section summary {
+            cursor: pointer;
+            padding: 4px 0;
+            font-size: 0.8rem;
+            color: #c0c0c0;
+            user-select: none;
+            font-weight: 600;
+        }
+
+        .sidebar-section summary:hover { color: #ffd700; }
+
+        .sidebar-section .section-body {
+            padding: 4px 0 4px 4px;
+        }
+
+        /* Settings mode radio */
+        .settings-mode {
+            display: flex;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #333;
+            margin-bottom: 8px;
+        }
+
+        .settings-mode label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.78rem;
+            color: #c0c0c0;
+        }
+
+        .settings-mode label:hover { color: #ffd700; }
+
+        .settings-mode input[type="radio"] {
+            accent-color: #ffd700;
+        }
+
+        /* Checkbox / radio lists in sidebar */
+        .filter-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .filter-list label {
+            font-size: 0.78rem;
+            white-space: nowrap;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #c0c0c0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .filter-list label:hover { color: #ffd700; }
+
+        .filter-list input[type="checkbox"],
+        .filter-list input[type="radio"] {
+            accent-color: #ffd700;
+            flex-shrink: 0;
+        }
+
+        .toggle-all-label {
+            font-weight: bold;
+            border-bottom: 1px solid #333;
+            padding-bottom: 4px;
+            margin-bottom: 2px;
+        }
+
+        /* Extensive-only sections */
+        .extensive-only {
+            display: none;
+        }
+
+        body.extensive-mode .extensive-only {
+            display: block;
+        }
+
+        /* Slider styling */
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 4px 0;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+            accent-color: #ffd700;
+        }
+
+        .slider-row .slider-val {
+            font-size: 0.75rem;
+            color: #888;
+            min-width: 28px;
+            text-align: right;
+        }
+
+        /* Select styling */
+        .sidebar-section select {
+            width: 100%;
+            padding: 3px 6px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background: #16213e;
+            color: #e0e0e0;
+            font-size: 0.78rem;
+            outline: none;
+            margin: 4px 0;
+        }
+
+        .sidebar-section select:focus { border-color: #6db3f2; }
+
+        /* --- Item List --- */
+        .item-list-container {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            border-top: 1px solid #333;
+            padding: 8px 12px 0;
+        }
+
+        .item-list-container h3 {
+            margin: 0 0 6px 0;
+            font-size: 0.8rem;
+            color: #c0c0c0;
+            font-weight: 600;
+        }
+
+        #item-list-search {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background: #16213e;
+            color: #e0e0e0;
+            font-size: 0.78rem;
+            outline: none;
+            margin-bottom: 6px;
+        }
+
+        #item-list-search:focus { border-color: #6db3f2; }
+        #item-list-search::placeholder { color: #888; }
+
+        #item-list {
+            flex: 1;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #333 transparent;
+        }
+
+        #item-list::-webkit-scrollbar { width: 5px; }
+        #item-list::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+        .item-entry {
+            padding: 2px 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            color: #c0c0c0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .item-entry .item-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-entry .item-select-cb {
+            accent-color: #ffd700;
+            cursor: pointer;
+        }
+
+        .item-entry:hover {
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        #btn-toggle-select {
+            width: 100%;
+            padding: 3px 6px;
+            margin-bottom: 4px;
+            background: #16213e;
+            color: #c0c0c0;
+            border: 1px solid #333;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            cursor: pointer;
+        }
+
+        #btn-toggle-select:hover {
+            color: #ffd700;
+            border-color: #ffd700;
+        }
+
+        /* --- Content Area --- */
+        .content-area {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* --- Header --- */
+        header {
+            background: #1a1a2e;
+            border-bottom: 1px solid #333;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        h1 {
+            color: #ffd700;
+            margin: 0;
+            font-size: 1.2rem;
+            white-space: nowrap;
+        }
+
+        h1 a { color: inherit; }
+        h1 a:hover { text-decoration: underline; }
+
+        .header-search {
+            flex: 1;
+            min-width: 180px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #search {
+            width: 100%;
+            padding: 6px 12px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background: #16213e;
+            color: #e0e0e0;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        #search:focus { border-color: #6db3f2; }
+        #search::placeholder { color: #888; }
+
+        #search-count {
+            font-size: 0.78rem;
+            color: #888;
+            white-space: nowrap;
+        }
+
+        /* View mode toggle */
+        .view-toggle {
+            display: flex;
+            border: 1px solid #444;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .view-toggle button {
+            padding: 5px 14px;
+            background: #16213e;
+            color: #c0c0c0;
+            border: none;
+            cursor: pointer;
+            font-size: 0.82rem;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .view-toggle button:not(:last-child) {
+            border-right: 1px solid #444;
+        }
+
+        .view-toggle button:hover {
+            color: #ffd700;
+        }
+
+        .view-toggle button.active {
+            background: #ffd700;
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+
+        /* Breadcrumb / diagram nav */
+        .diagram-nav {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 20px;
+            background: #141428;
+            border-bottom: 1px solid #333;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .diagram-nav.visible {
+            display: flex;
+        }
+
+        .diagram-nav button {
+            padding: 3px 10px;
+            background: #16213e;
+            color: #c0c0c0;
+            border: 1px solid #444;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.78rem;
+        }
+
+        .diagram-nav button:hover {
+            color: #ffd700;
+            border-color: #ffd700;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+            color: #888;
+        }
+
+        .breadcrumb span {
+            cursor: pointer;
+            color: #6db3f2;
+        }
+
+        .breadcrumb span:hover {
+            color: #ffd700;
+        }
+
+        .breadcrumb .separator {
+            color: #555;
+            cursor: default;
+        }
+
+        .breadcrumb .current {
+            color: #ffd700;
+            cursor: default;
+            font-weight: 600;
+        }
+
+        /* --- Cytoscape container --- */
+        #cy {
+            flex: 1;
+            min-height: 0;
+            background: #1a1a2e;
+        }
+
+        /* --- Loading overlay --- */
+        #loading {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(26, 26, 46, 0.9);
+            color: #888;
+            font-size: 1.1rem;
+            z-index: 200;
+        }
+
+        #loading.hidden {
+            display: none;
+        }
+
+        /* --- Tooltip --- */
+        #tooltip {
+            position: fixed;
+            display: none;
+            background: #16213e;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-size: 0.78rem;
+            color: #e0e0e0;
+            max-width: 360px;
+            z-index: 300;
+            pointer-events: none;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+            line-height: 1.4;
+        }
+
+        #tooltip .tt-name {
+            font-weight: bold;
+            font-size: 0.88rem;
+            color: #ffd700;
+            margin-bottom: 4px;
+        }
+
+        #tooltip .tt-meta {
+            color: #888;
+            margin-bottom: 6px;
+        }
+
+        #tooltip .tt-recipes {
+            border-top: 1px solid #333;
+            padding-top: 6px;
+        }
+
+        #tooltip .tt-recipe {
+            margin-bottom: 3px;
+        }
+
+        #tooltip .tt-recipe-type {
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .tt-recipe-type.craft { color: #4caf50; }
+        .tt-recipe-type.salvage { color: #ff9800; }
+        .tt-recipe-type.repair { color: #2196f3; }
+
+        /* --- Responsive --- */
+        @media (max-width: 800px) {
+            #sidebar { display: none; }
+            header { padding: 8px 12px; }
+            h1 { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-layout">
+        <!-- Sidebar -->
+        <aside id="sidebar">
+            <div class="sidebar-settings">
+                <!-- Settings mode toggle -->
+                <div class="settings-mode">
+                    <label><input type="radio" name="settings-mode" value="basic" checked> Basic</label>
+                    <label><input type="radio" name="settings-mode" value="extensive"> Extensive</label>
+                </div>
+
+                <!-- Blueprint Filters (always visible) -->
+                <details class="sidebar-section" open>
+                    <summary>Blueprint Filters</summary>
+                    <div class="section-body">
+                        <div class="filter-list" id="blueprint-filters">
+                            <label class="toggle-all-label">
+                                <input type="checkbox" id="bp-all" checked> All
+                            </label>
+                            <label><input type="checkbox" data-bp="craft" checked> Craft</label>
+                            <label><input type="checkbox" data-bp="salvage" checked> Salvage</label>
+                            <label><input type="checkbox" data-bp="repair" checked> Repair</label>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Category Filters (always visible) -->
+                <details class="sidebar-section">
+                    <summary>Category Filters</summary>
+                    <div class="section-body">
+                        <div class="filter-list" id="category-filters">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Display settings (extensive only) -->
+                <details class="sidebar-section extensive-only">
+                    <summary>Display</summary>
+                    <div class="section-body">
+                        <div class="filter-list">
+                            <label><input type="checkbox" id="opt-node-labels" checked> Node labels</label>
+                            <label><input type="checkbox" id="opt-shape-by-type" checked> Node shape by type</label>
+                            <label><input type="checkbox" id="opt-rarity-glow" checked> Rarity glow</label>
+                        </div>
+                        <div style="margin-top: 6px; color: #888; font-size: 0.75rem;">Node size:</div>
+                        <div class="filter-list">
+                            <label><input type="radio" name="node-size" value="fixed" checked> Fixed</label>
+                            <label><input type="radio" name="node-size" value="connectivity"> By connectivity</label>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Edge settings (extensive only) -->
+                <details class="sidebar-section extensive-only">
+                    <summary>Edges</summary>
+                    <div class="section-body">
+                        <div class="filter-list">
+                            <label><input type="checkbox" id="opt-edge-labels" checked> Edge labels</label>
+                            <label><input type="checkbox" id="opt-edge-colors" checked> Edge colors</label>
+                            <label><input type="checkbox" id="opt-edge-thickness"> Thickness by quantity</label>
+                        </div>
+                        <div style="margin-top: 6px; color: #888; font-size: 0.75rem;">Tool edges:</div>
+                        <div class="filter-list">
+                            <label><input type="radio" name="tool-edges" value="dashed" checked> Dashed</label>
+                            <label><input type="radio" name="tool-edges" value="hidden"> Hidden</label>
+                            <label><input type="radio" name="tool-edges" value="solid"> Solid</label>
+                        </div>
+                        <div style="margin-top: 6px; color: #888; font-size: 0.75rem;">Arrow style:</div>
+                        <div class="filter-list">
+                            <label><input type="radio" name="arrow-style" value="triangle" checked> Triangle</label>
+                            <label><input type="radio" name="arrow-style" value="vee"> Vee</label>
+                            <label><input type="radio" name="arrow-style" value="none"> None</label>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Layout settings (extensive only) -->
+                <details class="sidebar-section extensive-only">
+                    <summary>Layout</summary>
+                    <div class="section-body">
+                        <label style="font-size: 0.75rem; color: #888;">Algorithm:</label>
+                        <select id="opt-layout-algo">
+                            <option value="cose" selected>cose (force-directed)</option>
+                            <option value="dagre">dagre (hierarchical)</option>
+                            <option value="circle">circle</option>
+                            <option value="grid">grid</option>
+                            <option value="concentric">concentric</option>
+                        </select>
+                        <div class="slider-row">
+                            <span style="font-size: 0.75rem; color: #888;">Spacing:</span>
+                            <input type="range" id="opt-spacing" min="20" max="200" value="50">
+                            <span class="slider-val" id="opt-spacing-val">50</span>
+                        </div>
+                        <div class="filter-list" style="margin-top: 4px;">
+                            <label><input type="checkbox" id="opt-animate" checked> Animation</label>
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- Item List -->
+            <div class="item-list-container">
+                <h3>Items</h3>
+                <input type="search" id="item-list-search" placeholder="Filter items...">
+                <button id="btn-toggle-select">Select / Deselect Visible</button>
+                <div id="item-list">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <div class="content-area">
+            <header>
+                <h1><a href="/">stuff</a> / <a href="/unturned/">Unturned</a> / Crafting</h1>
+                <div class="header-search">
+                    <input type="search" id="search" placeholder="Search items...">
+                    <span id="search-count"></span>
+                </div>
+                <div class="view-toggle">
+                    <button id="btn-graph" class="active">Graph</button>
+                    <button id="btn-diagram">Diagram</button>
+                </div>
+            </header>
+
+            <div class="diagram-nav" id="diagram-nav">
+                <button id="btn-back">Back</button>
+                <div class="breadcrumb" id="breadcrumb"></div>
+            </div>
+
+            <div id="cy"></div>
+            <div id="loading">Loading crafting data...</div>
+        </div>
+    </div>
+
+    <!-- Tooltip -->
+    <div id="tooltip">
+        <div class="tt-name"></div>
+        <div class="tt-meta"></div>
+        <div class="tt-recipes"></div>
+    </div>
+
+    <script src="https://unpkg.com/cytoscape@3.30.4/dist/cytoscape.min.js"></script>
+    <script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
+    <script src="https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
+    <script type="module" src="./crafting.js"></script>
+</body>
+</html>
