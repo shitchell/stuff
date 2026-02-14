@@ -461,6 +461,8 @@ function buildCyStyle() {
                 'font-weight': settings.diagramEdgeWeight * 100,
                 'color': settings.diagramEdgeColor,
                 'text-outline-width': 2,
+                'text-wrap': 'wrap',
+                'text-max-width': '120px',
             }
         },
         // Diagram mode: cycle marker
@@ -646,15 +648,34 @@ function buildDiagramTree(rootId) {
         const incomingEdges = edgesByTarget[origId] || [];
 
         // Group edges by blueprintId to find distinct recipes
+        // Skip byproduct edges (these are secondary outputs of other recipes)
         const bpGroups = {};
         for (const e of incomingEdges) {
             if (e.type !== 'craft') continue; // Diagram shows craft recipes
+            if (e.byproduct) continue;        // Skip byproduct edges
             if (!bpGroups[e.blueprintId]) bpGroups[e.blueprintId] = [];
             bpGroups[e.blueprintId].push(e);
         }
 
+        // Collect workstations across all recipes for this node
+        const wsSet = new Set();
+        for (const bpId of Object.keys(bpGroups)) {
+            for (const ws of (bpGroups[bpId][0].workstations || [])) {
+                wsSet.add(ws);
+            }
+        }
+
+        // Annotate the parent node with workstation requirements
+        if (wsSet.size > 0) {
+            const parentNode = cyNodes.find(n => n.data.id === cyNodeId);
+            if (parentNode) {
+                parentNode.data.label += '\n(' + [...wsSet].join(', ') + ')';
+            }
+        }
+
         for (const bpId of Object.keys(bpGroups)) {
             const ingredients = bpGroups[bpId];
+
             for (const edge of ingredients) {
                 const srcNode = nodeMap[edge.source];
                 if (!srcNode) continue;
@@ -843,7 +864,7 @@ function onNodeMouseOver(e) {
     // Group incoming by blueprintId
     const craftRecipes = {};
     for (const e of incoming) {
-        if (!craftRecipes[e.blueprintId]) craftRecipes[e.blueprintId] = { type: e.type, ingredients: [] };
+        if (!craftRecipes[e.blueprintId]) craftRecipes[e.blueprintId] = { type: e.type, ingredients: [], workstations: e.workstations || [] };
         const src = nodeMap[e.source];
         craftRecipes[e.blueprintId].ingredients.push(
             (e.quantity > 1 ? e.quantity + 'x ' : '') + (src ? src.name : '?') + (e.tool ? ' (tool)' : '')
@@ -853,7 +874,7 @@ function onNodeMouseOver(e) {
     // Group outgoing (salvage products etc) by blueprintId
     const outRecipes = {};
     for (const e of outgoing) {
-        if (!outRecipes[e.blueprintId]) outRecipes[e.blueprintId] = { type: e.type, products: [] };
+        if (!outRecipes[e.blueprintId]) outRecipes[e.blueprintId] = { type: e.type, products: [], workstations: e.workstations || [] };
         const tgt = nodeMap[e.target];
         outRecipes[e.blueprintId].products.push(
             (e.quantity > 1 ? e.quantity + 'x ' : '') + (tgt ? tgt.name : '?')
@@ -867,6 +888,9 @@ function onNodeMouseOver(e) {
         recipesHtml += `<span class="tt-recipe-type ${esc(bp.type)}">${esc(bp.type)}</span>: `;
         recipesHtml += bp.ingredients.map(esc).join(' + ');
         recipesHtml += ` &rarr; ${esc(n.name)}`;
+        if (bp.workstations.length) {
+            recipesHtml += `<div class="tt-workstation">Requires: ${bp.workstations.map(esc).join(', ')}</div>`;
+        }
         recipesHtml += `</div>`;
     }
 
@@ -875,6 +899,9 @@ function onNodeMouseOver(e) {
         recipesHtml += `<span class="tt-recipe-type ${esc(bp.type)}">${esc(bp.type)}</span>: `;
         recipesHtml += `${esc(n.name)} &rarr; `;
         recipesHtml += bp.products.map(esc).join(' + ');
+        if (bp.workstations.length) {
+            recipesHtml += `<div class="tt-workstation">Requires: ${bp.workstations.map(esc).join(', ')}</div>`;
+        }
         recipesHtml += `</div>`;
     }
 
