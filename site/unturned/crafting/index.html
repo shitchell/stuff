@@ -725,6 +725,49 @@
             border-top-style: dashed;
         }
 
+        /* --- Primitives footer --- */
+        #primitives-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(20, 20, 40, 0.92);
+            border-top: 1px solid #333;
+            padding: 6px 16px;
+            font-size: 0.78rem;
+            color: #c0c0c0;
+            z-index: 150;
+            display: none;
+            line-height: 1.6;
+        }
+
+        #primitives-footer.visible { display: block; }
+
+        .prim-label {
+            color: #ffd700;
+            font-weight: 600;
+            margin-right: 4px;
+        }
+
+        .prim-section {
+            display: inline;
+        }
+
+        .prim-section + .prim-section::before {
+            content: '  \2502  ';
+            color: #555;
+        }
+
+        .prim-tool {
+            color: #b0a060;
+            font-style: italic;
+        }
+
+        .prim-ws {
+            color: #7090c0;
+            font-style: italic;
+        }
+
         /* --- Responsive --- */
         @media (max-width: 800px) {
             #sidebar { display: none; }
@@ -908,6 +951,19 @@
                         </div>
                     </div>
                 </details>
+
+                <!-- Primitives settings (extensive only) -->
+                <details class="sidebar-section extensive-only">
+                    <summary>Primitives</summary>
+                    <div class="section-body">
+                        <div style="font-size: 0.72rem; color: #888; margin-bottom: 4px;">Treat as primitive:</div>
+                        <div class="filter-list">
+                            <label><input type="checkbox" id="opt-prim-uncraftable" checked> Uncraftable</label>
+                            <label><input type="checkbox" id="opt-prim-salvageable" checked> Salvageable</label>
+                            <label><input type="checkbox" id="opt-prim-nature" checked> Nature</label>
+                        </div>
+                    </div>
+                </details>
             </div>
 
             <!-- Item List -->
@@ -948,6 +1004,9 @@
             <button class="carousel-arrow left" id="carousel-prev"></button>
             <button class="carousel-arrow right" id="carousel-next"></button>
             <div class="carousel-indicator" id="carousel-indicator"></div>
+
+            <!-- Primitives summary footer -->
+            <div id="primitives-footer"></div>
 
             <!-- Legend overlay -->
             <div id="legend">

@@ -60,7 +60,8 @@ all recipes flat. Wraps around at edges.
 
 **Future (ties into #5):** Click a ghost node to select that recipe
 branch, hiding others. Part of the "pick your path to primitives"
-workflow.
+workflow. Clicking the "Cheapest" label in the primitives footer
+should auto-select the cheapest path through all ghost nodes.
 
 ### 7. Noise reduction / item decomposition limits
 Full recipe trees can be very noisy. Investigate ways to reduce
@@ -84,3 +85,16 @@ clutter:
   ingredients in 10+ recipes)?
 - How does this interact with Recipe Depth? Depth limits the tree
   globally; a stop-list limits specific branches.
+
+### 8. Favorites / starred items
+Add a star outline (CSS, hidden by default, visible on hover) to the
+left of each item in the sidebar item list. Clicking the star fills
+it in and "favorites" the item (persisted to localStorage).
+
+Favorited items are pinned to the top of the list, but only when
+they pass the current search/category filters. E.g. a favorited
+"Water Tank" does not appear at the top when the search filter
+"rifle" is active.
+
+Sort order: favorites first (alphabetical), then non-favorites
+(alphabetical).

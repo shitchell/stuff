@@ -52,6 +52,21 @@ let selectedItems = null;     // Set of selected item IDs (null = all selected)
 let carouselIndex = 0;        // Current recipe index in carousel mode
 let carouselBpKeys = [];      // Blueprint group keys for current diagram root
 
+// Primitive ID sets (computed at data load time)
+let primUncraftableIds = new Set();  // H2: no craft recipe + used as ingredient
+let primSalvageableIds = new Set();  // H5: salvage outputs
+let primNatureIds = new Set();       // H6: nature-sourced items
+
+const NATURE_ITEM_NAMES = new Set([
+    'Birch Log', 'Birch Stick', 'Maple Log', 'Maple Stick', 'Pine Log', 'Pine Stick',
+    'Metal Scrap',
+    'Leather', 'Raw Venison', 'Pork',
+    'Raw Amber Berries', 'Raw Indigo Berries', 'Raw Jade Berries', 'Raw Mauve Berries',
+    'Raw Russet Berries', 'Raw Teal Berries', 'Raw Vermillion Berries',
+    'Raw Bass', 'Raw Goldfish', 'Raw Minnow', 'Raw Salmon', 'Raw Squid', 'Raw Trout',
+    'Carrot', 'Corn', 'Lettuce', 'Potato', 'Pumpkin', 'Tomato', 'Wheat', 'Eggs',
+]);
+
 // ── Settings helpers ────────────────────────────────────────────────────────
 
 function lsGet(key, fallback) {
@@ -108,6 +123,9 @@ function getSettings() {
         tooltipNameColor: lsGet('tooltip-name-color', '#ffd700'),
         multiRecipe: lsGet('multi-recipe', 'ghost'),
         recipeDepth: lsGet('recipe-depth', 0),  // 0 = full/unlimited
+        primUncraftable: lsGet('prim-uncraftable', true),
+        primSalvageable: lsGet('prim-salvageable', true),
+        primNature: lsGet('prim-nature', true),
     };
 }
 
@@ -132,6 +150,7 @@ const $cyViewport = document.getElementById('cy-viewport');
 const $carouselPrev = document.getElementById('carousel-prev');
 const $carouselNext = document.getElementById('carousel-next');
 const $carouselIndicator = document.getElementById('carousel-indicator');
+const $primitivesFooter = document.getElementById('primitives-footer');
 
 // ── Data loading ────────────────────────────────────────────────────────────
 
@@ -151,6 +170,31 @@ async function loadData() {
         edgesBySource[e.source].push(e);
         if (!blueprintGroups[e.blueprintId]) blueprintGroups[e.blueprintId] = [];
         blueprintGroups[e.blueprintId].push(e);
+    }
+
+    // Compute primitive ID sets
+    const craftTargets = new Set();
+    const craftSources = new Set();
+    for (const e of rawData.edges) {
+        if (e.type === 'craft') {
+            craftTargets.add(e.target);
+            if (!e.tool) craftSources.add(e.source);
+        }
+    }
+
+    // H2: uncraftable + used as ingredient
+    primUncraftableIds = new Set([...craftSources].filter(id => !craftTargets.has(id)));
+
+    // H5: salvage outputs
+    primSalvageableIds = new Set();
+    for (const e of rawData.edges) {
+        if (e.type === 'salvage') primSalvageableIds.add(e.target);
+    }
+
+    // H6: nature-sourced (by name lookup)
+    primNatureIds = new Set();
+    for (const n of rawData.nodes) {
+        if (NATURE_ITEM_NAMES.has(n.name)) primNatureIds.add(n.id);
     }
 }
 
@@ -865,6 +909,165 @@ function buildDiagramTree(rootId) {
     return { nodes: cyNodes, edges: cyEdges };
 }
 
+// ── Primitives summary ──────────────────────────────────────────────────────
+
+function getPrimitiveIds() {
+    const settings = getSettings();
+    const ids = new Set();
+    if (settings.primUncraftable) for (const id of primUncraftableIds) ids.add(id);
+    if (settings.primSalvageable) for (const id of primSalvageableIds) ids.add(id);
+    if (settings.primNature) for (const id of primNatureIds) ids.add(id);
+    return ids;
+}
+
+function computePrimitiveSummary(rootId) {
+    const primitiveIds = getPrimitiveIds();
+    const materials = {};   // guid -> total quantity
+    const tools = new Set();
+    const workstations = new Set();
+    let hasMultiplePaths = false;
+
+    // Helper: get craft blueprint groups for an item
+    function getCraftGroups(itemId) {
+        const incoming = edgesByTarget[itemId] || [];
+        const groups = {};
+        for (const e of incoming) {
+            if (e.type !== 'craft' || e.byproduct) continue;
+            if (!groups[e.blueprintId]) groups[e.blueprintId] = [];
+            groups[e.blueprintId].push(e);
+        }
+        return groups;
+    }
+
+    // Phase 1: compute cheapest primitive cost for each item (memoized)
+    const bestChoice = {};  // itemId -> { bpId, cost }
+
+    function computeCost(itemId, ancestors) {
+        if (primitiveIds.has(itemId)) return 1;
+        if (bestChoice[itemId] !== undefined) return bestChoice[itemId].cost;
+
+        const groups = getCraftGroups(itemId);
+        const bpKeys = Object.keys(groups);
+
+        if (bpKeys.length === 0) {
+            // No recipes — treat as leaf primitive
+            bestChoice[itemId] = { bpId: null, cost: 1 };
+            return 1;
+        }
+
+        if (ancestors.has(itemId)) return Infinity; // Cycle
+        if (bpKeys.length > 1) hasMultiplePaths = true;
+
+        const newAnc = new Set(ancestors);
+        newAnc.add(itemId);
+
+        let bestCost = Infinity;
+        let bestBpId = bpKeys[0];
+
+        for (const bpId of bpKeys) {
+            let recipeCost = 0;
+            for (const e of groups[bpId]) {
+                if (e.tool) continue;
+                const subCost = computeCost(e.source, newAnc);
+                if (subCost === Infinity) { recipeCost = Infinity; break; }
+                recipeCost += e.quantity * subCost;
+            }
+            if (recipeCost < bestCost) {
+                bestCost = recipeCost;
+                bestBpId = bpId;
+            }
+        }
+
+        bestChoice[itemId] = { bpId: bestBpId, cost: bestCost };
+        return bestCost;
+    }
+
+    computeCost(rootId, new Set());
+
+    // Phase 2: walk cheapest path, accumulating materials, tools, workstations
+    function walk(itemId, qty, ancestors) {
+        if (primitiveIds.has(itemId) || !bestChoice[itemId] || !bestChoice[itemId].bpId) {
+            materials[itemId] = (materials[itemId] || 0) + qty;
+            return;
+        }
+        if (ancestors.has(itemId)) {
+            materials[itemId] = (materials[itemId] || 0) + qty;
+            return;
+        }
+
+        const newAnc = new Set(ancestors);
+        newAnc.add(itemId);
+
+        const bpId = bestChoice[itemId].bpId;
+        const groups = getCraftGroups(itemId);
+        const edges = groups[bpId] || [];
+
+        // Collect workstations from this recipe
+        for (const ws of (edges[0]?.workstations || [])) {
+            workstations.add(ws);
+        }
+
+        for (const e of edges) {
+            if (e.tool) {
+                tools.add(e.source);
+            } else {
+                walk(e.source, qty * e.quantity, newAnc);
+            }
+        }
+    }
+
+    walk(rootId, 1, new Set());
+
+    // Sort materials by quantity descending
+    const sortedMaterials = Object.entries(materials)
+        .map(([id, qty]) => ({ id, qty, name: nodeMap[id]?.name || id }))
+        .sort((a, b) => b.qty - a.qty);
+
+    const sortedTools = [...tools]
+        .map(id => nodeMap[id]?.name || id)
+        .sort();
+
+    const sortedWorkstations = [...workstations].sort();
+
+    return { materials: sortedMaterials, tools: sortedTools, workstations: sortedWorkstations, hasMultiplePaths };
+}
+
+function updatePrimitivesFooter(itemId) {
+    if (!itemId) {
+        $primitivesFooter.classList.remove('visible');
+        return;
+    }
+
+    const summary = computePrimitiveSummary(itemId);
+
+    if (summary.materials.length === 0) {
+        $primitivesFooter.classList.remove('visible');
+        return;
+    }
+
+    let html = '';
+
+    // Materials
+    const prefix = summary.hasMultiplePaths ? 'Cheapest' : 'Materials';
+    const matStr = summary.materials.map(m =>
+        `${m.qty}x ${esc(m.name)}`
+    ).join(', ');
+    html += `<span class="prim-section"><span class="prim-label">${prefix}:</span>${matStr}</span>`;
+
+    // Tools
+    if (summary.tools.length > 0) {
+        html += `<span class="prim-section"><span class="prim-tool">Tools: ${summary.tools.map(esc).join(', ')}</span></span>`;
+    }
+
+    // Workstations
+    if (summary.workstations.length > 0) {
+        html += `<span class="prim-section"><span class="prim-ws">Requires: ${summary.workstations.map(esc).join(', ')}</span></span>`;
+    }
+
+    $primitivesFooter.innerHTML = html;
+    $primitivesFooter.classList.add('visible');
+}
+
 function renderDiagram(itemId) {
     const settings = getSettings();
     const tree = buildDiagramTree(itemId);
@@ -911,6 +1114,9 @@ function renderDiagram(itemId) {
         $carouselIndicator.textContent = `Recipe ${idx + 1} of ${carouselBpKeys.length}`;
     }
 
+    // Update primitives footer
+    updatePrimitivesFooter(itemId);
+
     $loading.classList.add('hidden');
 }
 
@@ -936,6 +1142,7 @@ function switchToGraph() {
     $btnDiagram.classList.remove('active');
     $diagramNav.classList.remove('visible');
     $cyViewport.classList.remove('carousel-visible');
+    $primitivesFooter.classList.remove('visible');
     renderGraph();
     applySearch();
 }
@@ -1172,6 +1379,14 @@ function wireSettings() {
             renderDiagram(currentDiagramId);
         }
     });
+
+    // Primitives checkboxes
+    const refreshPrimitives = () => {
+        if (viewMode === 'diagram' && currentDiagramId) updatePrimitivesFooter(currentDiagramId);
+    };
+    wireCheckbox('opt-prim-uncraftable', 'prim-uncraftable', refreshPrimitives);
+    wireCheckbox('opt-prim-salvageable', 'prim-salvageable', refreshPrimitives);
+    wireCheckbox('opt-prim-nature', 'prim-nature', refreshPrimitives);
 
     // Legend toggle
     wireCheckbox('opt-legend', 'legend', () => {
