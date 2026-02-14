@@ -14797,6 +14797,42 @@
       "byproduct": false
     },
     {
+      "source": "6314c13082c24bdcbc9872d492df4926",
+      "target": "306adf871cff47b48d09a3a5414def59",
+      "type": "craft",
+      "quantity": 2,
+      "tool": false,
+      "workstations": [],
+      "skill": "",
+      "skillLevel": 0,
+      "blueprintId": "bp-235",
+      "byproduct": false
+    },
+    {
+      "source": "6314c13082c24bdcbc9872d492df4926",
+      "target": "412697181591400983dafa441bd45b7b",
+      "type": "craft",
+      "quantity": 2,
+      "tool": false,
+      "workstations": [],
+      "skill": "",
+      "skillLevel": 0,
+      "blueprintId": "bp-236",
+      "byproduct": false
+    },
+    {
+      "source": "7f06b16642724683bd61584a52fde981",
+      "target": "6314c13082c24bdcbc9872d492df4926",
+      "type": "craft",
+      "quantity": 2,
+      "tool": false,
+      "workstations": [],
+      "skill": "",
+      "skillLevel": 0,
+      "blueprintId": "bp-237",
+      "byproduct": false
+    },
+    {
       "source": "5a3c4302400e400b9b9486fbb5178eca",
       "target": "09af865de1744194a18600dad2d80aef",
       "type": "craft",
