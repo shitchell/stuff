@@ -49,6 +49,8 @@ let viewMode = 'graph';       // 'graph' | 'diagram'
 let diagramStack = [];        // stack of item IDs for breadcrumb nav
 let currentDiagramId = null;
 let selectedItems = null;     // Set of selected item IDs (null = all selected)
+let carouselIndex = 0;        // Current recipe index in carousel mode
+let carouselBpKeys = [];      // Blueprint group keys for current diagram root
 
 // ── Settings helpers ────────────────────────────────────────────────────────
 
@@ -104,6 +106,8 @@ function getSettings() {
         tooltipNameFont: lsGet('tooltip-name-font', 14),
         tooltipNameWeight: lsGet('tooltip-name-weight', 7),
         tooltipNameColor: lsGet('tooltip-name-color', '#ffd700'),
+        multiRecipe: lsGet('multi-recipe', 'ghost'),
+        recipeDepth: lsGet('recipe-depth', 0),  // 0 = full/unlimited
     };
 }
 
@@ -124,6 +128,10 @@ const $itemListSearch = document.getElementById('item-list-search');
 const $bpAll = document.getElementById('bp-all');
 const $categoryFilters = document.getElementById('category-filters');
 const $legend = document.getElementById('legend');
+const $cyViewport = document.getElementById('cy-viewport');
+const $carouselPrev = document.getElementById('carousel-prev');
+const $carouselNext = document.getElementById('carousel-next');
+const $carouselIndicator = document.getElementById('carousel-indicator');
 
 // ── Data loading ────────────────────────────────────────────────────────────
 
@@ -475,6 +483,36 @@ function buildCyStyle() {
                 'border-width': 3,
             }
         },
+        // Diagram mode: recipe ghost node
+        {
+            selector: 'node.diagram-recipe',
+            style: {
+                'width': 16,
+                'height': 16,
+                'background-color': '#1a1a2e',
+                'border-width': 1,
+                'border-color': '#666',
+                'border-style': 'dashed',
+                'shape': 'round-rectangle',
+                'font-size': '7px',
+                'color': '#999',
+                'text-max-width': '100px',
+                'text-wrap': 'wrap',
+                'opacity': 0.75,
+            }
+        },
+        // Diagram mode: recipe ghost edge (parent -> ghost)
+        {
+            selector: 'edge.diagram-recipe-edge',
+            style: {
+                'line-style': 'dashed',
+                'line-dash-pattern': [4, 4],
+                'line-color': '#555',
+                'target-arrow-color': '#555',
+                'opacity': 0.5,
+                'width': 1,
+            }
+        },
     ];
 
     return styles;
@@ -635,13 +673,68 @@ function buildDiagramTree(rootId) {
     // Nodes are duplicated to form a proper tree
     // Cycle detection: track ancestors in current path
 
+    const settings = getSettings();
+    const multiRecipe = settings.multiRecipe;
+    const maxDepth = settings.recipeDepth;  // 0 = unlimited
     const cyNodes = [];
     const cyEdges = [];
     let counter = 0;
 
+    // Reset carousel state
+    carouselBpKeys = [];
+
     function makeNodeId(origId) {
         counter++;
         return origId + '-' + counter;
+    }
+
+    function addIngredientNode(edge, parentCyId, ancestorSet, depth) {
+        const srcNode = nodeMap[edge.source];
+        if (!srcNode) return;
+
+        const childCyId = makeNodeId(edge.source);
+        const isCycle = ancestorSet.has(edge.source);
+        const isLeaf = !edgesByTarget[edge.source] ||
+            !edgesByTarget[edge.source].some(e2 => e2.type === 'craft');
+
+        cyNodes.push({
+            data: {
+                id: childCyId,
+                origId: edge.source,
+                label: srcNode.name + (isCycle ? ' (cycle)' : ''),
+                shape: getNodeShape(srcNode),
+                bgColor: '#2a2a4a',
+                borderColor: getNodeBorderColor(srcNode),
+                hasRarity: !!srcNode.rarity,
+                size: 28,
+                nodeType: srcNode.type || '',
+                rarity: srcNode.rarity || '',
+            },
+            classes: 'diagram-node' + (isCycle ? ' diagram-cycle' : (isLeaf ? ' diagram-leaf' : '')),
+        });
+
+        cyEdges.push({
+            data: {
+                id: 'de-' + counter,
+                source: parentCyId,
+                target: childCyId,
+                label: edge.quantity > 1 ? `x${edge.quantity}` : '',
+                edgeColor: EDGE_COLORS.craft,
+                isTool: edge.tool,
+                thickness: 2,
+                edgeType: 'craft',
+                blueprintId: edge.blueprintId,
+            },
+            classes: 'diagram-edge',
+        });
+
+        // Recursively expand non-cycle, non-leaf nodes (respecting depth limit)
+        const atDepthLimit = maxDepth > 0 && depth + 1 >= maxDepth;
+        if (!isCycle && !isLeaf && !atDepthLimit) {
+            const newAncestors = new Set(ancestorSet);
+            newAncestors.add(edge.source);
+            expand(edge.source, childCyId, newAncestors, depth + 1);
+        }
     }
 
     function expand(origId, cyNodeId, ancestorSet, depth) {
@@ -652,76 +745,94 @@ function buildDiagramTree(rootId) {
         // Skip byproduct edges (these are secondary outputs of other recipes)
         const bpGroups = {};
         for (const e of incomingEdges) {
-            if (e.type !== 'craft') continue; // Diagram shows craft recipes
-            if (e.byproduct) continue;        // Skip byproduct edges
+            if (e.type !== 'craft') continue;
+            if (e.byproduct) continue;
             if (!bpGroups[e.blueprintId]) bpGroups[e.blueprintId] = [];
             bpGroups[e.blueprintId].push(e);
         }
 
-        // Collect workstations across all recipes for this node
-        const wsSet = new Set();
-        for (const bpId of Object.keys(bpGroups)) {
-            for (const ws of (bpGroups[bpId][0].workstations || [])) {
-                wsSet.add(ws);
-            }
+        let bpKeys = Object.keys(bpGroups);
+        if (bpKeys.length === 0) return;
+
+        // Carousel mode: at root (depth 0), show only the selected recipe
+        if (multiRecipe === 'carousel' && depth === 0 && bpKeys.length > 1) {
+            carouselBpKeys = bpKeys;
+            const idx = Math.min(carouselIndex, bpKeys.length - 1);
+            bpKeys = [bpKeys[idx]];
         }
 
-        // Annotate the parent node with workstation requirements
-        if (wsSet.size > 0) {
-            const parentNode = cyNodes.find(n => n.data.id === cyNodeId);
-            if (parentNode) {
-                parentNode.data.label += '\n(' + [...wsSet].join(', ') + ')';
-            }
-        }
+        const useGhostNodes = multiRecipe === 'ghost' && bpKeys.length > 1;
 
-        for (const bpId of Object.keys(bpGroups)) {
-            const ingredients = bpGroups[bpId];
+        if (useGhostNodes) {
+            // Ghost mode: create intermediate recipe nodes
+            let recipeNum = 0;
+            for (const bpId of bpKeys) {
+                recipeNum++;
+                const ingredients = bpGroups[bpId];
+                const ghostId = makeNodeId('recipe');
 
-            for (const edge of ingredients) {
-                const srcNode = nodeMap[edge.source];
-                if (!srcNode) continue;
-
-                const childCyId = makeNodeId(edge.source);
-                const isCycle = ancestorSet.has(edge.source);
-                const isLeaf = !edgesByTarget[edge.source] ||
-                    !edgesByTarget[edge.source].some(e2 => e2.type === 'craft');
+                // Build ghost label: "Recipe N" + optional workstation
+                const ws = ingredients[0].workstations || [];
+                let ghostLabel = `Recipe ${recipeNum}`;
+                if (ws.length > 0) {
+                    ghostLabel += '\n(' + ws.join(', ') + ')';
+                }
 
                 cyNodes.push({
                     data: {
-                        id: childCyId,
-                        origId: edge.source,
-                        label: srcNode.name + (isCycle ? ' (cycle)' : ''),
-                        shape: getNodeShape(srcNode),
-                        bgColor: '#2a2a4a',
-                        borderColor: getNodeBorderColor(srcNode),
-                        hasRarity: !!srcNode.rarity,
-                        size: 28,
-                        nodeType: srcNode.type || '',
-                        rarity: srcNode.rarity || '',
+                        id: ghostId,
+                        origId: null,
+                        label: ghostLabel,
+                        shape: 'round-rectangle',
+                        bgColor: '#1a1a2e',
+                        borderColor: '#666',
+                        hasRarity: false,
+                        size: 16,
+                        nodeType: 'recipe',
+                        rarity: '',
                     },
-                    classes: 'diagram-node' + (isCycle ? ' diagram-cycle' : (isLeaf ? ' diagram-leaf' : '')),
+                    classes: 'diagram-node diagram-recipe',
                 });
 
                 cyEdges.push({
                     data: {
                         id: 'de-' + counter,
                         source: cyNodeId,
-                        target: childCyId,
-                        label: edge.quantity > 1 ? `x${edge.quantity}` : '',
-                        edgeColor: EDGE_COLORS.craft,
-                        isTool: edge.tool,
-                        thickness: 2,
-                        edgeType: 'craft',
-                        blueprintId: edge.blueprintId,
+                        target: ghostId,
+                        label: '',
+                        edgeColor: '#555',
+                        isTool: false,
+                        thickness: 1,
+                        edgeType: 'recipe',
                     },
-                    classes: 'diagram-edge',
+                    classes: 'diagram-edge diagram-recipe-edge',
                 });
 
-                // Recursively expand non-cycle, non-leaf nodes
-                if (!isCycle && !isLeaf) {
-                    const newAncestors = new Set(ancestorSet);
-                    newAncestors.add(edge.source);
-                    expand(edge.source, childCyId, newAncestors, depth + 1);
+                for (const edge of ingredients) {
+                    addIngredientNode(edge, ghostId, ancestorSet, depth);
+                }
+            }
+        } else {
+            // Standard mode: ingredients connect directly to parent
+            // Annotate parent with workstations from visible recipes
+            const wsSet = new Set();
+            for (const bpId of bpKeys) {
+                for (const ws of (bpGroups[bpId][0].workstations || [])) {
+                    wsSet.add(ws);
+                }
+            }
+
+            if (wsSet.size > 0) {
+                const parentNode = cyNodes.find(n => n.data.id === cyNodeId);
+                if (parentNode) {
+                    parentNode.data.label += '\n(' + [...wsSet].join(', ') + ')';
+                }
+            }
+
+            for (const bpId of bpKeys) {
+                const ingredients = bpGroups[bpId];
+                for (const edge of ingredients) {
+                    addIngredientNode(edge, cyNodeId, ancestorSet, depth);
                 }
             }
         }
@@ -792,6 +903,14 @@ function renderDiagram(itemId) {
         }
     });
 
+    // Update carousel UI
+    const showCarousel = settings.multiRecipe === 'carousel' && carouselBpKeys.length > 1;
+    $cyViewport.classList.toggle('carousel-visible', showCarousel);
+    if (showCarousel) {
+        const idx = Math.min(carouselIndex, carouselBpKeys.length - 1);
+        $carouselIndicator.textContent = `Recipe ${idx + 1} of ${carouselBpKeys.length}`;
+    }
+
     $loading.classList.add('hidden');
 }
 
@@ -799,6 +918,7 @@ function switchToDiagram(itemId) {
     if (viewMode === 'graph') {
         diagramStack = [];
     }
+    carouselIndex = 0;
     currentDiagramId = itemId;
     viewMode = 'diagram';
     $btnGraph.classList.remove('active');
@@ -815,6 +935,7 @@ function switchToGraph() {
     $btnGraph.classList.add('active');
     $btnDiagram.classList.remove('active');
     $diagramNav.classList.remove('visible');
+    $cyViewport.classList.remove('carousel-visible');
     renderGraph();
     applySearch();
 }
@@ -1031,6 +1152,27 @@ function wireSettings() {
         });
     });
 
+    // Multi-recipe display mode
+    const $multiRecipe = document.getElementById('opt-multi-recipe');
+    $multiRecipe.value = settings.multiRecipe;
+    $multiRecipe.addEventListener('change', () => {
+        lsSet('multi-recipe', $multiRecipe.value);
+        if (viewMode === 'diagram' && currentDiagramId) {
+            carouselIndex = 0;
+            renderDiagram(currentDiagramId);
+        }
+    });
+
+    // Recipe depth
+    const $recipeDepth = document.getElementById('opt-recipe-depth');
+    $recipeDepth.value = settings.recipeDepth;
+    $recipeDepth.addEventListener('change', () => {
+        lsSet('recipe-depth', parseInt($recipeDepth.value));
+        if (viewMode === 'diagram' && currentDiagramId) {
+            renderDiagram(currentDiagramId);
+        }
+    });
+
     // Legend toggle
     wireCheckbox('opt-legend', 'legend', () => {
         $legend.classList.toggle('visible', lsGet('legend', false));
@@ -1242,6 +1384,18 @@ function wireEvents() {
             updateBreadcrumb();
             renderDiagram(targetId);
         }
+    });
+
+    // Carousel arrows
+    $carouselPrev.addEventListener('click', () => {
+        if (carouselBpKeys.length < 2) return;
+        carouselIndex = (carouselIndex - 1 + carouselBpKeys.length) % carouselBpKeys.length;
+        renderDiagram(currentDiagramId);
+    });
+    $carouselNext.addEventListener('click', () => {
+        if (carouselBpKeys.length < 2) return;
+        carouselIndex = (carouselIndex + 1) % carouselBpKeys.length;
+        renderDiagram(currentDiagramId);
     });
 
     // Header search

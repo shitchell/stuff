@@ -43,3 +43,44 @@ Workbench. Expanding: 8x Metal Scrap + Blowtorch + Workbench.
   separately as "requires" vs "consumes"?
 - What counts as a "primitive"? Items with no craft recipe? Or items
   that are loot/harvest only?
+
+### 6. Recipe disambiguation ✓ (implemented)
+Items with multiple blueprints (162 total) now support two display
+modes via "Multi-Recipe" dropdown in the Display sidebar section:
+
+**Ghost Nodes** (default): Intermediate recipe nodes inserted between
+the target and its ingredients when 2+ blueprints exist. Labeled
+"Recipe N" with optional `\n(Workstation)`. Small, dashed-border,
+dimmer style. Applies at all tree depths.
+
+**Carousel**: Big `◁`/`▷` arrow buttons on the left/right edges of
+the diagram area with a "Recipe X of Y" indicator at top-center.
+Only shows one recipe at a time for the root item. Sub-items show
+all recipes flat. Wraps around at edges.
+
+**Future (ties into #5):** Click a ghost node to select that recipe
+branch, hiding others. Part of the "pick your path to primitives"
+workflow.
+
+### 7. Noise reduction / item decomposition limits
+Full recipe trees can be very noisy. Investigate ways to reduce
+clutter:
+
+- **Stop-list**: User-defined list of items that should not be
+  further decomposed in diagrams (e.g. "Metal Scrap" — treat as
+  primitive even though it technically has salvage sources).
+- **Auto-detection**: Heuristic to identify "common base materials"
+  that appear in many recipes and auto-collapse them.
+- **Decomposition toggle per item**: Click a leaf node to
+  expand/collapse its sub-recipes on demand (lazy expansion).
+- **Hide salvage-only paths**: Option to exclude recipes where
+  the only way to obtain an ingredient is via salvage (breaking
+  down a rarer item into a common one is rarely the intended path).
+
+**Open questions:**
+- Where does the stop-list live? localStorage? A config panel?
+- Should the default stop-list be auto-generated from the data
+  (e.g. items with no craft recipe, or items appearing as
+  ingredients in 10+ recipes)?
+- How does this interact with Recipe Depth? Depth limits the tree
+  globally; a stop-list limits specific branches.
