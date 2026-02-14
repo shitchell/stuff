@@ -57,6 +57,7 @@ let carouselBpKeys = [];      // Blueprint group keys for current diagram root
 let primUncraftableIds = new Set();  // H2: no craft recipe + used as ingredient
 let primSalvageableIds = new Set();  // H5: salvage outputs
 let primNatureIds = new Set();       // H6: nature-sourced items
+let primCommonIds = new Set();       // H4: high fan-out (10+ blueprints)
 
 const NATURE_ITEM_NAMES = new Set([
     'Birch Log', 'Birch Stick', 'Maple Log', 'Maple Stick', 'Pine Log', 'Pine Stick',
@@ -127,6 +128,7 @@ function getSettings() {
         primUncraftable: lsGet('prim-uncraftable', true),
         primSalvageable: lsGet('prim-salvageable', true),
         primNature: lsGet('prim-nature', true),
+        primCommon: lsGet('prim-common', false),
     };
 }
 
@@ -196,6 +198,18 @@ async function loadData() {
     primNatureIds = new Set();
     for (const n of rawData.nodes) {
         if (NATURE_ITEM_NAMES.has(n.name)) primNatureIds.add(n.id);
+    }
+
+    // H4: high fan-out (10+ distinct blueprints as non-tool ingredient)
+    const bpCountBySource = {};  // sourceId -> Set of blueprintIds
+    for (const e of rawData.edges) {
+        if (e.type !== 'craft' || e.tool) continue;
+        if (!bpCountBySource[e.source]) bpCountBySource[e.source] = new Set();
+        bpCountBySource[e.source].add(e.blueprintId);
+    }
+    primCommonIds = new Set();
+    for (const [id, bps] of Object.entries(bpCountBySource)) {
+        if (bps.size >= 10) primCommonIds.add(id);
     }
 }
 
@@ -927,6 +941,7 @@ function getPrimitiveIds() {
     if (settings.primUncraftable) for (const id of primUncraftableIds) ids.add(id);
     if (settings.primSalvageable) for (const id of primSalvageableIds) ids.add(id);
     if (settings.primNature) for (const id of primNatureIds) ids.add(id);
+    if (settings.primCommon) for (const id of primCommonIds) ids.add(id);
     return ids;
 }
 
@@ -1397,6 +1412,7 @@ function wireSettings() {
     wireCheckbox('opt-prim-uncraftable', 'prim-uncraftable', refreshPrimitives);
     wireCheckbox('opt-prim-salvageable', 'prim-salvageable', refreshPrimitives);
     wireCheckbox('opt-prim-nature', 'prim-nature', refreshPrimitives);
+    wireCheckbox('opt-prim-common', 'prim-common', refreshPrimitives);
 
     // Legend toggle
     wireCheckbox('opt-legend', 'legend', () => {
