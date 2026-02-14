@@ -566,6 +566,97 @@
             border-radius: 2px;
         }
 
+        /* --- Legend overlay --- */
+        #legend {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            background: rgba(20, 20, 40, 0.85);
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-size: 0.72rem;
+            color: #c0c0c0;
+            z-index: 150;
+            pointer-events: auto;
+            max-width: 220px;
+            display: none;
+            line-height: 1.5;
+        }
+
+        #legend.visible { display: block; }
+
+        .legend-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        #legend.collapsed .legend-header { margin-bottom: 0; }
+
+        #legend h4 {
+            margin: 0;
+            font-size: 0.75rem;
+            color: #e0e0e0;
+            font-weight: 600;
+        }
+
+        #legend .legend-collapse-btn {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 0 2px;
+            line-height: 1;
+            margin-left: 1em;
+        }
+
+        #legend .legend-collapse-btn:hover { color: #ffd700; }
+
+        #legend.collapsed .legend-body { display: none; }
+
+        .legend-group {
+            margin-bottom: 8px;
+        }
+
+        .legend-group:last-child { margin-bottom: 0; }
+
+        .legend-group-title {
+            font-size: 0.68rem;
+            color: #888;
+            font-weight: 600;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 2px 0;
+        }
+
+        .legend-swatch {
+            width: 14px;
+            height: 14px;
+            border: 2px solid;
+            flex-shrink: 0;
+        }
+
+        .legend-line {
+            width: 22px;
+            height: 0;
+            border-top: 2px solid;
+            flex-shrink: 0;
+        }
+
+        .legend-line.dashed {
+            border-top-style: dashed;
+        }
+
         /* --- Responsive --- */
         @media (max-width: 800px) {
             #sidebar { display: none; }
@@ -596,6 +687,16 @@
                             <label><input type="checkbox" data-bp="craft" checked> Craft</label>
                             <label><input type="checkbox" data-bp="salvage" checked> Salvage</label>
                             <label><input type="checkbox" data-bp="repair" checked> Repair</label>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Legend toggle (always visible) -->
+                <details class="sidebar-section" open>
+                    <summary>Display</summary>
+                    <div class="section-body">
+                        <div class="filter-list">
+                            <label><input type="checkbox" id="opt-legend"> Show legend</label>
                         </div>
                     </div>
                 </details>
@@ -759,6 +860,40 @@
 
             <div id="cy"></div>
             <div id="loading">Loading crafting data...</div>
+
+            <!-- Legend overlay -->
+            <div id="legend">
+                <div class="legend-header">
+                    <h4>Legend</h4>
+                    <button class="legend-collapse-btn" id="legend-collapse" title="Collapse">&#x25BD;</button>
+                </div>
+                <div class="legend-body">
+                <div class="legend-group">
+                    <div class="legend-group-title">Node shapes</div>
+                    <div class="legend-item"><span class="legend-swatch" style="border-color:#555; border-radius:50%; background:#2a2a4a;"></span> Consumable</div>
+                    <div class="legend-item"><span class="legend-swatch" style="border-color:#555; border-radius:3px; transform:rotate(45deg); background:#2a2a4a;"></span> Weapon</div>
+                    <div class="legend-item"><span class="legend-swatch" style="border-color:#555; border-radius:4px; background:#2a2a4a;"></span> Clothing</div>
+                    <div class="legend-item"><span class="legend-swatch" style="border-color:#555; clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%); background:#2a2a4a;"></span> Structure</div>
+                    <div class="legend-item"><span class="legend-swatch" style="border-color:#555; clip-path:polygon(0% 50%,30% 0%,100% 0%,100% 100%,30% 100%); border:none; background:#555;"></span> Magazine</div>
+                </div>
+                <div class="legend-group">
+                    <div class="legend-group-title">Rarity</div>
+                    <div class="legend-item"><span class="legend-swatch" style="border-color:#b0b0b0; border-radius:50%; background:#2a2a4a;"></span> Common</div>
+                    <div class="legend-item"><span class="legend-swatch" style="border-color:#4caf50; border-radius:50%; background:#2a2a4a;"></span> Uncommon</div>
+                    <div class="legend-item"><span class="legend-swatch" style="border-color:#2196f3; border-radius:50%; background:#2a2a4a;"></span> Rare</div>
+                    <div class="legend-item"><span class="legend-swatch" style="border-color:#9c27b0; border-radius:50%; background:#2a2a4a;"></span> Epic</div>
+                    <div class="legend-item"><span class="legend-swatch" style="border-color:#ff9800; border-radius:50%; background:#2a2a4a;"></span> Legendary</div>
+                    <div class="legend-item"><span class="legend-swatch" style="border-color:#f44336; border-radius:50%; background:#2a2a4a;"></span> Mythical</div>
+                </div>
+                <div class="legend-group">
+                    <div class="legend-group-title">Edge types</div>
+                    <div class="legend-item"><span class="legend-line" style="border-color:#4caf50;"></span> Craft</div>
+                    <div class="legend-item"><span class="legend-line" style="border-color:#ff9800;"></span> Salvage</div>
+                    <div class="legend-item"><span class="legend-line" style="border-color:#2196f3;"></span> Repair</div>
+                    <div class="legend-item"><span class="legend-line dashed" style="border-color:#888;"></span> Tool (not consumed)</div>
+                </div>
+                </div>
+            </div>
         </div>
     </div>
 

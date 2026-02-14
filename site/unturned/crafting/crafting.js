@@ -123,6 +123,7 @@ const $itemList = document.getElementById('item-list');
 const $itemListSearch = document.getElementById('item-list-search');
 const $bpAll = document.getElementById('bp-all');
 const $categoryFilters = document.getElementById('category-filters');
+const $legend = document.getElementById('legend');
 
 // ── Data loading ────────────────────────────────────────────────────────────
 
@@ -1028,6 +1029,23 @@ function wireSettings() {
             $bpAll.checked = [...boxes].every(b => b.checked);
             onFiltersChanged();
         });
+    });
+
+    // Legend toggle
+    wireCheckbox('opt-legend', 'legend', () => {
+        $legend.classList.toggle('visible', lsGet('legend', false));
+    });
+    $legend.classList.toggle('visible', lsGet('legend', false));
+
+    // Legend collapse
+    const $legendCollapse = document.getElementById('legend-collapse');
+    const legendCollapsed = lsGet('legend-collapsed', false);
+    $legend.classList.toggle('collapsed', legendCollapsed);
+    $legendCollapse.textContent = legendCollapsed ? '\u25B8' : '\u25BE';
+    $legendCollapse.addEventListener('click', () => {
+        const isCollapsed = $legend.classList.toggle('collapsed');
+        $legendCollapse.textContent = isCollapsed ? '\u25B8' : '\u25BE';
+        lsSet('legend-collapsed', isCollapsed);
     });
 
     // Display options
