@@ -83,6 +83,27 @@ function getSettings() {
         layoutAlgo: lsGet('layout-algo', 'cose'),
         spacing: lsGet('spacing', 50),
         animate: lsGet('animate', true),
+        graphNodeFont: lsGet('graph-node-font', 10),
+        graphNodeWeight: lsGet('graph-node-weight', 4),
+        graphNodeColor: lsGet('graph-node-color', '#e0e0e0'),
+        graphEdgeFont: lsGet('graph-edge-font', 9),
+        graphEdgeWeight: lsGet('graph-edge-weight', 4),
+        graphEdgeColor: lsGet('graph-edge-color', '#c0c0c0'),
+        diagramNodeFont: lsGet('diagram-node-font', 8),
+        diagramNodeWeight: lsGet('diagram-node-weight', 4),
+        diagramNodeColor: lsGet('diagram-node-color', '#e0e0e0'),
+        diagramTargetFont: lsGet('diagram-target-font', 9),
+        diagramTargetWeight: lsGet('diagram-target-weight', 7),
+        diagramTargetColor: lsGet('diagram-target-color', '#e0e0e0'),
+        diagramEdgeFont: lsGet('diagram-edge-font', 22),
+        diagramEdgeWeight: lsGet('diagram-edge-weight', 4),
+        diagramEdgeColor: lsGet('diagram-edge-color', '#c0c0c0'),
+        tooltipFont: lsGet('tooltip-font', 12),
+        tooltipWeight: lsGet('tooltip-weight', 4),
+        tooltipColor: lsGet('tooltip-color', '#e0e0e0'),
+        tooltipNameFont: lsGet('tooltip-name-font', 14),
+        tooltipNameWeight: lsGet('tooltip-name-weight', 7),
+        tooltipNameColor: lsGet('tooltip-name-color', '#ffd700'),
     };
 }
 
@@ -307,8 +328,9 @@ function buildCyStyle() {
             selector: 'node',
             style: {
                 'label': settings.nodeLabels ? 'data(label)' : '',
-                'font-size': '10px',
-                'color': '#e0e0e0',
+                'font-size': settings.graphNodeFont + 'px',
+                'font-weight': settings.graphNodeWeight * 100,
+                'color': settings.graphNodeColor,
                 'text-outline-color': '#1a1a2e',
                 'text-outline-width': 1.5,
                 'text-valign': 'bottom',
@@ -346,8 +368,9 @@ function buildCyStyle() {
                 'target-arrow-shape': settings.arrowStyle === 'none' ? 'none' : settings.arrowStyle,
                 'curve-style': 'bezier',
                 'label': settings.edgeLabels ? 'data(label)' : '',
-                'font-size': '9px',
-                'color': '#c0c0c0',
+                'font-size': settings.graphEdgeFont + 'px',
+                'font-weight': settings.graphEdgeWeight * 100,
+                'color': settings.graphEdgeColor,
                 'text-outline-color': '#1a1a2e',
                 'text-outline-width': 1,
                 'text-rotation': 'autorotate',
@@ -397,7 +420,9 @@ function buildCyStyle() {
         {
             selector: 'node.diagram-node',
             style: {
-                'font-size': '8px',
+                'font-size': settings.diagramNodeFont + 'px',
+                'font-weight': settings.diagramNodeWeight * 100,
+                'color': settings.diagramNodeColor,
                 'text-max-width': '90px',
                 'text-wrap': 'wrap',
             }
@@ -410,8 +435,9 @@ function buildCyStyle() {
                 'height': 45,
                 'border-width': 4,
                 'border-color': '#ffd700',
-                'font-size': '9px',
-                'font-weight': 'bold',
+                'font-size': settings.diagramTargetFont + 'px',
+                'font-weight': settings.diagramTargetWeight * 100,
+                'color': settings.diagramTargetColor,
                 'text-max-width': '100px',
                 'text-wrap': 'wrap',
                 'z-index': 10,
@@ -425,6 +451,16 @@ function buildCyStyle() {
                 'shape': 'rectangle',
                 'width': 22,
                 'height': 22,
+            }
+        },
+        // Diagram mode: edge labels (larger for readability)
+        {
+            selector: 'edge.diagram-edge',
+            style: {
+                'font-size': settings.diagramEdgeFont + 'px',
+                'font-weight': settings.diagramEdgeWeight * 100,
+                'color': settings.diagramEdgeColor,
+                'text-outline-width': 2,
             }
         },
         // Diagram mode: cycle marker
@@ -655,7 +691,8 @@ function buildDiagramTree(rootId) {
                         thickness: 2,
                         edgeType: 'craft',
                         blueprintId: edge.blueprintId,
-                    }
+                    },
+                    classes: 'diagram-edge',
                 });
 
                 // Recursively expand non-cycle, non-leaf nodes
@@ -864,6 +901,10 @@ function onNodeMouseMove(e) {
         y = containerRect.top + renderedPos.y - ttRect.height - 16;
     }
 
+    // Final clamp so it never goes off-screen
+    x = Math.max(10, Math.min(x, window.innerWidth - ttRect.width - 10));
+    y = Math.max(10, Math.min(y, window.innerHeight - ttRect.height - 10));
+
     $tooltip.style.left = x + 'px';
     $tooltip.style.top = y + 'px';
 }
@@ -1006,6 +1047,49 @@ function wireSettings() {
     });
 
     wireCheckbox('opt-animate', 'animate', () => {});
+
+    // Text settings — graph
+    const refreshGraph = () => refreshGraphStyle();
+    wireNumberInput('opt-graph-node-font', 'graph-node-font', refreshGraph);
+    wireNumberInput('opt-graph-node-weight', 'graph-node-weight', refreshGraph);
+    wireColorInput('opt-graph-node-color', 'graph-node-color', refreshGraph);
+    wireNumberInput('opt-graph-edge-font', 'graph-edge-font', refreshGraph);
+    wireNumberInput('opt-graph-edge-weight', 'graph-edge-weight', refreshGraph);
+    wireColorInput('opt-graph-edge-color', 'graph-edge-color', refreshGraph);
+
+    // Text settings — diagram
+    const refreshDiagram = () => {
+        if (viewMode === 'diagram' && currentDiagramId) renderDiagram(currentDiagramId);
+    };
+    wireNumberInput('opt-diagram-node-font', 'diagram-node-font', refreshDiagram);
+    wireNumberInput('opt-diagram-node-weight', 'diagram-node-weight', refreshDiagram);
+    wireColorInput('opt-diagram-node-color', 'diagram-node-color', refreshDiagram);
+    wireNumberInput('opt-diagram-target-font', 'diagram-target-font', refreshDiagram);
+    wireNumberInput('opt-diagram-target-weight', 'diagram-target-weight', refreshDiagram);
+    wireColorInput('opt-diagram-target-color', 'diagram-target-color', refreshDiagram);
+    wireNumberInput('opt-diagram-edge-font', 'diagram-edge-font', refreshDiagram);
+    wireNumberInput('opt-diagram-edge-weight', 'diagram-edge-weight', refreshDiagram);
+    wireColorInput('opt-diagram-edge-color', 'diagram-edge-color', refreshDiagram);
+
+    // Text settings — tooltip (uses CSS custom properties)
+    const applyTooltipVars = () => {
+        const s = getSettings();
+        document.documentElement.style.setProperty('--tooltip-font-size', s.tooltipFont + 'px');
+        document.documentElement.style.setProperty('--tooltip-font-weight', s.tooltipWeight * 100);
+        document.documentElement.style.setProperty('--tooltip-color', s.tooltipColor);
+        document.documentElement.style.setProperty('--tooltip-name-font-size', s.tooltipNameFont + 'px');
+        document.documentElement.style.setProperty('--tooltip-name-font-weight', s.tooltipNameWeight * 100);
+        document.documentElement.style.setProperty('--tooltip-name-color', s.tooltipNameColor);
+    };
+    wireNumberInput('opt-tooltip-font', 'tooltip-font', applyTooltipVars);
+    wireNumberInput('opt-tooltip-weight', 'tooltip-weight', applyTooltipVars);
+    wireColorInput('opt-tooltip-color', 'tooltip-color', applyTooltipVars);
+    wireNumberInput('opt-tooltip-name-font', 'tooltip-name-font', applyTooltipVars);
+    wireNumberInput('opt-tooltip-name-weight', 'tooltip-name-weight', applyTooltipVars);
+    wireColorInput('opt-tooltip-name-color', 'tooltip-name-color', applyTooltipVars);
+
+    // Apply saved tooltip CSS custom properties on init
+    applyTooltipVars();
 }
 
 function wireCheckbox(elementId, settingsKey, onChange) {
@@ -1030,6 +1114,28 @@ function wireRadioGroup(name, settingsKey, onChange) {
             }
         });
     }
+}
+
+function wireNumberInput(elementId, settingsKey, onChange) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const saved = lsGet(settingsKey, parseFloat(el.value));
+    el.value = saved;
+    el.addEventListener('change', () => {
+        lsSet(settingsKey, parseFloat(el.value));
+        onChange();
+    });
+}
+
+function wireColorInput(elementId, settingsKey, onChange) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const saved = lsGet(settingsKey, el.value);
+    el.value = saved;
+    el.addEventListener('input', () => {
+        lsSet(settingsKey, el.value);
+        onChange();
+    });
 }
 
 // ── Event wiring ────────────────────────────────────────────────────────────

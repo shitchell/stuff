@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unturned Crafting Viewer</title>
     <style>
+        :root {
+            --tooltip-font-size: 0.78rem;
+            --tooltip-name-font-size: 0.88rem;
+            --tooltip-font-weight: 400;
+            --tooltip-name-font-weight: 700;
+            --tooltip-color: #e0e0e0;
+            --tooltip-name-color: #ffd700;
+        }
+
         *, *::before, *::after { box-sizing: border-box; }
 
         body {
@@ -445,8 +454,9 @@
             border: 1px solid #444;
             border-radius: 6px;
             padding: 10px 14px;
-            font-size: 0.78rem;
-            color: #e0e0e0;
+            font-size: var(--tooltip-font-size);
+            font-weight: var(--tooltip-font-weight);
+            color: var(--tooltip-color);
             max-width: 360px;
             z-index: 300;
             pointer-events: none;
@@ -455,9 +465,9 @@
         }
 
         #tooltip .tt-name {
-            font-weight: bold;
-            font-size: 0.88rem;
-            color: #ffd700;
+            font-weight: var(--tooltip-name-font-weight);
+            font-size: var(--tooltip-name-font-size);
+            color: var(--tooltip-name-color);
             margin-bottom: 4px;
         }
 
@@ -483,6 +493,71 @@
         .tt-recipe-type.craft { color: #4caf50; }
         .tt-recipe-type.salvage { color: #ff9800; }
         .tt-recipe-type.repair { color: #2196f3; }
+
+        /* --- Text config rows --- */
+        .text-section-header {
+            font-size: 0.72rem;
+            color: #c0c0c0;
+            font-weight: 600;
+            margin-top: 6px;
+            margin-bottom: 2px;
+        }
+
+        .text-section-header:first-child {
+            margin-top: 0;
+        }
+
+        .text-prop-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin: 2px 0;
+            font-size: 0.72rem;
+            color: #888;
+        }
+
+        .text-prop-row .text-prop-label {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .text-prop-row input[type="number"] {
+            width: 42px;
+            padding: 1px 2px;
+            border: 1px solid #333;
+            border-radius: 3px;
+            background: #16213e;
+            color: #e0e0e0;
+            font-size: 0.72rem;
+            text-align: center;
+            outline: none;
+        }
+
+        .text-prop-row input[type="number"]:focus {
+            border-color: #6db3f2;
+        }
+
+        .text-prop-row input[type="color"] {
+            width: 22px;
+            height: 18px;
+            padding: 0;
+            border: 1px solid #333;
+            border-radius: 3px;
+            background: none;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .text-prop-row input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 1px;
+        }
+
+        .text-prop-row input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 2px;
+        }
 
         /* --- Responsive --- */
         @media (max-width: 800px) {
@@ -541,6 +616,58 @@
                         <div class="filter-list">
                             <label><input type="radio" name="node-size" value="fixed" checked> Fixed</label>
                             <label><input type="radio" name="node-size" value="connectivity"> By connectivity</label>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Text settings (extensive only) -->
+                <details class="sidebar-section extensive-only">
+                    <summary>Text</summary>
+                    <div class="section-body">
+                        <div class="text-section-header">Graph</div>
+                        <div class="text-prop-row">
+                            <span class="text-prop-label">Node labels</span>
+                            <input type="number" id="opt-graph-node-font" min="4" max="48" value="10" title="Size (px)">
+                            <input type="number" id="opt-graph-node-weight" min="1" max="10" value="4" title="Weight (1-10)">
+                            <input type="color" id="opt-graph-node-color" value="#e0e0e0" title="Color">
+                        </div>
+                        <div class="text-prop-row">
+                            <span class="text-prop-label">Edge labels</span>
+                            <input type="number" id="opt-graph-edge-font" min="4" max="48" value="9" title="Size (px)">
+                            <input type="number" id="opt-graph-edge-weight" min="1" max="10" value="4" title="Weight (1-10)">
+                            <input type="color" id="opt-graph-edge-color" value="#c0c0c0" title="Color">
+                        </div>
+                        <div class="text-section-header">Diagram</div>
+                        <div class="text-prop-row">
+                            <span class="text-prop-label">Node labels</span>
+                            <input type="number" id="opt-diagram-node-font" min="4" max="48" value="8" title="Size (px)">
+                            <input type="number" id="opt-diagram-node-weight" min="1" max="10" value="4" title="Weight (1-10)">
+                            <input type="color" id="opt-diagram-node-color" value="#e0e0e0" title="Color">
+                        </div>
+                        <div class="text-prop-row">
+                            <span class="text-prop-label">Target label</span>
+                            <input type="number" id="opt-diagram-target-font" min="4" max="48" value="9" title="Size (px)">
+                            <input type="number" id="opt-diagram-target-weight" min="1" max="10" value="7" title="Weight (1-10)">
+                            <input type="color" id="opt-diagram-target-color" value="#e0e0e0" title="Color">
+                        </div>
+                        <div class="text-prop-row">
+                            <span class="text-prop-label">Edge labels</span>
+                            <input type="number" id="opt-diagram-edge-font" min="4" max="48" value="22" title="Size (px)">
+                            <input type="number" id="opt-diagram-edge-weight" min="1" max="10" value="4" title="Weight (1-10)">
+                            <input type="color" id="opt-diagram-edge-color" value="#c0c0c0" title="Color">
+                        </div>
+                        <div class="text-section-header">Tooltip</div>
+                        <div class="text-prop-row">
+                            <span class="text-prop-label">Body text</span>
+                            <input type="number" id="opt-tooltip-font" min="4" max="48" value="12" title="Size (px)">
+                            <input type="number" id="opt-tooltip-weight" min="1" max="10" value="4" title="Weight (1-10)">
+                            <input type="color" id="opt-tooltip-color" value="#e0e0e0" title="Color">
+                        </div>
+                        <div class="text-prop-row">
+                            <span class="text-prop-label">Name</span>
+                            <input type="number" id="opt-tooltip-name-font" min="4" max="48" value="14" title="Size (px)">
+                            <input type="number" id="opt-tooltip-name-weight" min="1" max="10" value="7" title="Weight (1-10)">
+                            <input type="color" id="opt-tooltip-name-color" value="#ffd700" title="Color">
                         </div>
                     </div>
                 </details>
