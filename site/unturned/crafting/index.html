@@ -238,9 +238,34 @@
             justify-content: space-between;
         }
 
+        .item-entry .item-star {
+            flex-shrink: 0;
+            cursor: pointer;
+            font-size: 0.78rem;
+            color: #555;
+            opacity: 0;
+            transition: opacity 0.1s, color 0.1s;
+            margin-right: 2px;
+            line-height: 1;
+        }
+
+        .item-entry:hover .item-star,
+        .item-entry .item-star.favorited {
+            opacity: 1;
+        }
+
+        .item-entry .item-star.favorited {
+            color: #ffd700;
+        }
+
+        .item-entry .item-star:hover {
+            color: #ffd700;
+        }
+
         .item-entry .item-name {
             overflow: hidden;
             text-overflow: ellipsis;
+            flex: 1;
         }
 
         .item-entry .item-select-cb {

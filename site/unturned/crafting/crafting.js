@@ -49,6 +49,7 @@ let viewMode = 'graph';       // 'graph' | 'diagram'
 let diagramStack = [];        // stack of item IDs for breadcrumb nav
 let currentDiagramId = null;
 let selectedItems = null;     // Set of selected item IDs (null = all selected)
+let favoriteItems = new Set(lsGet('favorite-items', []));
 let carouselIndex = 0;        // Current recipe index in carousel mode
 let carouselBpKeys = [];      // Blueprint group keys for current diagram root
 
@@ -313,7 +314,12 @@ function updateItemList() {
     const items = rawData.nodes
         .filter(n => visibleIds.has(n.id))
         .filter(n => !filterText || n.name.toLowerCase().includes(filterText))
-        .sort((a, b) => a.name.localeCompare(b.name));
+        .sort((a, b) => {
+            const aFav = favoriteItems.has(a.id);
+            const bFav = favoriteItems.has(b.id);
+            if (aFav !== bFav) return aFav ? -1 : 1;
+            return a.name.localeCompare(b.name);
+        });
 
     // Initialize selectedItems to all items on first call
     if (selectedItems === null) {
@@ -328,7 +334,11 @@ function updateItemList() {
     let html = '';
     for (const item of items) {
         const checked = selectedItems.has(item.id) ? ' checked' : '';
+        const isFav = favoriteItems.has(item.id);
+        const starCls = isFav ? 'item-star favorited' : 'item-star';
+        const starChar = isFav ? '\u2605' : '\u2606';
         html += `<div class="item-entry" data-id="${item.id}" title="${esc(item.name)}">`;
+        html += `<span class="${starCls}" data-id="${item.id}">${starChar}</span>`;
         html += `<span class="item-name">${esc(item.name)}</span>`;
         html += `<input type="checkbox" class="item-select-cb" data-id="${item.id}"${checked}>`;
         html += `</div>`;
@@ -1623,8 +1633,21 @@ function wireEvents() {
         updateItemList();
     }, 200));
 
-    // Item list clicks - checkbox vs name
+    // Item list clicks - star, checkbox, or name
     $itemList.addEventListener('click', (e) => {
+        // Star click: toggle favorite
+        if (e.target.classList.contains('item-star')) {
+            const id = e.target.dataset.id;
+            if (favoriteItems.has(id)) {
+                favoriteItems.delete(id);
+            } else {
+                favoriteItems.add(id);
+            }
+            lsSet('favorite-items', [...favoriteItems]);
+            updateItemList();
+            return;
+        }
+
         // Checkbox click: toggle selection
         if (e.target.classList.contains('item-select-cb')) {
             const id = e.target.dataset.id;

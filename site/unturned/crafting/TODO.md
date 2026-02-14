@@ -86,15 +86,20 @@ clutter:
 - How does this interact with Recipe Depth? Depth limits the tree
   globally; a stop-list limits specific branches.
 
-### 8. Favorites / starred items
-Add a star outline (CSS, hidden by default, visible on hover) to the
-left of each item in the sidebar item list. Clicking the star fills
-it in and "favorites" the item (persisted to localStorage).
+### 8. Favorites / starred items ✓ (implemented)
+Star outline (☆) to the left of each item in the sidebar list.
+Hidden by default, visible on hover. Click to favorite (★, gold).
+Favorited items pinned to top of list, respecting active
+search/category filters. Persisted to localStorage.
 
-Favorited items are pinned to the top of the list, but only when
-they pass the current search/category filters. E.g. a favorited
-"Water Tank" does not appear at the top when the search filter
-"rifle" is active.
+### 9. Investigate category oddities
+Some items have surprising or missing categorizations:
+- "Uncategorized" bucket contains items like Saw that could be
+  Melee / Tool
+- "Items" appears as a top-level category — investigate what's in
+  it and whether it's a parsing artifact or a real game category
 
-Sort order: favorites first (alphabetical), then non-favorites
-(alphabetical).
+Audit all Uncategorized and "Items" entries. Determine whether
+better categories can be inferred from the .dat file fields
+(Type, Useable, etc.) or from the source_path hierarchy.
+May require changes to the Python parser's category logic.
