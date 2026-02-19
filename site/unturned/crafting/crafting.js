@@ -160,7 +160,8 @@ const $primitivesFooter = document.getElementById('primitives-footer');
 // ── Data loading ────────────────────────────────────────────────────────────
 
 async function loadData() {
-    const resp = await fetch('./crafting.json');
+    // Cache-bust: use ETag/conditional request, fall back to timestamp param
+    const resp = await fetch('./crafting.json', { cache: 'no-cache' });
     if (!resp.ok) throw new Error(`Failed to load data: ${resp.status}`);
     rawData = await resp.json();
 

@@ -56,7 +56,7 @@ function loadCollapsed() {
 
 // === Load & Init ===
 async function init() {
-    const resp = await fetch('./data.json');
+    const resp = await fetch('./data.json', { cache: 'no-cache' });
     sections = await resp.json();
     totalRows = sections.reduce((sum, s) => sum + s.rows.length, 0);
 
