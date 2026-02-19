@@ -148,6 +148,8 @@ const $itemList = document.getElementById('item-list');
 const $itemListSearch = document.getElementById('item-list-search');
 const $bpAll = document.getElementById('bp-all');
 const $categoryFilters = document.getElementById('category-filters');
+const $mapFilters = document.getElementById('map-filters');
+const $mapFilterSection = document.getElementById('map-filter-section');
 const $legend = document.getElementById('legend');
 const $cyViewport = document.getElementById('cy-viewport');
 const $carouselPrev = document.getElementById('carousel-prev');
@@ -271,6 +273,63 @@ function getActiveCategories() {
     return active;
 }
 
+// ── Map filter building ──────────────────────────────────────────────────────
+
+function buildMapFilters() {
+    const mapSet = new Set();
+    for (const n of rawData.nodes) {
+        if (n.maps) {
+            for (const m of n.maps) mapSet.add(m);
+        }
+    }
+    if (mapSet.size === 0) return; // No map data, leave hidden
+
+    $mapFilterSection.style.display = '';
+    const sorted = [...mapSet].sort();
+    const savedMaps = lsGet('maps', null);
+
+    let html = '<label class="toggle-all-label"><input type="checkbox" id="map-all"> All</label>';
+    for (const map of sorted) {
+        const checked = savedMaps === null ? false : savedMaps.includes(map);
+        html += `<label><input type="checkbox" data-map="${esc(map)}" ${checked ? 'checked' : ''}> ${esc(map)}</label>`;
+    }
+    $mapFilters.innerHTML = html;
+
+    // Wire up All toggle
+    const $mapAll = document.getElementById('map-all');
+    $mapAll.checked = savedMaps !== null && sorted.every(m => savedMaps.includes(m));
+    $mapAll.addEventListener('change', () => {
+        const boxes = $mapFilters.querySelectorAll('input[data-map]');
+        for (const b of boxes) b.checked = $mapAll.checked;
+        onFiltersChanged();
+    });
+
+    // Wire individual map checkboxes
+    $mapFilters.addEventListener('change', (e) => {
+        if (e.target.dataset.map) {
+            updateMapAllState();
+            onFiltersChanged();
+        }
+    });
+}
+
+function updateMapAllState() {
+    const boxes = $mapFilters.querySelectorAll('input[data-map]');
+    const $mapAll = document.getElementById('map-all');
+    if (!$mapAll) return;
+    $mapAll.checked = [...boxes].every(b => b.checked);
+}
+
+function getActiveMaps() {
+    const boxes = $mapFilters.querySelectorAll('input[data-map]');
+    if (boxes.length === 0) return null; // No map data
+    const active = [];
+    for (const b of boxes) {
+        if (b.checked) active.push(b.dataset.map);
+    }
+    return active.length > 0 ? active : null; // null = no filter (show all)
+}
+
 function getActiveBlueprintTypes() {
     const types = [];
     const boxes = document.querySelectorAll('#blueprint-filters input[data-bp]');
@@ -288,9 +347,16 @@ function nodePassesCategoryFilter(node, activeCats) {
     return activeCats.includes(cat);
 }
 
+function nodePassesMapFilter(node, activeMaps) {
+    if (activeMaps === null) return true; // No filter active
+    if (!node.maps || node.maps.length === 0) return true; // No map data = always show
+    return node.maps.some(m => activeMaps.includes(m));
+}
+
 function getVisibleEdges() {
     const bpTypes = getActiveBlueprintTypes();
     const activeCats = getActiveCategories();
+    const activeMaps = getActiveMaps();
     const settings = getSettings();
 
     return rawData.edges.filter(e => {
@@ -304,6 +370,8 @@ function getVisibleEdges() {
         if (!src || !tgt) return false;
         if (!nodePassesCategoryFilter(src, activeCats)) return false;
         if (!nodePassesCategoryFilter(tgt, activeCats)) return false;
+        if (!nodePassesMapFilter(src, activeMaps)) return false;
+        if (!nodePassesMapFilter(tgt, activeMaps)) return false;
         return true;
     });
 }
@@ -1337,6 +1405,9 @@ function onFiltersChanged() {
     const activeCats = getActiveCategories();
     lsSet('categories', activeCats);
 
+    const activeMaps = getActiveMaps();
+    lsSet('maps', activeMaps);
+
     // Re-render current view
     if (viewMode === 'graph') {
         renderGraph();
@@ -1710,6 +1781,7 @@ async function init() {
     try {
         await loadData();
         buildCategoryFilters();
+        buildMapFilters();
         wireSettings();
         wireEvents();
         updateItemList();
