@@ -8,6 +8,7 @@ let sections = [];
 let allRowRefs = [];      // {sectionIdx, rowIdx, tr, cells}
 let activeCategories;     // Set of checked top-level category names
 let activeSearchFields;   // Set of checked column names
+let activeMaps = null;    // Set of checked map names, or null if no Maps column exists
 let totalRows = 0;
 // Maps section path key -> { sectionEl, navLink }
 const sectionRegistry = new Map();
@@ -17,6 +18,8 @@ const searchInput = document.getElementById('search');
 const resultCount = document.getElementById('result-count');
 const categoryFilters = document.getElementById('category-filters');
 const fieldFilters = document.getElementById('field-filters');
+const mapFilters = document.getElementById('map-filters');
+const mapFilterGroup = document.getElementById('map-filter-group');
 const content = document.getElementById('content');
 const sidebar = document.getElementById('sidebar');
 
@@ -70,10 +73,43 @@ async function init() {
         ? new Set([...savedFields].filter(f => fields.includes(f)))
         : new Set(fields);
 
+    // Scan for unique map names across all sections
+    const mapNameSet = new Set();
+    let hasMapsColumn = false;
+    for (const s of sections) {
+        const mapsColIdx = s.columns.indexOf('Maps');
+        if (mapsColIdx === -1) continue;
+        hasMapsColumn = true;
+        for (const row of s.rows) {
+            const val = row[mapsColIdx];
+            if (val) {
+                for (const m of val.split(', ')) {
+                    if (m) mapNameSet.add(m);
+                }
+            }
+        }
+    }
+    const mapNames = [...mapNameSet].sort();
+
     buildCheckboxList(categoryFilters, categories, activeCategories, () => {
         saveSet('categories', activeCategories);
         applyFilters();
     });
+
+    // Build map filter if Maps column exists with actual map names
+    if (hasMapsColumn && mapNames.length > 0) {
+        const savedMaps = loadSet('maps');
+        // Default to empty set (no filter applied = show all)
+        activeMaps = savedMaps
+            ? new Set([...savedMaps].filter(m => mapNames.includes(m)))
+            : new Set();
+        mapFilterGroup.style.display = '';
+        buildCheckboxList(mapFilters, mapNames, activeMaps, () => {
+            saveSet('maps', activeMaps);
+            applyFilters();
+        });
+    }
+
     buildCheckboxList(fieldFilters, fields, activeSearchFields, () => {
         saveSet('fields', activeSearchFields);
         applyFilters();
@@ -239,6 +275,12 @@ function createTable(sectionIdx) {
         }
         tbody.appendChild(tr);
 
+        // Pre-parse maps for this row if a Maps column exists
+        const mapsColIdx = s.columns.indexOf('Maps');
+        const rowMaps = mapsColIdx !== -1 && row[mapsColIdx]
+            ? new Set(row[mapsColIdx].split(', ').filter(Boolean))
+            : new Set();
+
         allRowRefs.push({
             sectionIdx,
             rowIdx,
@@ -246,6 +288,8 @@ function createTable(sectionIdx) {
             cells: row,
             columns: s.columns,
             category: s.path[0] || '',
+            maps: rowMaps,
+            hasMapsColumn: mapsColIdx !== -1,
         });
     }
     table.appendChild(tbody);
@@ -365,6 +409,22 @@ function applyFilters() {
         if (!activeCategories.has(ref.category)) {
             ref.tr.classList.add('hidden');
             continue;
+        }
+
+        // Map filter: if activeMaps has entries, only show rows whose maps
+        // intersect with the checked maps. Items with no maps data are always visible.
+        if (activeMaps && activeMaps.size > 0) {
+            if (ref.hasMapsColumn && ref.maps.size > 0) {
+                let mapMatch = false;
+                for (const m of ref.maps) {
+                    if (activeMaps.has(m)) { mapMatch = true; break; }
+                }
+                if (!mapMatch) {
+                    ref.tr.classList.add('hidden');
+                    continue;
+                }
+            }
+            // Items with no maps data (empty set) pass through - always visible
         }
 
         if (query) {
