@@ -1781,6 +1781,7 @@ function debounce(fn, ms) {
 async function init() {
     try {
         await loadData();
+
         buildCategoryFilters();
         buildMapFilters();
         wireSettings();
