@@ -356,6 +356,226 @@ function applyColFilters(entries, columns, filters) {
   );
 }
 
+// ── Important Columns (auto-detect defaults) ────────────────────────────────
+
+const IMPORTANT_COLUMNS = [
+  { key: 'id', label: 'ID' },
+  { key: 'name', label: 'Name' },
+  { key: 'type', label: 'Type' },
+  { key: 'rarity', label: 'Rarity' },
+  { key: 'parsed.damage.player', label: 'Player Dmg' },
+  { key: 'parsed.damage.zombie', label: 'Zombie Dmg' },
+  { key: 'parsed.range', label: 'Range' },
+  { key: 'parsed.firerate', label: 'Firerate' },
+  { key: 'parsed.consumable.health', label: 'Health' },
+  { key: 'parsed.consumable.food', label: 'Food' },
+  { key: 'parsed.consumable.water', label: 'Water' },
+  { key: 'parsed.consumable.virus', label: 'Virus' },
+  { key: 'parsed.armor', label: 'Armor' },
+  { key: 'parsed.storage.width', label: 'Width' },
+  { key: 'parsed.storage.height', label: 'Height' },
+  { key: 'parsed.speed_max', label: 'Speed' },
+  { key: 'parsed.health', label: 'Health (Structure)' },
+  { key: 'parsed.fuel_capacity', label: 'Fuel Cap' },
+];
+
+// ── Table Definition Presets ─────────────────────────────────────────────────
+
+const TABLE_OPERATORS = ['=', '!=', '>', '<', '>=', '<=', 'contains'];
+
+const PRESET_TABLES = [
+  {
+    label: 'Weapons',
+    anyConditions: [
+      { field: 'type', operator: '=', value: 'Gun' },
+      { field: 'type', operator: '=', value: 'Melee' },
+      { field: 'type', operator: '=', value: 'Throwable' },
+    ],
+    allConditions: [],
+    visible: true,
+  },
+  {
+    label: 'Clothing',
+    anyConditions: [
+      { field: 'type', operator: '=', value: 'Shirt' },
+      { field: 'type', operator: '=', value: 'Pants' },
+      { field: 'type', operator: '=', value: 'Hat' },
+      { field: 'type', operator: '=', value: 'Vest' },
+      { field: 'type', operator: '=', value: 'Backpack' },
+      { field: 'type', operator: '=', value: 'Mask' },
+      { field: 'type', operator: '=', value: 'Glasses' },
+    ],
+    allConditions: [],
+    visible: true,
+  },
+  {
+    label: 'Consumables',
+    anyConditions: [
+      { field: 'type', operator: '=', value: 'Food' },
+      { field: 'type', operator: '=', value: 'Water' },
+      { field: 'type', operator: '=', value: 'Medical' },
+    ],
+    allConditions: [],
+    visible: true,
+  },
+  {
+    label: 'Building',
+    anyConditions: [
+      { field: 'type', operator: '=', value: 'Barricade' },
+      { field: 'type', operator: '=', value: 'Structure' },
+      { field: 'type', operator: '=', value: 'Storage' },
+    ],
+    allConditions: [],
+    visible: true,
+  },
+  {
+    label: 'Vehicles',
+    anyConditions: [
+      { field: 'type', operator: '=', value: 'Vehicle' },
+    ],
+    allConditions: [],
+    visible: true,
+  },
+  {
+    label: 'Equipment',
+    anyConditions: [
+      { field: 'type', operator: '=', value: 'Optic' },
+      { field: 'type', operator: '=', value: 'Grip' },
+      { field: 'type', operator: '=', value: 'Barrel' },
+      { field: 'type', operator: '=', value: 'Tactical' },
+      { field: 'type', operator: '=', value: 'Sight' },
+      { field: 'type', operator: '=', value: 'Magazine' },
+    ],
+    allConditions: [],
+    visible: true,
+  },
+  {
+    label: 'Resources',
+    anyConditions: [
+      { field: 'type', operator: '=', value: 'Resource' },
+      { field: 'type', operator: '=', value: 'Supply' },
+      { field: 'type', operator: '=', value: 'Fisher' },
+      { field: 'type', operator: '=', value: 'Fuel' },
+      { field: 'type', operator: '=', value: 'Refill' },
+    ],
+    allConditions: [],
+    visible: true,
+  },
+  {
+    label: 'Containers',
+    anyConditions: [
+      { field: 'type', operator: '=', value: 'Large' },
+      { field: 'type', operator: '=', value: 'Medium' },
+      { field: 'type', operator: '=', value: 'Small' },
+    ],
+    allConditions: [],
+    visible: true,
+  },
+  {
+    label: 'Spawn Tables',
+    anyConditions: [
+      { field: 'type', operator: '=', value: 'Spawn' },
+    ],
+    allConditions: [],
+    visible: false,
+  },
+  {
+    label: 'Skins',
+    anyConditions: [
+      { field: 'type', operator: '=', value: 'Skin' },
+    ],
+    allConditions: [],
+    visible: false,
+  },
+];
+
+// ── Table Filtering ──────────────────────────────────────────────────────────
+
+function matchesTableCondition(entry, cond) {
+  const val = getNestedValue(entry, cond.field);
+  const filter = { op: cond.operator === 'contains' ? '~' : cond.operator, value: cond.value };
+  // For '=' on strings, do exact match (not numeric)
+  if (cond.operator === '=' && typeof cond.value === 'string') {
+    return val != null && String(val) === cond.value;
+  }
+  if (cond.operator === '!=' && typeof cond.value === 'string') {
+    return val == null || String(val) !== cond.value;
+  }
+  return matchesFilter(val, filter);
+}
+
+function filterEntriesByTable(entries, tableDef) {
+  if (!tableDef.anyConditions.length && !tableDef.allConditions.length) return entries;
+  return entries.filter(e => {
+    const anyPass = tableDef.anyConditions.length === 0
+      || tableDef.anyConditions.some(c => matchesTableCondition(e, c));
+    const allPass = tableDef.allConditions.length === 0
+      || tableDef.allConditions.every(c => matchesTableCondition(e, c));
+    return anyPass && allPass;
+  });
+}
+
+function detectColumnsForEntries(entries) {
+  if (!entries.length) return IMPORTANT_COLUMNS.slice(0, 4); // fallback: id, name, type, rarity
+  const result = [];
+  for (const col of IMPORTANT_COLUMNS) {
+    const hasValue = entries.some(e => {
+      const v = getNestedValue(e, col.key);
+      return v != null && v !== '' && v !== 0;
+    });
+    if (hasValue) result.push(col);
+  }
+  return result.length > 0 ? result : IMPORTANT_COLUMNS.slice(0, 4);
+}
+
+// ── Table Persistence ────────────────────────────────────────────────────────
+
+function loadTableDefs() {
+  let userTables;
+  try { userTables = JSON.parse(localStorage.getItem('ut:catalog:tables')); } catch {}
+  if (!Array.isArray(userTables)) {
+    // First visit: return deep copy of presets
+    return PRESET_TABLES.map(t => JSON.parse(JSON.stringify(t)));
+  }
+  // Merge: user tables take priority by label, then append any presets not overridden
+  const userLabels = new Set(userTables.map(t => t.label));
+  const merged = [...userTables];
+  for (const preset of PRESET_TABLES) {
+    if (!userLabels.has(preset.label)) {
+      merged.push(JSON.parse(JSON.stringify(preset)));
+    }
+  }
+  return merged;
+}
+
+function saveTableDefs(tables) {
+  localStorage.setItem('ut:catalog:tables', JSON.stringify(tables));
+}
+
+function loadTableColumns(label) {
+  try {
+    const data = JSON.parse(localStorage.getItem(`ut:catalog:columns:${label}`));
+    return Array.isArray(data) ? data : null;
+  } catch { return null; }
+}
+
+function saveTableColumns(label, columns) {
+  if (columns) {
+    localStorage.setItem(`ut:catalog:columns:${label}`, JSON.stringify(columns));
+  } else {
+    localStorage.removeItem(`ut:catalog:columns:${label}`);
+  }
+}
+
+function getKnownFieldValues(entries, fieldKey) {
+  const vals = new Set();
+  for (const e of entries) {
+    const v = getNestedValue(e, fieldKey);
+    if (v != null && v !== '') vals.add(String(v));
+  }
+  return [...vals].sort();
+}
+
 // ── Map Filtering Utilities ─────────────────────────────────────────────────
 
 function getSpawnableIds(mapData) {
