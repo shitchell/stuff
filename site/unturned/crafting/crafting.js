@@ -29,12 +29,10 @@ const EDGE_COLORS = {
     repair: '#2196f3',
 };
 
-const LS_PREFIX = 'unturned-crafting:';
+const LS_PREFIX = 'ut:crafting:';
 
-// HTML escaping for safe innerHTML usage
-function esc(str) {
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
+// Use shared escapeHtml from common.js
+function esc(str) { return escapeHtml(str); }
 
 // ── State ───────────────────────────────────────────────────────────────────
 
@@ -44,6 +42,7 @@ let nodeMap = {};             // id -> node data
 let edgesByTarget = {};       // targetId -> [edge]
 let edgesBySource = {};       // sourceId -> [edge]
 let blueprintGroups = {};     // blueprintId -> [edge]
+let craftingCategoryList = []; // resolved crafting category names
 
 let viewMode = 'graph';       // 'graph' | 'diagram'
 let diagramStack = [];        // stack of item IDs for breadcrumb nav
@@ -160,10 +159,18 @@ const $primitivesFooter = document.getElementById('primitives-footer');
 // ── Data loading ────────────────────────────────────────────────────────────
 
 async function loadData() {
-    // Cache-bust: use ETag/conditional request, fall back to timestamp param
-    const resp = await fetch('./crafting.json', { cache: 'no-cache' });
-    if (!resp.ok) throw new Error(`Failed to load data: ${resp.status}`);
-    rawData = await resp.json();
+    const [entries, guidIndex, assets] = await Promise.all([
+        dataLoader.getBaseEntries(),
+        dataLoader.getGuidIndex(),
+        dataLoader.getBaseAssets(),
+    ]);
+
+    // Build graph using common.js graph builder
+    const graph = buildCraftingGraph(entries, guidIndex, assets);
+
+    // Set state in the format the rest of crafting.js expects
+    rawData = { nodes: graph.nodes, edges: graph.edges };
+    craftingCategoryList = graph.craftingCategories;
 
     // Build lookup maps
     for (const n of rawData.nodes) {
@@ -274,23 +281,64 @@ function getActiveCategories() {
     return active;
 }
 
+// ── Crafting category filter building ────────────────────────────────────────
+
+function buildCraftingCategoryFilters() {
+    const $section = document.getElementById('crafting-cat-section');
+    const $filters = document.getElementById('crafting-cat-filters');
+    if (!$section || !$filters) return;
+    if (craftingCategoryList.length === 0) return;
+
+    $section.style.display = '';
+    const savedCraftCats = lsGet('crafting-categories', null);
+
+    let html = '<label class="toggle-all-label"><input type="checkbox" id="craft-cat-all" checked> All</label>';
+    for (const cat of craftingCategoryList) {
+        const checked = savedCraftCats === null || savedCraftCats.includes(cat);
+        html += `<label><input type="checkbox" data-craftcat="${esc(cat)}" ${checked ? 'checked' : ''}> ${esc(cat)}</label>`;
+    }
+    $filters.innerHTML = html;
+
+    const $allCb = document.getElementById('craft-cat-all');
+    $allCb.addEventListener('change', () => {
+        const boxes = $filters.querySelectorAll('input[data-craftcat]');
+        for (const b of boxes) b.checked = $allCb.checked;
+        onFiltersChanged();
+    });
+
+    $filters.addEventListener('change', (e) => {
+        if (e.target.dataset.craftcat) {
+            const boxes = $filters.querySelectorAll('input[data-craftcat]');
+            $allCb.checked = [...boxes].every(b => b.checked);
+            onFiltersChanged();
+        }
+    });
+}
+
+function getActiveCraftingCategories() {
+    const $filters = document.getElementById('crafting-cat-filters');
+    if (!$filters) return null;
+    const boxes = $filters.querySelectorAll('input[data-craftcat]');
+    if (boxes.length === 0) return null;
+    const active = [];
+    for (const b of boxes) {
+        if (b.checked) active.push(b.dataset.craftcat);
+    }
+    return active.length === craftingCategoryList.length ? null : active;
+}
+
 // ── Map filter building ──────────────────────────────────────────────────────
 
-function buildMapFilters() {
-    const mapSet = new Set();
-    for (const n of rawData.nodes) {
-        if (n.maps) {
-            for (const m of n.maps) mapSet.add(m);
-        }
-    }
-    if (mapSet.size === 0) return; // No map data, leave hidden
+async function buildMapFilters() {
+    const manifest = await dataLoader.getManifest();
+    const maps = Object.keys(manifest.maps).sort();
+    if (maps.length === 0) return;
 
     $mapFilterSection.style.display = '';
-    const sorted = [...mapSet].sort();
     const savedMaps = lsGet('maps', null);
 
     let html = '<label class="toggle-all-label"><input type="checkbox" id="map-all"> All</label>';
-    for (const map of sorted) {
+    for (const map of maps) {
         const checked = savedMaps === null ? false : savedMaps.includes(map);
         html += `<label><input type="checkbox" data-map="${esc(map)}" ${checked ? 'checked' : ''}> ${esc(map)}</label>`;
     }
@@ -298,7 +346,7 @@ function buildMapFilters() {
 
     // Wire up All toggle
     const $mapAll = document.getElementById('map-all');
-    $mapAll.checked = savedMaps !== null && sorted.every(m => savedMaps.includes(m));
+    $mapAll.checked = savedMaps !== null && maps.every(m => savedMaps.includes(m));
     $mapAll.addEventListener('change', () => {
         const boxes = $mapFilters.querySelectorAll('input[data-map]');
         for (const b of boxes) b.checked = $mapAll.checked;
@@ -358,6 +406,7 @@ function getVisibleEdges() {
     const bpTypes = getActiveBlueprintTypes();
     const activeCats = getActiveCategories();
     const activeMaps = getActiveMaps();
+    const activeCraftCats = getActiveCraftingCategories();
     const settings = getSettings();
 
     return rawData.edges.filter(e => {
@@ -365,6 +414,8 @@ function getVisibleEdges() {
         if (!bpTypes.includes(e.type)) return false;
         // Tool edge visibility
         if (e.tool && settings.toolEdges === 'hidden') return false;
+        // Crafting category filter
+        if (activeCraftCats !== null && e.craftingCategory && !activeCraftCats.includes(e.craftingCategory)) return false;
         // Both source and target must pass category filter
         const src = nodeMap[e.source];
         const tgt = nodeMap[e.target];
@@ -1287,7 +1338,7 @@ function onNodeMouseOver(e) {
     // Group incoming by blueprintId
     const craftRecipes = {};
     for (const e of incoming) {
-        if (!craftRecipes[e.blueprintId]) craftRecipes[e.blueprintId] = { type: e.type, ingredients: [], workstations: e.workstations || [] };
+        if (!craftRecipes[e.blueprintId]) craftRecipes[e.blueprintId] = { type: e.type, ingredients: [], workstations: e.workstations || [], craftingCategory: e.craftingCategory || '' };
         const src = nodeMap[e.source];
         craftRecipes[e.blueprintId].ingredients.push(
             (e.quantity > 1 ? e.quantity + 'x ' : '') + (src ? src.name : '?') + (e.tool ? ' (tool)' : '')
@@ -1297,7 +1348,7 @@ function onNodeMouseOver(e) {
     // Group outgoing (salvage products etc) by blueprintId
     const outRecipes = {};
     for (const e of outgoing) {
-        if (!outRecipes[e.blueprintId]) outRecipes[e.blueprintId] = { type: e.type, products: [], workstations: e.workstations || [] };
+        if (!outRecipes[e.blueprintId]) outRecipes[e.blueprintId] = { type: e.type, products: [], workstations: e.workstations || [], craftingCategory: e.craftingCategory || '' };
         const tgt = nodeMap[e.target];
         outRecipes[e.blueprintId].products.push(
             (e.quantity > 1 ? e.quantity + 'x ' : '') + (tgt ? tgt.name : '?')
@@ -1308,7 +1359,9 @@ function onNodeMouseOver(e) {
 
     for (const bp of Object.values(craftRecipes)) {
         recipesHtml += `<div class="tt-recipe">`;
-        recipesHtml += `<span class="tt-recipe-type ${esc(bp.type)}">${esc(bp.type)}</span>: `;
+        recipesHtml += `<span class="tt-recipe-type ${esc(bp.type)}">${esc(bp.type)}</span>`;
+        if (bp.craftingCategory) recipesHtml += ` <span style="color:#888;font-size:0.72rem">[${esc(bp.craftingCategory)}]</span>`;
+        recipesHtml += `: `;
         recipesHtml += bp.ingredients.map(esc).join(' + ');
         recipesHtml += ` &rarr; ${esc(n.name)}`;
         if (bp.workstations.length) {
@@ -1319,7 +1372,9 @@ function onNodeMouseOver(e) {
 
     for (const bp of Object.values(outRecipes)) {
         recipesHtml += `<div class="tt-recipe">`;
-        recipesHtml += `<span class="tt-recipe-type ${esc(bp.type)}">${esc(bp.type)}</span>: `;
+        recipesHtml += `<span class="tt-recipe-type ${esc(bp.type)}">${esc(bp.type)}</span>`;
+        if (bp.craftingCategory) recipesHtml += ` <span style="color:#888;font-size:0.72rem">[${esc(bp.craftingCategory)}]</span>`;
+        recipesHtml += `: `;
         recipesHtml += `${esc(n.name)} &rarr; `;
         recipesHtml += bp.products.map(esc).join(' + ');
         if (bp.workstations.length) {
@@ -1408,6 +1463,9 @@ function onFiltersChanged() {
 
     const activeMaps = getActiveMaps();
     lsSet('maps', activeMaps);
+
+    const activeCraftCats = getActiveCraftingCategories();
+    lsSet('crafting-categories', activeCraftCats);
 
     // Re-render current view
     if (viewMode === 'graph') {
@@ -1768,13 +1826,7 @@ function wireEvents() {
     }
 }
 
-function debounce(fn, ms) {
-    let timer;
-    return (...args) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => fn(...args), ms);
-    };
-}
+// debounce is now provided by common.js
 
 // ── Init ────────────────────────────────────────────────────────────────────
 
@@ -1783,6 +1835,7 @@ async function init() {
         await loadData();
 
         buildCategoryFilters();
+        buildCraftingCategoryFilters();
         buildMapFilters();
         wireSettings();
         wireEvents();

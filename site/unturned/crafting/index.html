@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unturned Crafting Viewer</title>
+    <link rel="stylesheet" href="../css/common.css">
     <style>
         :root {
             --tooltip-font-size: 0.78rem;
@@ -861,6 +862,16 @@
                     </div>
                 </details>
 
+                <!-- Crafting Category Filters -->
+                <details class="sidebar-section" id="crafting-cat-section" style="display:none">
+                    <summary>Crafting Category</summary>
+                    <div class="section-body">
+                        <div class="filter-list" id="crafting-cat-filters">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </details>
+
                 <!-- Map Filters (shown when map data exists) -->
                 <details class="sidebar-section" id="map-filter-section" open style="display:none">
                     <summary>Map Filters</summary>
@@ -1089,6 +1100,7 @@
     <script src="https://unpkg.com/cytoscape@3.30.4/dist/cytoscape.min.js"></script>
     <script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
     <script src="https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
-    <script type="module" src="./crafting.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="./crafting.js"></script>
 </body>
 </html>
