@@ -88,7 +88,6 @@ function getSettings() {
         bpCraft: lsGet('bp-craft', true),
         bpSalvage: lsGet('bp-salvage', true),
         bpRepair: lsGet('bp-repair', true),
-        categories: lsGet('categories', null), // null = all
         nodeLabels: lsGet('node-labels', true),
         shapeByType: lsGet('shape-by-type', true),
         rarityGlow: lsGet('rarity-glow', true),
@@ -146,7 +145,6 @@ const $tooltip = document.getElementById('tooltip');
 const $itemList = document.getElementById('item-list');
 const $itemListSearch = document.getElementById('item-list-search');
 const $bpAll = document.getElementById('bp-all');
-const $categoryFilters = document.getElementById('category-filters');
 const $mapFilters = document.getElementById('map-filters');
 const $mapFilterSection = document.getElementById('map-filter-section');
 const $legend = document.getElementById('legend');
@@ -223,65 +221,7 @@ async function loadData() {
     }
 }
 
-// ── Category filter building ────────────────────────────────────────────────
-
-function buildCategoryFilters() {
-    const cats = new Set();
-    for (const n of rawData.nodes) {
-        if (n.category && n.category.length > 0) {
-            cats.add(n.category[0]);
-        }
-    }
-    // Items with no category get "Uncategorized"
-    const hasUncategorized = rawData.nodes.some(n => !n.category || n.category.length === 0);
-
-    const sorted = [...cats].sort();
-    if (hasUncategorized) sorted.push('Uncategorized');
-
-    const savedCats = lsGet('categories', null);
-
-    let html = '<label class="toggle-all-label"><input type="checkbox" id="cat-all" checked> All</label>';
-    for (const cat of sorted) {
-        const checked = savedCats === null || savedCats.includes(cat);
-        html += `<label><input type="checkbox" data-cat="${esc(cat)}" ${checked ? 'checked' : ''}> ${esc(cat)}</label>`;
-    }
-    $categoryFilters.innerHTML = html;
-
-    // Wire up All toggle
-    const $catAll = document.getElementById('cat-all');
-    $catAll.addEventListener('change', () => {
-        const boxes = $categoryFilters.querySelectorAll('input[data-cat]');
-        for (const b of boxes) b.checked = $catAll.checked;
-        onFiltersChanged();
-    });
-
-    // Wire individual category checkboxes
-    $categoryFilters.addEventListener('change', (e) => {
-        if (e.target.dataset.cat) {
-            updateCatAllState();
-            onFiltersChanged();
-        }
-    });
-}
-
-function updateCatAllState() {
-    const boxes = $categoryFilters.querySelectorAll('input[data-cat]');
-    const $catAll = document.getElementById('cat-all');
-    const allChecked = [...boxes].every(b => b.checked);
-    $catAll.checked = allChecked;
-}
-
-function getActiveCategories() {
-    const boxes = $categoryFilters.querySelectorAll('input[data-cat]');
-    if (boxes.length === 0) return null;
-    const active = [];
-    for (const b of boxes) {
-        if (b.checked) active.push(b.dataset.cat);
-    }
-    return active;
-}
-
-// ── Crafting category filter building ────────────────────────────────────────
+// ── Category filter building (crafting categories from blueprint tags) ───────
 
 function buildCraftingCategoryFilters() {
     const $section = document.getElementById('crafting-cat-section');
@@ -390,12 +330,6 @@ function getActiveBlueprintTypes() {
 
 // ── Filtering logic ─────────────────────────────────────────────────────────
 
-function nodePassesCategoryFilter(node, activeCats) {
-    if (activeCats === null) return true;
-    const cat = (node.category && node.category.length > 0) ? node.category[0] : 'Uncategorized';
-    return activeCats.includes(cat);
-}
-
 function nodePassesMapFilter(node, activeMaps) {
     if (activeMaps === null) return true; // No filter active
     if (!node.maps || node.maps.length === 0) return true; // No map data = always show
@@ -404,7 +338,6 @@ function nodePassesMapFilter(node, activeMaps) {
 
 function getVisibleEdges() {
     const bpTypes = getActiveBlueprintTypes();
-    const activeCats = getActiveCategories();
     const activeMaps = getActiveMaps();
     const activeCraftCats = getActiveCraftingCategories();
     const settings = getSettings();
@@ -416,12 +349,10 @@ function getVisibleEdges() {
         if (e.tool && settings.toolEdges === 'hidden') return false;
         // Crafting category filter
         if (activeCraftCats !== null && e.craftingCategory && !activeCraftCats.includes(e.craftingCategory)) return false;
-        // Both source and target must pass category filter
+        // Both source and target must pass map filter
         const src = nodeMap[e.source];
         const tgt = nodeMap[e.target];
         if (!src || !tgt) return false;
-        if (!nodePassesCategoryFilter(src, activeCats)) return false;
-        if (!nodePassesCategoryFilter(tgt, activeCats)) return false;
         if (!nodePassesMapFilter(src, activeMaps)) return false;
         if (!nodePassesMapFilter(tgt, activeMaps)) return false;
         return true;
@@ -1458,9 +1389,6 @@ function onFiltersChanged() {
     lsSet('bp-salvage', document.querySelector('input[data-bp="salvage"]').checked);
     lsSet('bp-repair', document.querySelector('input[data-bp="repair"]').checked);
 
-    const activeCats = getActiveCategories();
-    lsSet('categories', activeCats);
-
     const activeMaps = getActiveMaps();
     lsSet('maps', activeMaps);
 
@@ -1834,7 +1762,6 @@ async function init() {
     try {
         await loadData();
 
-        buildCategoryFilters();
         buildCraftingCategoryFilters();
         buildMapFilters();
         wireSettings();
