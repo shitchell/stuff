@@ -299,7 +299,7 @@ function getColumnsForPath(path, overrides, entries) {
 
 function resolveColumnValue(entry, colDef) {
   if (colDef.compute) return colDef.compute(entry);
-  if (colDef.expr) return null; // future
+  if (colDef.expr) return evaluateExpr(colDef.expr, entry);
   return getNestedValue(entry, colDef.key);
 }
 
@@ -310,6 +310,168 @@ function loadColumnOverrides() {
 
 function saveColumnOverrides(overrides) {
   localStorage.setItem('ut:catalog:columns', JSON.stringify(overrides));
+}
+
+// ── Expression Parser & Evaluator ───────────────────────────────────────────
+// Recursive descent parser for arithmetic expressions over entry fields.
+// Supports: +, -, *, /, %, parentheses, numeric literals, field references.
+// Field references are dot-separated paths (e.g. parsed.consumable.food).
+// Returns null for missing fields or errors (division by zero, etc).
+
+function tokenizeExpr(expr) {
+  const tokens = [];
+  let i = 0;
+  while (i < expr.length) {
+    if (/\s/.test(expr[i])) { i++; continue; }
+    if ('+-*/%()'.includes(expr[i])) {
+      tokens.push({ type: 'op', value: expr[i] });
+      i++;
+    } else if (/[0-9.]/.test(expr[i])) {
+      let num = '';
+      while (i < expr.length && /[0-9.]/.test(expr[i])) num += expr[i++];
+      tokens.push({ type: 'num', value: parseFloat(num) });
+    } else if (/[a-zA-Z_]/.test(expr[i])) {
+      let id = '';
+      while (i < expr.length && /[a-zA-Z0-9_.]/.test(expr[i])) id += expr[i++];
+      tokens.push({ type: 'field', value: id });
+    } else {
+      i++; // skip unknown
+    }
+  }
+  return tokens;
+}
+
+function parseExprTokens(tokens) {
+  let pos = 0;
+  function peek() { return pos < tokens.length ? tokens[pos] : null; }
+  function consume() { return tokens[pos++]; }
+
+  function parseAddSub() {
+    let node = parseMulDiv();
+    while (peek() && (peek().value === '+' || peek().value === '-')) {
+      const op = consume().value;
+      const right = parseMulDiv();
+      node = { type: 'binop', op, left: node, right };
+    }
+    return node;
+  }
+
+  function parseMulDiv() {
+    let node = parseUnary();
+    while (peek() && ('*/%'.includes(peek().value))) {
+      const op = consume().value;
+      const right = parseUnary();
+      node = { type: 'binop', op, left: node, right };
+    }
+    return node;
+  }
+
+  function parseUnary() {
+    if (peek() && peek().value === '-') {
+      consume();
+      const operand = parsePrimary();
+      return { type: 'binop', op: '*', left: { type: 'num', value: -1 }, right: operand };
+    }
+    return parsePrimary();
+  }
+
+  function parsePrimary() {
+    const t = peek();
+    if (!t) return { type: 'num', value: 0 };
+    if (t.type === 'num') { consume(); return { type: 'num', value: t.value }; }
+    if (t.type === 'field') { consume(); return { type: 'field', value: t.value }; }
+    if (t.value === '(') {
+      consume();
+      const node = parseAddSub();
+      if (peek() && peek().value === ')') consume();
+      return node;
+    }
+    consume();
+    return { type: 'num', value: 0 };
+  }
+
+  return parseAddSub();
+}
+
+function evalAST(node, entry) {
+  if (node.type === 'num') return node.value;
+  if (node.type === 'field') {
+    const v = getNestedValue(entry, node.value);
+    if (v == null) return null;
+    const n = typeof v === 'number' ? v : parseFloat(v);
+    return isNaN(n) ? null : n;
+  }
+  if (node.type === 'binop') {
+    const l = evalAST(node.left, entry);
+    const r = evalAST(node.right, entry);
+    if (l == null || r == null) return null;
+    switch (node.op) {
+      case '+': return l + r;
+      case '-': return l - r;
+      case '*': return l * r;
+      case '/': return r === 0 ? null : l / r;
+      case '%': return r === 0 ? null : l % r;
+    }
+  }
+  return null;
+}
+
+function evaluateExpr(expr, entry) {
+  try {
+    const tokens = tokenizeExpr(expr);
+    const ast = parseExprTokens(tokens);
+    const result = evalAST(ast, entry);
+    if (result == null || !isFinite(result)) return null;
+    return Math.round(result * 100) / 100; // 2 decimal places
+  } catch { return null; }
+}
+
+function extractExprFields(expr) {
+  return tokenizeExpr(expr).filter(t => t.type === 'field').map(t => t.value);
+}
+
+// ── Custom Column Definitions ───────────────────────────────────────────────
+
+const PRESET_CUSTOM_COLUMNS = [
+  { id: 'cc_capacity', label: 'Capacity', expr: 'parsed.storage.width * parsed.storage.height' },
+  { id: 'cc_food_water_ratio', label: 'Food:Water', expr: 'parsed.consumable.food / parsed.consumable.water' },
+  { id: 'cc_total_restore', label: 'Total Restore', expr: 'parsed.consumable.food + parsed.consumable.water + parsed.consumable.health' },
+];
+
+function loadCustomColumns() {
+  let userCols;
+  try { userCols = JSON.parse(localStorage.getItem('ut:catalog:customColumns')); } catch {}
+  if (!Array.isArray(userCols)) {
+    return PRESET_CUSTOM_COLUMNS.map(c => ({ ...c }));
+  }
+  const userIds = new Set(userCols.map(c => c.id));
+  const merged = [...userCols];
+  for (const preset of PRESET_CUSTOM_COLUMNS) {
+    if (!userIds.has(preset.id)) merged.push({ ...preset });
+  }
+  return merged;
+}
+
+function saveCustomColumns(cols) {
+  localStorage.setItem('ut:catalog:customColumns', JSON.stringify(cols));
+}
+
+function customColumnAvailable(customCol, entries) {
+  const fields = extractExprFields(customCol.expr);
+  if (fields.length === 0) return false;
+  return entries.some(e => fields.every(f => getNestedValue(e, f) != null));
+}
+
+function resolveExprFieldName(input) {
+  // Try exact key match
+  const exact = ALL_AVAILABLE_COLUMNS.find(c => c.key === input);
+  if (exact) return exact.key;
+  // Try case-insensitive label match
+  const lower = input.toLowerCase();
+  const byLabel = ALL_AVAILABLE_COLUMNS.find(c => c.label.toLowerCase() === lower);
+  if (byLabel) return byLabel.key;
+  // Return as-is (might be a valid nested path not in ALL_AVAILABLE_COLUMNS)
+  return input;
 }
 
 // ── Filter Engine ───────────────────────────────────────────────────────────
@@ -374,6 +536,7 @@ const IMPORTANT_COLUMNS = [
   { key: 'parsed.armor', label: 'Armor' },
   { key: 'parsed.storage.width', label: 'Width' },
   { key: 'parsed.storage.height', label: 'Height' },
+  { key: '_custom:cc_capacity', label: 'Capacity', expr: 'parsed.storage.width * parsed.storage.height' },
   { key: 'parsed.speed_max', label: 'Speed' },
   { key: 'parsed.health', label: 'Health (Structure)' },
   { key: 'parsed.fuel_capacity', label: 'Fuel Cap' },
@@ -466,9 +629,8 @@ const PRESET_TABLES = [
   {
     label: 'Containers',
     anyConditions: [
-      { field: 'type', operator: '=', value: 'Large' },
-      { field: 'type', operator: '=', value: 'Medium' },
-      { field: 'type', operator: '=', value: 'Small' },
+      { field: 'type', operator: '=', value: 'Storage' },
+      { field: 'type', operator: '=', value: 'Backpack' },
     ],
     allConditions: [],
     visible: true,
@@ -522,7 +684,7 @@ function detectColumnsForEntries(entries) {
   const result = [];
   for (const col of IMPORTANT_COLUMNS) {
     const hasValue = entries.some(e => {
-      const v = getNestedValue(e, col.key);
+      const v = col.expr ? evaluateExpr(col.expr, e) : getNestedValue(e, col.key);
       return v != null && v !== '' && v !== 0;
     });
     if (hasValue) result.push(col);

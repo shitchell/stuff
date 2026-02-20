@@ -138,17 +138,50 @@ Candidate important columns: name, type, rarity, description, size, player_damag
 - **Hiding != deleting**: Unchecking visibility keeps the definition and tab
   - Rationale: Rebuilding a filter from scratch is annoying. Hide/show is cheap.
 
-## Future Work
+## Custom Computed Columns
 
-### Custom Computed Columns
+### Overview
 
-The inline "+" column dropdown currently only lets users pick from known fields. A "Custom..." option at the top of the dropdown should open a mini modal for defining a computed column with:
+The inline "+" column dropdown includes a "Custom..." option that opens a modal for defining computed columns with a label and a math expression referencing entry fields.
 
-- **Label**: display name for the column header (e.g., "Food:Water Ratio")
-- **Expression**: a math expression referencing entry fields (e.g., `parsed.consumable.food / parsed.consumable.water`)
+### Storage
 
-This would need:
-- A safe expression parser/evaluator (no `eval`) that resolves field references and supports basic arithmetic (`+`, `-`, `*`, `/`, parentheses)
-- Error handling for division by zero, missing fields, non-numeric values
-- Persistence in per-table column config (stored alongside regular column defs, distinguished by a `compute` or `expr` property)
-- The existing `resolveColumnValue` already has a `colDef.expr` branch stubbed out (`if (colDef.expr) return null; // future`) — this is where evaluation would hook in
+- **Global definitions**: `ut:catalog:customColumns` in localStorage — an array of `{ id, label, expr }` where `expr` uses full field paths (resolved at definition time)
+- **Per-table column config**: custom columns stored as `{ key: "_custom:<id>", label, expr }` alongside regular column defs
+
+### Expression Language
+
+Supported:
+- **Field references**: full paths (`parsed.consumable.food`) or short labels (`Food`, `Water`) resolved to full paths via autocomplete at definition time
+- **Operators**: `+`, `-`, `*`, `/`, `%`
+- **Parentheses**: `(food + water) / health`
+- **Literal numbers**: `food * 1.5`, `health - 100`
+
+Not supported (YAGNI): functions, conditionals, string operations.
+
+### Expression Parser
+
+Recursive descent parser for arithmetic expressions. Tokenizes into numbers, field refs (dot-separated identifiers), and operators. Standard precedence: `*`/`/`/`%` before `+`/`-`. No `eval()`. Returns `null` for missing fields, division by zero.
+
+### Field Resolution
+
+Stored expressions always use full paths. The autocomplete in the expression input resolves short names at definition time:
+1. Exact match on `ALL_AVAILABLE_COLUMNS` keys
+2. Case-insensitive match on column labels
+3. Shown in autocomplete for user to pick
+
+### Availability
+
+Custom columns appear in a table's add-column dropdown only if at least one entry in that table has non-null values for ALL field refs in the expression. Check: `entries.some(e => fieldRefs.every(f => getNestedValue(e, f) != null))`.
+
+### UI
+
+"Custom..." option at top of inline add-column dropdown. Opens a modal with:
+- **Label** text input
+- **Expression** text input with field autocomplete (triggered by typing)
+- **Preview** showing computed values for a few sample rows from the active table
+- **Save/Cancel** buttons
+
+### Integration
+
+`resolveColumnValue` already has an `expr` branch stub. Custom columns hook in there — parse the expression, evaluate against the entry, return the numeric result.

@@ -14,6 +14,8 @@ let mapDataCache = {};        // mapName -> { map, entries?, assets? }
 let mapFilterIds = null;      // Set of entry IDs, or null (show all)
 let manifest = null;
 let modalState = null;        // { editIndex: number|null, anyConditions: [], allConditions: [] }
+let customColumns = loadCustomColumns();
+let colModalState = null;     // { tableKey: string, editId: string|null }
 
 // Load persisted state
 try { collapsedSections = JSON.parse(localStorage.getItem('ut:catalog:collapsed') || '{}'); } catch {}
@@ -82,9 +84,10 @@ function describeTableFilter(def) {
 function buildTableHTML(entries, columns, sortKey, sortDir, tableKey) {
   let sorted = [...entries];
   if (sortKey) {
+    const sortCol = columns.find(c => c.key === sortKey) || { key: sortKey };
     sorted.sort((a, b) => {
-      let va = resolveColumnValue(a, { key: sortKey });
-      let vb = resolveColumnValue(b, { key: sortKey });
+      let va = resolveColumnValue(a, sortCol);
+      let vb = resolveColumnValue(b, sortCol);
       if (va == null) va = '';
       if (vb == null) vb = '';
       if (typeof va === 'number' && typeof vb === 'number') return (va - vb) * sortDir;
@@ -168,6 +171,42 @@ function onInlineColDrop(e, tableKey, idx) {
 }
 function onInlineColDragEnd(e) { e.target.classList.remove('dragging'); inlineColDragState = null; }
 
+function getAvailableCustomColumns(tableKey) {
+  const label = getTableLabel(tableKey);
+  const def = tableDefs.find(d => d.label === label);
+  if (!def) return [];
+  const entries = filterEntriesByTable(filteredEntries, def);
+  return customColumns.filter(cc => customColumnAvailable(cc, entries));
+}
+
+function buildDropdownOptions(tableKey, query) {
+  const currentCols = new Set(getTableColumns(tableKey).map(c => c.key));
+  const q = (query || '').toLowerCase();
+
+  // "Custom..." always first
+  let html = `<div class="inline-col-option inline-col-custom" onclick="openColModal('${escapeHtml(tableKey)}')">Custom... <span class="ac-key">define expression</span></div>`;
+
+  // Available custom columns
+  const customs = getAvailableCustomColumns(tableKey).filter(cc =>
+    !currentCols.has(`_custom:${cc.id}`) &&
+    (!q || cc.label.toLowerCase().includes(q) || cc.expr.toLowerCase().includes(q))
+  );
+  if (customs.length > 0) {
+    html += customs.map(cc =>
+      `<div class="inline-col-option" onclick="addInlineColumn('${escapeHtml(tableKey)}','_custom:${escapeHtml(cc.id)}','${escapeHtml(cc.label)}')">${escapeHtml(cc.label)} <span class="ac-key">${escapeHtml(cc.expr)}</span></div>`
+    ).join('');
+  }
+
+  // Standard columns
+  const matches = ALL_AVAILABLE_COLUMNS.filter(c => !currentCols.has(c.key) &&
+    (!q || c.label.toLowerCase().includes(q) || c.key.toLowerCase().includes(q)));
+  html += matches.slice(0, 15).map(c =>
+    `<div class="inline-col-option" onclick="addInlineColumn('${escapeHtml(tableKey)}','${escapeHtml(c.key)}','${escapeHtml(c.label)}')">${escapeHtml(c.label)} <span class="ac-key">${escapeHtml(c.key)}</span></div>`
+  ).join('');
+
+  return html;
+}
+
 function showInlineAddColumn(event, tableKey) {
   event.stopPropagation();
   const existing = document.querySelector('.inline-col-dropdown');
@@ -175,8 +214,6 @@ function showInlineAddColumn(event, tableKey) {
 
   const btn = event.target;
   const rect = btn.getBoundingClientRect();
-  const currentCols = new Set(getTableColumns(tableKey).map(c => c.key));
-  const available = ALL_AVAILABLE_COLUMNS.filter(c => !currentCols.has(c.key));
 
   const dropdown = document.createElement('div');
   dropdown.className = 'inline-col-dropdown';
@@ -185,9 +222,7 @@ function showInlineAddColumn(event, tableKey) {
 
   dropdown.innerHTML = `
     <input type="text" class="inline-col-search" placeholder="Search columns..." oninput="filterInlineColDropdown(this, '${escapeHtml(tableKey)}')">
-    <div class="inline-col-options">${available.slice(0, 15).map(c =>
-      `<div class="inline-col-option" onclick="addInlineColumn('${escapeHtml(tableKey)}','${escapeHtml(c.key)}','${escapeHtml(c.label)}')">${escapeHtml(c.label)} <span class="ac-key">${escapeHtml(c.key)}</span></div>`
-    ).join('')}</div>`;
+    <div class="inline-col-options">${buildDropdownOptions(tableKey, '')}</div>`;
 
   document.body.appendChild(dropdown);
   dropdown.querySelector('.inline-col-search').focus();
@@ -201,17 +236,21 @@ function showInlineAddColumn(event, tableKey) {
 }
 
 function filterInlineColDropdown(input, tableKey) {
-  const q = input.value.toLowerCase();
-  const currentCols = new Set(getTableColumns(tableKey).map(c => c.key));
-  const matches = ALL_AVAILABLE_COLUMNS.filter(c => !currentCols.has(c.key) &&
-    (c.label.toLowerCase().includes(q) || c.key.toLowerCase().includes(q)));
-  input.parentElement.querySelector('.inline-col-options').innerHTML = matches.slice(0, 15).map(c =>
-    `<div class="inline-col-option" onclick="addInlineColumn('${escapeHtml(tableKey)}','${escapeHtml(c.key)}','${escapeHtml(c.label)}')">${escapeHtml(c.label)} <span class="ac-key">${escapeHtml(c.key)}</span></div>`
-  ).join('');
+  input.parentElement.querySelector('.inline-col-options').innerHTML = buildDropdownOptions(tableKey, input.value);
 }
 
 function addInlineColumn(tableKey, key, label) {
-  const columns = [...getTableColumns(tableKey), { key, label }];
+  const columns = [...getTableColumns(tableKey)];
+  // For custom columns, also store the expr
+  if (key.startsWith('_custom:')) {
+    const id = key.substring(8);
+    const cc = customColumns.find(c => c.id === id);
+    if (cc) {
+      columns.push({ key, label: cc.label, expr: cc.expr });
+    }
+  } else {
+    columns.push({ key, label });
+  }
   setTableColumns(tableKey, columns);
   const dropdown = document.querySelector('.inline-col-dropdown');
   if (dropdown) dropdown.remove();
@@ -538,6 +577,166 @@ function saveModal() {
 
   saveTableDefs(tableDefs);
   closeModal();
+  render();
+}
+
+// ── Custom Column Modal ──────────────────────────────────────────────────────
+
+function openColModal(tableKey, editId) {
+  colModalState = { tableKey, editId: editId || null };
+  const overlay = document.getElementById('col-modal-overlay');
+  const titleEl = document.getElementById('col-modal-title');
+  const labelInput = document.getElementById('col-modal-label');
+  const exprInput = document.getElementById('col-modal-expr');
+
+  // Close the add-column dropdown if open
+  const dropdown = document.querySelector('.inline-col-dropdown');
+  if (dropdown) dropdown.remove();
+
+  if (editId) {
+    const cc = customColumns.find(c => c.id === editId);
+    if (cc) {
+      titleEl.textContent = 'Edit Custom Column';
+      labelInput.value = cc.label;
+      exprInput.value = cc.expr;
+    }
+  } else {
+    titleEl.textContent = 'Custom Column';
+    labelInput.value = '';
+    exprInput.value = '';
+  }
+
+  updateColModalPreview();
+  overlay.style.display = 'flex';
+  labelInput.focus();
+}
+
+function closeColModal() {
+  document.getElementById('col-modal-overlay').style.display = 'none';
+  document.getElementById('expr-autocomplete').classList.remove('open');
+  colModalState = null;
+}
+
+function onExprInput(input) {
+  updateExprAutocomplete(input);
+  updateColModalPreview();
+}
+
+function updateExprAutocomplete(input) {
+  const ac = document.getElementById('expr-autocomplete');
+  const val = input.value;
+  const cursor = input.selectionStart;
+
+  // Find the current token being typed (last word-like segment before cursor)
+  const before = val.substring(0, cursor);
+  const match = before.match(/([a-zA-Z_][a-zA-Z0-9_.]*)?$/);
+  const partial = match ? match[1] || '' : '';
+
+  if (partial.length < 1) {
+    ac.classList.remove('open');
+    return;
+  }
+
+  const lower = partial.toLowerCase();
+  const matches = ALL_AVAILABLE_COLUMNS.filter(c =>
+    c.label.toLowerCase().includes(lower) || c.key.toLowerCase().includes(lower)
+  ).slice(0, 8);
+
+  if (matches.length === 0) {
+    ac.classList.remove('open');
+    return;
+  }
+
+  ac.innerHTML = matches.map(c =>
+    `<div class="expr-ac-item" onmousedown="insertExprField(event, '${escapeHtml(c.key)}')">${escapeHtml(c.label)} <span class="ac-key">${escapeHtml(c.key)}</span></div>`
+  ).join('');
+  ac.classList.add('open');
+}
+
+function insertExprField(event, fieldKey) {
+  event.preventDefault();
+  const input = document.getElementById('col-modal-expr');
+  const val = input.value;
+  const cursor = input.selectionStart;
+
+  // Find and replace the partial token before cursor
+  const before = val.substring(0, cursor);
+  const after = val.substring(cursor);
+  const match = before.match(/([a-zA-Z_][a-zA-Z0-9_.]*)?$/);
+  const start = match ? cursor - (match[1] || '').length : cursor;
+
+  input.value = val.substring(0, start) + fieldKey + after;
+  const newCursor = start + fieldKey.length;
+  input.selectionStart = input.selectionEnd = newCursor;
+  input.focus();
+
+  document.getElementById('expr-autocomplete').classList.remove('open');
+  updateColModalPreview();
+}
+
+function updateColModalPreview() {
+  const preview = document.getElementById('col-modal-preview');
+  const expr = document.getElementById('col-modal-expr').value.trim();
+
+  if (!expr) {
+    preview.innerHTML = '<div class="preview-label">Preview — enter an expression</div>';
+    return;
+  }
+
+  // Get sample entries from the active table
+  let sampleEntries = filteredEntries;
+  if (colModalState && colModalState.tableKey) {
+    const label = getTableLabel(colModalState.tableKey);
+    const def = tableDefs.find(d => d.label === label);
+    if (def) sampleEntries = filterEntriesByTable(filteredEntries, def);
+  }
+
+  // Pick up to 5 entries that have at least some fields in the expression
+  const fields = extractExprFields(expr);
+  const relevant = sampleEntries.filter(e =>
+    fields.some(f => getNestedValue(e, f) != null)
+  ).slice(0, 5);
+
+  if (relevant.length === 0) {
+    preview.innerHTML = '<div class="preview-label">No matching entries found for these fields</div>';
+    return;
+  }
+
+  const rows = relevant.map(e => {
+    const val = evaluateExpr(expr, e);
+    const valStr = val != null ? String(val) : '—';
+    const cls = val != null ? 'preview-val' : 'preview-err';
+    return `<div class="col-preview-row"><span class="preview-name">${escapeHtml(e.name)}</span><span class="${cls}">${escapeHtml(valStr)}</span></div>`;
+  }).join('');
+
+  preview.innerHTML = `<div class="preview-label">Preview</div>${rows}`;
+}
+
+function saveColModal() {
+  const label = document.getElementById('col-modal-label').value.trim();
+  const expr = document.getElementById('col-modal-expr').value.trim();
+
+  if (!label) { document.getElementById('col-modal-label').focus(); return; }
+  if (!expr) { document.getElementById('col-modal-expr').focus(); return; }
+
+  if (colModalState.editId) {
+    // Update existing
+    const cc = customColumns.find(c => c.id === colModalState.editId);
+    if (cc) { cc.label = label; cc.expr = expr; }
+  } else {
+    // Create new
+    const id = `cc_${Date.now()}`;
+    customColumns.push({ id, label, expr });
+
+    // Auto-add to the table that triggered the modal
+    if (colModalState.tableKey) {
+      const columns = [...getTableColumns(colModalState.tableKey), { key: `_custom:${id}`, label, expr }];
+      setTableColumns(colModalState.tableKey, columns);
+    }
+  }
+
+  saveCustomColumns(customColumns);
+  closeColModal();
   render();
 }
 
