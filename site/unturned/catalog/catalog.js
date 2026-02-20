@@ -3,6 +3,7 @@
 // ── State ───────────────────────────────────────────────────────────────────
 
 let allEntries = [];
+let filteredEntries = [];
 let currentPath = [];
 let activeTab = null;
 let sortState = {};         // pathKey -> { col, dir }
@@ -12,15 +13,21 @@ let colEditTarget = null;
 let hiddenTables = {};
 let collapsedSections = {};
 let columnOverrides = loadColumnOverrides();
+let selectedMaps = {};      // mapName -> true
+let mapDataCache = {};      // mapName -> { map, entries?, assets? }
+let mapFilterIds = null;    // Set of entry IDs, or null (show all)
+let manifest = null;
 
 // Load persisted state
 try { hiddenTables = JSON.parse(localStorage.getItem('ut:catalog:hidden') || '{}'); } catch {}
 try { collapsedSections = JSON.parse(localStorage.getItem('ut:catalog:collapsed') || '{}'); } catch {}
+try { selectedMaps = JSON.parse(localStorage.getItem('ut:catalog:maps') || '{}'); } catch {}
 
 function saveState() {
   saveColumnOverrides(columnOverrides);
   localStorage.setItem('ut:catalog:hidden', JSON.stringify(hiddenTables));
   localStorage.setItem('ut:catalog:collapsed', JSON.stringify(collapsedSections));
+  localStorage.setItem('ut:catalog:maps', JSON.stringify(selectedMaps));
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -29,7 +36,7 @@ function pk(path) { return path.join('/'); }
 function isOverviewMode() { return currentPath.length === 0; }
 
 function getEntriesAtPath(path) {
-  return allEntries.filter(e => pathStartsWith(e.category || [], path));
+  return filteredEntries.filter(e => pathStartsWith(e.category || [], path));
 }
 
 function getSubcategories(path, entries) {
@@ -46,7 +53,7 @@ function getSubcategories(path, entries) {
 
 function getTopLevelCategories() {
   const cats = new Map();
-  for (const e of allEntries) {
+  for (const e of filteredEntries) {
     if ((e.category || []).length > 0) {
       const c = e.category[0];
       cats.set(c, (cats.get(c) || 0) + 1);
@@ -135,7 +142,7 @@ function renderTabs() {
   const tabsEl = document.getElementById('tabs');
   const cats = getTopLevelCategories();
   const allTab = `<div class="tab all-tab ${isOverviewMode() ? 'active' : ''}" onclick="navigate([])">
-    All<span class="count">${allEntries.length}</span></div>`;
+    All<span class="count">${filteredEntries.length}</span></div>`;
   const catTabs = cats.map(([name, count]) => `
     <div class="tab ${activeTab === name ? 'active' : ''}" onclick="navigate(['${escapeHtml(name)}'])">
       ${escapeHtml(name)}<span class="count">${count}</span>
@@ -173,11 +180,80 @@ function renderCategoryToggles() {
   `).join('');
 }
 
-function renderMapFilters(manifest) {
+function renderMapFilters() {
   const el = document.getElementById('map-filters');
+  if (!manifest) return;
   const maps = Object.keys(manifest.maps).sort();
-  el.innerHTML = '<label><input type="checkbox" checked disabled> All Maps</label>' +
-    maps.map(m => `<label><input type="checkbox" checked disabled> ${escapeHtml(m)}</label>`).join('');
+  const anySelected = maps.some(m => selectedMaps[m]);
+  const allSelected = anySelected && maps.every(m => selectedMaps[m]);
+
+  el.innerHTML = `<label><input type="checkbox"
+    ${allSelected ? 'checked' : ''}
+    onchange="toggleAllMaps(this.checked)"> All Maps</label>` +
+    maps.map(m => `<label><input type="checkbox"
+      ${selectedMaps[m] ? 'checked' : ''}
+      onchange="toggleMapFilter('${escapeHtml(m)}', this.checked)"> ${escapeHtml(m)}</label>`).join('');
+}
+
+async function toggleAllMaps(checked) {
+  if (!manifest) return;
+  const maps = Object.keys(manifest.maps);
+  if (checked) {
+    for (const m of maps) selectedMaps[m] = true;
+  } else {
+    selectedMaps = {};
+  }
+  saveState();
+  await applyMapFilter();
+}
+
+async function toggleMapFilter(mapName, checked) {
+  if (checked) selectedMaps[mapName] = true;
+  else delete selectedMaps[mapName];
+  saveState();
+  await applyMapFilter();
+}
+
+async function applyMapFilter() {
+  const selected = Object.keys(selectedMaps).filter(m => selectedMaps[m]);
+
+  if (selected.length === 0) {
+    // No maps selected: show all entries
+    mapFilterIds = null;
+    filteredEntries = allEntries;
+  } else {
+    // Build set of IDs available on any selected map
+    const ids = new Set();
+
+    for (const mapName of selected) {
+      // Load map data (cached by dataLoader)
+      if (!mapDataCache[mapName]) {
+        mapDataCache[mapName] = await dataLoader.getMapData(mapName);
+      }
+      const md = mapDataCache[mapName];
+      if (!md) continue;
+
+      // Add spawnable IDs
+      const spawnable = getSpawnableIds(md);
+      if (spawnable) {
+        for (const id of spawnable) ids.add(id);
+      }
+
+      // Add map-specific entry IDs (for maps with has_custom_entries)
+      const mapInfo = manifest.maps[mapName];
+      if (mapInfo && mapInfo.has_custom_entries && md.entries) {
+        for (const entry of md.entries) {
+          ids.add(entry.id);
+        }
+      }
+    }
+
+    mapFilterIds = ids;
+    filteredEntries = allEntries.filter(e => ids.has(e.id));
+  }
+
+  renderMapFilters();
+  render();
 }
 
 function renderOverviewMode() {
@@ -447,11 +523,18 @@ window.addEventListener('hashchange', () => {
 
 async function init() {
   try {
-    const manifest = await dataLoader.getManifest();
+    manifest = await dataLoader.getManifest();
     allEntries = await dataLoader.getBaseEntries();
-    renderMapFilters(manifest);
+    filteredEntries = allEntries;
+    renderMapFilters();
     parseHash();
-    render();
+    // Apply persisted map filter if any maps were selected
+    const hasPersistedMaps = Object.keys(selectedMaps).some(m => selectedMaps[m]);
+    if (hasPersistedMaps) {
+      await applyMapFilter();
+    } else {
+      render();
+    }
   } catch (err) {
     document.getElementById('content').innerHTML =
       `<div style="text-align:center;padding:2rem;color:#e34f4f;">Failed to load data: ${escapeHtml(err.message)}</div>`;
