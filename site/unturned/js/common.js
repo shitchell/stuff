@@ -374,6 +374,7 @@ function applyCraftingBlacklists(graph, mapData, mapGraph) {
   if (!mapData?.map?.crafting_blacklists) return graph;
 
   const blacklists = mapData.map.crafting_blacklists;
+  console.log('[MAP-FILTER] applyCraftingBlacklists: processing', blacklists.length, 'blacklist(s)');
 
   // Collect all blocked blueprint IDs and blocked source/target GUIDs
   let blockAllCore = false;
@@ -383,6 +384,7 @@ function applyCraftingBlacklists(graph, mapData, mapGraph) {
   for (const bl of blacklists) {
     if (bl.allow_core_blueprints === false) {
       blockAllCore = true;
+      console.log('[MAP-FILTER] applyCraftingBlacklists: blockAllCore = true (allow_core_blueprints: false)');
     }
     for (const guid of (bl.blocked_input_guids || [])) {
       blockedInputGuids.add(guid);
@@ -392,15 +394,23 @@ function applyCraftingBlacklists(graph, mapData, mapGraph) {
     }
   }
 
+  console.log('[MAP-FILTER] applyCraftingBlacklists: blockAllCore:', blockAllCore,
+    ', blockedInputGuids:', blockedInputGuids.size,
+    ', blockedOutputGuids:', blockedOutputGuids.size);
+
   // Build a set of blueprint IDs from the map's own graph (if provided)
   const mapBlueprintIds = new Set();
   if (mapGraph) {
     for (const e of mapGraph.edges) {
       mapBlueprintIds.add(e.blueprintId);
     }
+    console.log('[MAP-FILTER] applyCraftingBlacklists: mapBlueprintIds count:', mapBlueprintIds.size,
+      ', sample IDs:', [...mapBlueprintIds].slice(0, 5));
+  } else {
+    console.log('[MAP-FILTER] applyCraftingBlacklists: no map graph provided');
   }
 
-  // Filter edges
+  // Filter edges from the base graph
   const filteredEdges = graph.edges.filter(e => {
     // If core blueprints are blocked, only keep edges from the map's own blueprints
     if (blockAllCore && !mapBlueprintIds.has(e.blueprintId)) {
@@ -413,6 +423,24 @@ function applyCraftingBlacklists(graph, mapData, mapGraph) {
     return true;
   });
 
+  console.log('[MAP-FILTER] applyCraftingBlacklists: after base graph filtering:', filteredEdges.length, 'edges remain (from', graph.edges.length, ')');
+
+  // If core blueprints are blocked and the map has its own graph, merge map edges in
+  // (these replace the blocked core edges with map-specific ones)
+  if (blockAllCore && mapGraph) {
+    let mapEdgesAdded = 0;
+    for (const e of mapGraph.edges) {
+      // Apply blocked input/output filters to map edges too
+      if (blockedInputGuids.has(e.source)) continue;
+      if (blockedOutputGuids.has(e.target)) continue;
+      filteredEdges.push(e);
+      mapEdgesAdded++;
+    }
+    console.log('[MAP-FILTER] applyCraftingBlacklists: merged', mapEdgesAdded, 'map-specific edges (from', mapGraph.edges.length, 'total map edges)');
+  }
+
+  console.log('[MAP-FILTER] applyCraftingBlacklists: final edge count:', filteredEdges.length);
+
   // Collect node IDs still referenced by remaining edges
   const referencedIds = new Set();
   for (const e of filteredEdges) {
@@ -420,8 +448,22 @@ function applyCraftingBlacklists(graph, mapData, mapGraph) {
     referencedIds.add(e.target);
   }
 
+  // Build a combined node pool (base graph nodes + map graph nodes for deduplication)
+  const nodeById = {};
+  for (const n of graph.nodes) {
+    nodeById[n.id] = n;
+  }
+  if (mapGraph) {
+    for (const n of mapGraph.nodes) {
+      if (!nodeById[n.id]) nodeById[n.id] = n;
+    }
+  }
+
   // Filter nodes to only those still referenced
-  const filteredNodes = graph.nodes.filter(n => referencedIds.has(n.id));
+  const filteredNodes = [];
+  for (const id of referencedIds) {
+    if (nodeById[id]) filteredNodes.push(nodeById[id]);
+  }
 
   // Rebuild blueprint groups
   const filteredBlueprintGroups = {};
@@ -493,12 +535,13 @@ function parseBlueprintRef(ref, ownerGuid, guidIndex) {
   return null;
 }
 
-function buildCraftingGraph(entries, guidIndex, assets) {
+function buildCraftingGraph(entries, guidIndex, assets, blueprintPrefix) {
   const nodes = [];
   const edges = [];
   const nodeSet = new Set();
   const craftingCategories = new Set();
   let bpCounter = 0;
+  const bpPrefix = blueprintPrefix || 'bp';
 
   function ensureNode(guid) {
     if (nodeSet.has(guid)) return true;
@@ -529,7 +572,7 @@ function buildCraftingGraph(entries, guidIndex, assets) {
     for (const bp of entry.blueprints) {
       if (bp.operation === 'FillTargetItem' || bp.operation === 'RepairTargetItem') continue;
 
-      const blueprintId = `bp-${bpCounter++}`;
+      const blueprintId = `${bpPrefix}-${bpCounter++}`;
       const bpName = (bp.name || '').toLowerCase();
       const craftingCategory = CRAFTING_CATEGORIES[bp.category_tag] || '';
       if (craftingCategory) craftingCategories.add(craftingCategory);

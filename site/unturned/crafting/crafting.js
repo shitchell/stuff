@@ -322,7 +322,9 @@ function getActiveMaps() {
     for (const b of boxes) {
         if (b.checked) active.push(b.dataset.map);
     }
-    return active.length > 0 ? active : null; // null = no filter (show all)
+    const result = active.length > 0 ? active : null;
+    console.log('[MAP-FILTER] getActiveMaps:', result);
+    return result; // null = no filter (show all)
 }
 
 function getActiveBlueprintTypes() {
@@ -345,7 +347,9 @@ function getVisibleEdges() {
     const sourceEdges = mapFilteredGraph ? mapFilteredGraph.edges : rawData.edges;
     const sourceNodeMap = mapFilteredGraph ? mapFilteredNodeMap : nodeMap;
 
-    return sourceEdges.filter(e => {
+    console.log('[MAP-FILTER] getVisibleEdges: using', mapFilteredGraph ? 'FILTERED' : 'RAW', 'graph,', sourceEdges.length, 'source edges');
+
+    const result = sourceEdges.filter(e => {
         // Blueprint type filter
         if (!bpTypes.includes(e.type)) return false;
         // Tool edge visibility
@@ -356,6 +360,9 @@ function getVisibleEdges() {
         if (!sourceNodeMap[e.source] || !sourceNodeMap[e.target]) return false;
         return true;
     });
+
+    console.log('[MAP-FILTER] getVisibleEdges: returning', result.length, 'visible edges');
+    return result;
 }
 
 function getVisibleNodeIds(visibleEdges) {
@@ -1395,7 +1402,10 @@ function applySearch() {
 // ── Map blacklist computation ────────────────────────────────────────────────
 
 async function computeMapBlacklist(activeMaps) {
+    console.log('[MAP-FILTER] computeMapBlacklist called, activeMaps:', activeMaps);
+
     if (!activeMaps || activeMaps.length === 0) {
+        console.log('[MAP-FILTER] No active maps, clearing map filter state');
         mapFilteredGraph = null;
         mapFilteredNodeMap = null;
         mapFilteredEdgesByTarget = null;
@@ -1410,21 +1420,33 @@ async function computeMapBlacklist(activeMaps) {
         blueprintGroups,
         craftingCategories: craftingCategoryList,
     };
+    console.log('[MAP-FILTER] Starting with base graph:', currentGraph.nodes.length, 'nodes,', currentGraph.edges.length, 'edges');
 
     // Apply each selected map's blacklists
     for (const mapName of activeMaps) {
         const mapData = await dataLoader.getMapData(mapName);
+        console.log('[MAP-FILTER] Loaded map data for', mapName, ':', mapData ? 'OK' : 'FAILED');
         if (!mapData) continue;
-        if (!mapData.map?.crafting_blacklists || mapData.map.crafting_blacklists.length === 0) continue;
+
+        console.log('[MAP-FILTER] Map crafting_blacklists:', mapData.map?.crafting_blacklists);
+        if (!mapData.map?.crafting_blacklists || mapData.map.crafting_blacklists.length === 0) {
+            console.log('[MAP-FILTER] No crafting_blacklists for', mapName, ', skipping');
+            continue;
+        }
 
         // If the map has its own entries with blueprints, build a graph from them
         let mapGraph = null;
         if (mapData.entries && mapData.entries.length > 0) {
             const guidIndex = await dataLoader.getGuidIndex();
-            mapGraph = buildCraftingGraph(mapData.entries, guidIndex, mapData.assets || {});
+            mapGraph = buildCraftingGraph(mapData.entries, guidIndex, mapData.assets || {}, `map-${mapName}-bp`);
+            console.log('[MAP-FILTER] Built map graph for', mapName, ':', mapGraph.nodes.length, 'nodes,', mapGraph.edges.length, 'edges');
+        } else {
+            console.log('[MAP-FILTER] No entries for', mapName, ', no map graph built');
         }
 
+        const beforeEdges = currentGraph.edges.length;
         currentGraph = applyCraftingBlacklists(currentGraph, mapData, mapGraph);
+        console.log('[MAP-FILTER] After applyCraftingBlacklists for', mapName, ':', currentGraph.nodes.length, 'nodes,', currentGraph.edges.length, 'edges (was', beforeEdges, 'edges)');
     }
 
     // Store the filtered result
@@ -1441,11 +1463,14 @@ async function computeMapBlacklist(activeMaps) {
         if (!mapFilteredEdgesBySource[e.source]) mapFilteredEdgesBySource[e.source] = [];
         mapFilteredEdgesBySource[e.source].push(e);
     }
+    console.log('[MAP-FILTER] Final filtered graph stored:', currentGraph.nodes.length, 'nodes,', currentGraph.edges.length, 'edges');
 }
 
 // ── Filter change handler ───────────────────────────────────────────────────
 
 async function onFiltersChanged() {
+    console.log('[MAP-FILTER] onFiltersChanged called');
+
     // Save filter state
     lsSet('bp-craft', document.querySelector('input[data-bp="craft"]').checked);
     lsSet('bp-salvage', document.querySelector('input[data-bp="salvage"]').checked);
@@ -1453,12 +1478,14 @@ async function onFiltersChanged() {
 
     const activeMaps = getActiveMaps();
     lsSet('maps', activeMaps);
+    console.log('[MAP-FILTER] onFiltersChanged: activeMaps =', activeMaps);
 
     const activeCraftCats = getActiveCraftingCategories();
     lsSet('crafting-categories', activeCraftCats);
 
     // Compute map blacklist (async - loads map data if needed)
     await computeMapBlacklist(activeMaps);
+    console.log('[MAP-FILTER] onFiltersChanged: computeMapBlacklist done, mapFilteredGraph =', mapFilteredGraph ? 'SET (' + mapFilteredGraph.edges.length + ' edges)' : 'null');
 
     // Re-render current view
     if (viewMode === 'graph') {
