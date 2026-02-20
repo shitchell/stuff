@@ -370,10 +370,78 @@ function isAvailableOnMap(entry, mapData, mapEntryIds) {
   return false;
 }
 
-function applyCraftingBlacklists(graph, mapData) {
+function applyCraftingBlacklists(graph, mapData, mapGraph) {
   if (!mapData?.map?.crafting_blacklists) return graph;
-  // Detailed implementation deferred to crafting page integration
-  return graph;
+
+  const blacklists = mapData.map.crafting_blacklists;
+
+  // Collect all blocked blueprint IDs and blocked source/target GUIDs
+  let blockAllCore = false;
+  const blockedInputGuids = new Set();
+  const blockedOutputGuids = new Set();
+
+  for (const bl of blacklists) {
+    if (bl.allow_core_blueprints === false) {
+      blockAllCore = true;
+    }
+    for (const guid of (bl.blocked_input_guids || [])) {
+      blockedInputGuids.add(guid);
+    }
+    for (const guid of (bl.blocked_output_guids || [])) {
+      blockedOutputGuids.add(guid);
+    }
+  }
+
+  // Build a set of blueprint IDs from the map's own graph (if provided)
+  const mapBlueprintIds = new Set();
+  if (mapGraph) {
+    for (const e of mapGraph.edges) {
+      mapBlueprintIds.add(e.blueprintId);
+    }
+  }
+
+  // Filter edges
+  const filteredEdges = graph.edges.filter(e => {
+    // If core blueprints are blocked, only keep edges from the map's own blueprints
+    if (blockAllCore && !mapBlueprintIds.has(e.blueprintId)) {
+      return false;
+    }
+    // Check blocked inputs (source GUIDs)
+    if (blockedInputGuids.has(e.source)) return false;
+    // Check blocked outputs (target GUIDs)
+    if (blockedOutputGuids.has(e.target)) return false;
+    return true;
+  });
+
+  // Collect node IDs still referenced by remaining edges
+  const referencedIds = new Set();
+  for (const e of filteredEdges) {
+    referencedIds.add(e.source);
+    referencedIds.add(e.target);
+  }
+
+  // Filter nodes to only those still referenced
+  const filteredNodes = graph.nodes.filter(n => referencedIds.has(n.id));
+
+  // Rebuild blueprint groups
+  const filteredBlueprintGroups = {};
+  for (const e of filteredEdges) {
+    if (!filteredBlueprintGroups[e.blueprintId]) filteredBlueprintGroups[e.blueprintId] = [];
+    filteredBlueprintGroups[e.blueprintId].push(e);
+  }
+
+  // Rebuild crafting categories from remaining edges
+  const filteredCategories = new Set();
+  for (const e of filteredEdges) {
+    if (e.craftingCategory) filteredCategories.add(e.craftingCategory);
+  }
+
+  return {
+    nodes: filteredNodes,
+    edges: filteredEdges,
+    blueprintGroups: filteredBlueprintGroups,
+    craftingCategories: [...filteredCategories].sort(),
+  };
 }
 
 // ── Crafting Graph Builder ──────────────────────────────────────────────────

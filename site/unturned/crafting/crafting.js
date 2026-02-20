@@ -52,6 +52,12 @@ let favoriteItems = new Set(lsGet('favorite-items', []));
 let carouselIndex = 0;        // Current recipe index in carousel mode
 let carouselBpKeys = [];      // Blueprint group keys for current diagram root
 
+// Map blacklist filtering state
+let mapFilteredGraph = null;  // null = no map filter, otherwise { nodes, edges, blueprintGroups }
+let mapFilteredNodeMap = null; // id -> node for filtered graph
+let mapFilteredEdgesByTarget = null;
+let mapFilteredEdgesBySource = null;
+
 // Primitive ID sets (computed at data load time)
 let primUncraftableIds = new Set();  // H2: no craft recipe + used as ingredient
 let primSalvageableIds = new Set();  // H5: salvage outputs
@@ -330,31 +336,24 @@ function getActiveBlueprintTypes() {
 
 // ── Filtering logic ─────────────────────────────────────────────────────────
 
-function nodePassesMapFilter(node, activeMaps) {
-    if (activeMaps === null) return true; // No filter active
-    if (!node.maps || node.maps.length === 0) return true; // No map data = always show
-    return node.maps.some(m => activeMaps.includes(m));
-}
-
 function getVisibleEdges() {
     const bpTypes = getActiveBlueprintTypes();
-    const activeMaps = getActiveMaps();
     const activeCraftCats = getActiveCraftingCategories();
     const settings = getSettings();
 
-    return rawData.edges.filter(e => {
+    // Use map-filtered edges if a map filter is active, otherwise use raw edges
+    const sourceEdges = mapFilteredGraph ? mapFilteredGraph.edges : rawData.edges;
+    const sourceNodeMap = mapFilteredGraph ? mapFilteredNodeMap : nodeMap;
+
+    return sourceEdges.filter(e => {
         // Blueprint type filter
         if (!bpTypes.includes(e.type)) return false;
         // Tool edge visibility
         if (e.tool && settings.toolEdges === 'hidden') return false;
         // Crafting category filter
         if (activeCraftCats !== null && e.craftingCategory && !activeCraftCats.includes(e.craftingCategory)) return false;
-        // Both source and target must pass map filter
-        const src = nodeMap[e.source];
-        const tgt = nodeMap[e.target];
-        if (!src || !tgt) return false;
-        if (!nodePassesMapFilter(src, activeMaps)) return false;
-        if (!nodePassesMapFilter(tgt, activeMaps)) return false;
+        // Both source and target must exist
+        if (!sourceNodeMap[e.source] || !sourceNodeMap[e.target]) return false;
         return true;
     });
 }
@@ -787,6 +786,14 @@ function relayoutGraph() {
 
 // ── Diagram mode ────────────────────────────────────────────────────────────
 
+function getActiveEdgesByTarget() {
+    return mapFilteredGraph ? mapFilteredEdgesByTarget : edgesByTarget;
+}
+
+function getActiveEdgesBySource() {
+    return mapFilteredGraph ? mapFilteredEdgesBySource : edgesBySource;
+}
+
 function buildDiagramTree(rootId) {
     // Build a top-down tree: rootId at top, ingredients below
     // Nodes are duplicated to form a proper tree
@@ -798,6 +805,7 @@ function buildDiagramTree(rootId) {
     const cyNodes = [];
     const cyEdges = [];
     let counter = 0;
+    const activeEdgesByTarget = getActiveEdgesByTarget();
 
     // Reset carousel state
     carouselBpKeys = [];
@@ -813,8 +821,8 @@ function buildDiagramTree(rootId) {
 
         const childCyId = makeNodeId(edge.source);
         const isCycle = ancestorSet.has(edge.source);
-        const isLeaf = !edgesByTarget[edge.source] ||
-            !edgesByTarget[edge.source].some(e2 => e2.type === 'craft');
+        const isLeaf = !activeEdgesByTarget[edge.source] ||
+            !activeEdgesByTarget[edge.source].some(e2 => e2.type === 'craft');
 
         cyNodes.push({
             data: {
@@ -858,7 +866,7 @@ function buildDiagramTree(rootId) {
 
     function expand(origId, cyNodeId, ancestorSet, depth) {
         // Get all craft blueprints targeting this item
-        const incomingEdges = edgesByTarget[origId] || [];
+        const incomingEdges = activeEdgesByTarget[origId] || [];
 
         // Group edges by blueprintId to find distinct recipes
         // Skip byproduct edges (these are secondary outputs of other recipes)
@@ -1002,10 +1010,11 @@ function computePrimitiveSummary(rootId) {
     const tools = new Set();
     const workstations = new Set();
     let hasMultiplePaths = false;
+    const activeEdgesByTarget = getActiveEdgesByTarget();
 
     // Helper: get craft blueprint groups for an item
     function getCraftGroups(itemId) {
-        const incoming = edgesByTarget[itemId] || [];
+        const incoming = activeEdgesByTarget[itemId] || [];
         const groups = {};
         for (const e of incoming) {
             if (e.type !== 'craft' || e.byproduct) continue;
@@ -1262,9 +1271,11 @@ function onNodeMouseOver(e) {
     $name.textContent = n.name;
     $meta.textContent = [n.type, n.rarity].filter(Boolean).join(' \u2022 ') || 'Unknown';
 
-    // Build recipe descriptions
-    const incoming = edgesByTarget[origId] || [];
-    const outgoing = edgesBySource[origId] || [];
+    // Build recipe descriptions (use filtered edges if map filter is active)
+    const activeET = getActiveEdgesByTarget();
+    const activeES = getActiveEdgesBySource();
+    const incoming = activeET[origId] || [];
+    const outgoing = activeES[origId] || [];
 
     // Group incoming by blueprintId
     const craftRecipes = {};
@@ -1381,9 +1392,60 @@ function applySearch() {
     $searchCount.textContent = matchCount > 0 ? `${matchCount} match${matchCount !== 1 ? 'es' : ''}` : 'No matches';
 }
 
+// ── Map blacklist computation ────────────────────────────────────────────────
+
+async function computeMapBlacklist(activeMaps) {
+    if (!activeMaps || activeMaps.length === 0) {
+        mapFilteredGraph = null;
+        mapFilteredNodeMap = null;
+        mapFilteredEdgesByTarget = null;
+        mapFilteredEdgesBySource = null;
+        return;
+    }
+
+    // Start with the full base graph
+    let currentGraph = {
+        nodes: rawData.nodes,
+        edges: rawData.edges,
+        blueprintGroups,
+        craftingCategories: craftingCategoryList,
+    };
+
+    // Apply each selected map's blacklists
+    for (const mapName of activeMaps) {
+        const mapData = await dataLoader.getMapData(mapName);
+        if (!mapData) continue;
+        if (!mapData.map?.crafting_blacklists || mapData.map.crafting_blacklists.length === 0) continue;
+
+        // If the map has its own entries with blueprints, build a graph from them
+        let mapGraph = null;
+        if (mapData.entries && mapData.entries.length > 0) {
+            const guidIndex = await dataLoader.getGuidIndex();
+            mapGraph = buildCraftingGraph(mapData.entries, guidIndex, mapData.assets || {});
+        }
+
+        currentGraph = applyCraftingBlacklists(currentGraph, mapData, mapGraph);
+    }
+
+    // Store the filtered result
+    mapFilteredGraph = currentGraph;
+    mapFilteredNodeMap = {};
+    mapFilteredEdgesByTarget = {};
+    mapFilteredEdgesBySource = {};
+    for (const n of currentGraph.nodes) {
+        mapFilteredNodeMap[n.id] = n;
+    }
+    for (const e of currentGraph.edges) {
+        if (!mapFilteredEdgesByTarget[e.target]) mapFilteredEdgesByTarget[e.target] = [];
+        mapFilteredEdgesByTarget[e.target].push(e);
+        if (!mapFilteredEdgesBySource[e.source]) mapFilteredEdgesBySource[e.source] = [];
+        mapFilteredEdgesBySource[e.source].push(e);
+    }
+}
+
 // ── Filter change handler ───────────────────────────────────────────────────
 
-function onFiltersChanged() {
+async function onFiltersChanged() {
     // Save filter state
     lsSet('bp-craft', document.querySelector('input[data-bp="craft"]').checked);
     lsSet('bp-salvage', document.querySelector('input[data-bp="salvage"]').checked);
@@ -1395,10 +1457,15 @@ function onFiltersChanged() {
     const activeCraftCats = getActiveCraftingCategories();
     lsSet('crafting-categories', activeCraftCats);
 
+    // Compute map blacklist (async - loads map data if needed)
+    await computeMapBlacklist(activeMaps);
+
     // Re-render current view
     if (viewMode === 'graph') {
         renderGraph();
         applySearch();
+    } else if (viewMode === 'diagram' && currentDiagramId) {
+        renderDiagram(currentDiagramId);
     }
 
     updateItemList();
@@ -1763,9 +1830,16 @@ async function init() {
         await loadData();
 
         buildCraftingCategoryFilters();
-        buildMapFilters();
+        await buildMapFilters();
         wireSettings();
         wireEvents();
+
+        // Apply saved map filter if any
+        const savedMaps = getActiveMaps();
+        if (savedMaps) {
+            await computeMapBlacklist(savedMaps);
+        }
+
         updateItemList();
         renderGraph();
     } catch (err) {
