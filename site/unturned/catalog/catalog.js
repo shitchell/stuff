@@ -222,8 +222,11 @@ async function applyMapFilter() {
     mapFilterIds = null;
     filteredEntries = allEntries;
   } else {
-    // Build set of IDs available on any selected map
+    // Build set of IDs available on any selected map, and collect map-specific
+    // entries that aren't part of the base data
     const ids = new Set();
+    const mapEntries = [];          // map-specific entries to merge in
+    const seenGuids = new Set(allEntries.map(e => e.guid));
 
     for (const mapName of selected) {
       // Load map data (cached by dataLoader)
@@ -233,23 +236,30 @@ async function applyMapFilter() {
       const md = mapDataCache[mapName];
       if (!md) continue;
 
-      // Add spawnable IDs
+      // Add spawnable IDs (core items available on this map)
       const spawnable = getSpawnableIds(md);
       if (spawnable) {
         for (const id of spawnable) ids.add(id);
       }
 
-      // Add map-specific entry IDs (for maps with has_custom_entries)
+      // Add map-specific entries (for maps with has_custom_entries)
       const mapInfo = manifest.maps[mapName];
       if (mapInfo && mapInfo.has_custom_entries && md.entries) {
         for (const entry of md.entries) {
           ids.add(entry.id);
+          // Collect entries not already in the base pool (dedup by guid)
+          if (!seenGuids.has(entry.guid)) {
+            seenGuids.add(entry.guid);
+            mapEntries.push(entry);
+          }
         }
       }
     }
 
     mapFilterIds = ids;
-    filteredEntries = allEntries.filter(e => ids.has(e.id));
+    // Filter base entries by spawnable IDs, then append map-specific entries
+    const baseMatches = allEntries.filter(e => ids.has(e.id));
+    filteredEntries = baseMatches.concat(mapEntries);
   }
 
   renderMapFilters();
