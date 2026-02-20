@@ -311,3 +311,67 @@ function loadColumnOverrides() {
 function saveColumnOverrides(overrides) {
   localStorage.setItem('ut:catalog:columns', JSON.stringify(overrides));
 }
+
+// ── Filter Engine ───────────────────────────────────────────────────────────
+
+function parseFilter(raw) {
+  const s = raw.trim();
+  if (!s) return null;
+  const m = s.match(/^(>=|<=|!=|>|<|=)\s*(.+)/);
+  if (m) {
+    const num = parseFloat(m[2]);
+    if (!isNaN(num)) return { op: m[1], value: num };
+  }
+  const num = parseFloat(s);
+  if (!isNaN(num) && s === String(num)) return { op: '=', value: num };
+  return { op: '~', value: s.toLowerCase() };
+}
+
+function matchesFilter(cellValue, filter) {
+  if (!filter) return true;
+  if (filter.op === '~') {
+    return cellValue != null && String(cellValue).toLowerCase().includes(filter.value);
+  }
+  const n = typeof cellValue === 'number' ? cellValue : parseFloat(cellValue);
+  if (isNaN(n)) return false;
+  switch (filter.op) {
+    case '>':  return n > filter.value;
+    case '<':  return n < filter.value;
+    case '>=': return n >= filter.value;
+    case '<=': return n <= filter.value;
+    case '!=': return n !== filter.value;
+    case '=':  return n === filter.value;
+  }
+  return true;
+}
+
+function applyColFilters(entries, columns, filters) {
+  if (!filters) return entries;
+  const active = columns
+    .map(c => ({ col: c, filter: parseFilter(filters[c.key] || '') }))
+    .filter(f => f.filter);
+  if (active.length === 0) return entries;
+  return entries.filter(e =>
+    active.every(({ col, filter }) => matchesFilter(resolveColumnValue(e, col), filter))
+  );
+}
+
+// ── Map Filtering Utilities ─────────────────────────────────────────────────
+
+function getSpawnableIds(mapData) {
+  if (!mapData?.map?.spawn_resolution) return null;
+  return new Set(mapData.map.spawn_resolution.spawnable_item_ids);
+}
+
+function isAvailableOnMap(entry, mapData, mapEntryIds) {
+  const spawnable = getSpawnableIds(mapData);
+  if (spawnable && spawnable.has(entry.id)) return true;
+  if (mapEntryIds && mapEntryIds.has(entry.id)) return true;
+  return false;
+}
+
+function applyCraftingBlacklists(graph, mapData) {
+  if (!mapData?.map?.crafting_blacklists) return graph;
+  // Detailed implementation deferred to crafting page integration
+  return graph;
+}
