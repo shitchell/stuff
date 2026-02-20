@@ -382,7 +382,11 @@ function updateItemList() {
 
     const filterText = $itemListSearch.value.toLowerCase().trim();
 
-    const items = rawData.nodes
+    // Use the active node map to include map-specific nodes when a map filter is active
+    const activeNM = getActiveNodeMap();
+    const activeNodes = Object.values(activeNM);
+
+    const items = activeNodes
         .filter(n => visibleIds.has(n.id))
         .filter(n => !filterText || n.name.toLowerCase().includes(filterText))
         .sort((a, b) => {
@@ -398,7 +402,7 @@ function updateItemList() {
         if (saved) {
             selectedItems = new Set(saved);
         } else {
-            selectedItems = new Set(rawData.nodes.map(n => n.id));
+            selectedItems = new Set(activeNodes.map(n => n.id));
         }
     }
 
@@ -647,6 +651,7 @@ function buildGraphElements() {
     const visibleEdges = getVisibleEdges();
     const visibleNodeIds = getVisibleNodeIds(visibleEdges);
     const settings = getSettings();
+    const activeNM = getActiveNodeMap();
 
     // Determine which nodes are selected vs needed-but-deselected
     // An edge is shown if at least one endpoint is selected
@@ -665,9 +670,11 @@ function buildGraphElements() {
     const maxDeg = Math.max(1, ...Object.values(degree));
 
     const nodes = [];
+    let resolvedCount = 0;
     for (const id of neededNodeIds) {
-        const n = nodeMap[id];
+        const n = activeNM[id];
         if (!n) continue;
+        resolvedCount++;
         const deg = degree[id] || 1;
         const size = settings.nodeSize === 'connectivity'
             ? 18 + 30 * (deg / maxDeg)
@@ -688,6 +695,8 @@ function buildGraphElements() {
             classes: isDeselected ? 'deselected' : '',
         });
     }
+
+    console.log('[MAP-FILTER] buildGraphElements: resolved', resolvedCount, 'of', neededNodeIds.size, 'needed nodes');
 
     const edges = filteredEdges.map((e, i) => ({
         data: {
@@ -793,6 +802,10 @@ function relayoutGraph() {
 
 // ── Diagram mode ────────────────────────────────────────────────────────────
 
+function getActiveNodeMap() {
+    return mapFilteredGraph ? mapFilteredNodeMap : nodeMap;
+}
+
 function getActiveEdgesByTarget() {
     return mapFilteredGraph ? mapFilteredEdgesByTarget : edgesByTarget;
 }
@@ -813,6 +826,7 @@ function buildDiagramTree(rootId) {
     const cyEdges = [];
     let counter = 0;
     const activeEdgesByTarget = getActiveEdgesByTarget();
+    const activeNM = getActiveNodeMap();
 
     // Reset carousel state
     carouselBpKeys = [];
@@ -823,7 +837,7 @@ function buildDiagramTree(rootId) {
     }
 
     function addIngredientNode(edge, parentCyId, ancestorSet, depth) {
-        const srcNode = nodeMap[edge.source];
+        const srcNode = activeNM[edge.source];
         if (!srcNode) return;
 
         const childCyId = makeNodeId(edge.source);
@@ -973,7 +987,7 @@ function buildDiagramTree(rootId) {
     }
 
     // Root node
-    const rootNode = nodeMap[rootId];
+    const rootNode = activeNM[rootId];
     if (!rootNode) return { nodes: [], edges: [] };
 
     const rootCyId = makeNodeId(rootId);
@@ -1111,12 +1125,13 @@ function computePrimitiveSummary(rootId) {
     walk(rootId, 1, new Set());
 
     // Sort materials by quantity descending
+    const activeNM = getActiveNodeMap();
     const sortedMaterials = Object.entries(materials)
-        .map(([id, qty]) => ({ id, qty, name: nodeMap[id]?.name || id }))
+        .map(([id, qty]) => ({ id, qty, name: activeNM[id]?.name || id }))
         .sort((a, b) => b.qty - a.qty);
 
     const sortedTools = [...tools]
-        .map(id => nodeMap[id]?.name || id)
+        .map(id => activeNM[id]?.name || id)
         .sort();
 
     const sortedWorkstations = [...workstations].sort();
@@ -1249,14 +1264,15 @@ function renderCurrentView() {
 }
 
 function updateBreadcrumb() {
+    const activeNM = getActiveNodeMap();
     let html = '<span data-action="graph">Graph</span>';
     for (const id of diagramStack) {
-        const n = nodeMap[id];
+        const n = activeNM[id];
         html += '<span class="separator">/</span>';
         html += `<span data-id="${id}">${n ? esc(n.name) : esc(id)}</span>`;
     }
     if (currentDiagramId) {
-        const n = nodeMap[currentDiagramId];
+        const n = activeNM[currentDiagramId];
         html += '<span class="separator">/</span>';
         html += `<span class="current">${n ? esc(n.name) : esc(currentDiagramId)}</span>`;
     }
@@ -1268,7 +1284,8 @@ function updateBreadcrumb() {
 function onNodeMouseOver(e) {
     const node = e.target;
     const origId = node.data('origId') || node.id();
-    const n = nodeMap[origId];
+    const activeNM = getActiveNodeMap();
+    const n = activeNM[origId];
     if (!n) return;
 
     const $name = $tooltip.querySelector('.tt-name');
@@ -1288,7 +1305,7 @@ function onNodeMouseOver(e) {
     const craftRecipes = {};
     for (const e of incoming) {
         if (!craftRecipes[e.blueprintId]) craftRecipes[e.blueprintId] = { type: e.type, ingredients: [], workstations: e.workstations || [], craftingCategory: e.craftingCategory || '' };
-        const src = nodeMap[e.source];
+        const src = activeNM[e.source];
         craftRecipes[e.blueprintId].ingredients.push(
             (e.quantity > 1 ? e.quantity + 'x ' : '') + (src ? src.name : '?') + (e.tool ? ' (tool)' : '')
         );
@@ -1298,7 +1315,7 @@ function onNodeMouseOver(e) {
     const outRecipes = {};
     for (const e of outgoing) {
         if (!outRecipes[e.blueprintId]) outRecipes[e.blueprintId] = { type: e.type, products: [], workstations: e.workstations || [], craftingCategory: e.craftingCategory || '' };
-        const tgt = nodeMap[e.target];
+        const tgt = activeNM[e.target];
         outRecipes[e.blueprintId].products.push(
             (e.quantity > 1 ? e.quantity + 'x ' : '') + (tgt ? tgt.name : '?')
         );
@@ -1464,6 +1481,21 @@ async function computeMapBlacklist(activeMaps) {
         mapFilteredEdgesBySource[e.source].push(e);
     }
     console.log('[MAP-FILTER] Final filtered graph stored:', currentGraph.nodes.length, 'nodes,', currentGraph.edges.length, 'edges');
+
+    // Ensure map-specific nodes are included in selectedItems so they appear in the graph
+    if (selectedItems) {
+        let added = 0;
+        for (const n of currentGraph.nodes) {
+            if (!selectedItems.has(n.id)) {
+                selectedItems.add(n.id);
+                added++;
+            }
+        }
+        if (added > 0) {
+            console.log('[MAP-FILTER] Added', added, 'new map-specific nodes to selectedItems');
+            saveSelectedItems();
+        }
+    }
 }
 
 // ── Filter change handler ───────────────────────────────────────────────────
@@ -1732,8 +1764,9 @@ function wireEvents() {
             const visibleEdges = getVisibleEdges();
             const ids = getVisibleNodeIds(visibleEdges);
             if (ids.size > 0) {
+                const activeNM = getActiveNodeMap();
                 const firstId = [...ids].sort((a, b) => {
-                    const na = nodeMap[a], nb = nodeMap[b];
+                    const na = activeNM[a], nb = activeNM[b];
                     return (na?.name || '').localeCompare(nb?.name || '');
                 })[0];
                 switchToDiagram(firstId);
