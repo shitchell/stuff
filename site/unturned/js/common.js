@@ -375,3 +375,189 @@ function applyCraftingBlacklists(graph, mapData) {
   // Detailed implementation deferred to crafting page integration
   return graph;
 }
+
+// ── Crafting Graph Builder ──────────────────────────────────────────────────
+
+const CRAFTING_CATEGORIES = {
+  '31a59b5fec3f4ec5b2887b1ce4acb029': 'Vehicles',
+  '71d9e182c18b4aad8e87778e4f621995': 'Structures',
+  '732ee6ffeb18418985cf4f9fde33dd11': 'Repair',
+  '7ed29f9101ae4523a3b2e389414b7bd9': 'Salvage',
+  'ad1804b6945145f3b308738b0b8ea447': 'Weapons & Tools',
+  'b0c6cc0a8b4346be89aef697ecdb8e46': 'Furniture',
+  'bfac6026305f4737a95fd275ebff65a6': 'Farming & Lighting',
+  'cdb2df24b76d4c6e9d8411c940d8337f': 'Materials',
+  'd089feb7e43f40c5a7dfcefc36998cfb': 'Food & Medical',
+  'd739926736374e5ba34b4ac6ffbb5c8f': 'Ammunition',
+  'ebe755533bdd42d1871c3ac66b89530f': 'Clothing',
+};
+
+function parseBlueprintRef(ref, ownerGuid, guidIndex) {
+  if (typeof ref === 'string') {
+    // "this x N" or "this"
+    if (ref === 'this' || ref.startsWith('this ')) {
+      const qty = ref.includes(' x ') ? parseInt(ref.split(' x ')[1]) : 1;
+      return { guid: ownerGuid, quantity: qty, isTool: false };
+    }
+    // "GUID x N" or "GUID"
+    const parts = ref.split(' x ');
+    let guid = parts[0];
+    const qty = parts.length > 1 ? parseInt(parts[1]) : 1;
+    // Could be numeric legacy ID
+    if (/^\d+$/.test(guid)) {
+      const resolved = guidIndex.by_id[guid];
+      if (resolved) guid = resolved;
+      else return null;
+    }
+    return { guid, quantity: qty, isTool: false };
+  }
+  if (typeof ref === 'object' && ref.ID) {
+    let guid = ref.ID;
+    if (guid === 'this') guid = ownerGuid;
+    else if (/^\d+$/.test(guid)) {
+      const resolved = guidIndex.by_id[guid];
+      if (resolved) guid = resolved;
+      else return null;
+    }
+    const isTool = ref.Delete === false;
+    return { guid, quantity: ref.Amount || 1, isTool };
+  }
+  return null;
+}
+
+function buildCraftingGraph(entries, guidIndex, assets) {
+  const nodes = [];
+  const edges = [];
+  const nodeSet = new Set();
+  const craftingCategories = new Set();
+  let bpCounter = 0;
+
+  function ensureNode(guid) {
+    if (nodeSet.has(guid)) return true;
+    const gi = guidIndex.entries[guid];
+    if (!gi) return false;
+    nodeSet.add(guid);
+    nodes.push({
+      id: guid,
+      name: gi.name,
+      type: gi.type || '',
+      rarity: '',
+      category: [],
+      maps: [],
+    });
+    return true;
+  }
+
+  // Build entry lookup by guid
+  const entryByGuid = {};
+  for (const e of entries) {
+    entryByGuid[e.guid] = e;
+  }
+
+  // Process blueprints
+  for (const entry of entries) {
+    if (!entry.blueprints || entry.blueprints.length === 0) continue;
+
+    for (const bp of entry.blueprints) {
+      if (bp.operation === 'FillTargetItem' || bp.operation === 'RepairTargetItem') continue;
+
+      const blueprintId = `bp-${bpCounter++}`;
+      const bpName = (bp.name || '').toLowerCase();
+      const craftingCategory = CRAFTING_CATEGORIES[bp.category_tag] || '';
+      if (craftingCategory) craftingCategories.add(craftingCategory);
+
+      // Determine edge type
+      let edgeType = 'craft';
+      if (bpName === 'salvage' || bpName === 'unstack') edgeType = 'salvage';
+      else if (bpName === 'repair') edgeType = 'repair';
+
+      // Resolve workstation tags
+      const workstations = (bp.workstation_tags || []).map(tag => {
+        const resolved = guidIndex.entries[tag];
+        return resolved ? resolved.name : `[${tag.substring(0, 8)}]`;
+      });
+
+      // Parse inputs
+      const inputs = (bp.inputs || [])
+        .map(ref => parseBlueprintRef(ref, entry.guid, guidIndex))
+        .filter(Boolean);
+
+      // Parse outputs
+      let outputs = (bp.outputs || [])
+        .map(ref => parseBlueprintRef(ref, entry.guid, guidIndex))
+        .filter(Boolean);
+
+      // If no explicit outputs, the output is "this" (common for craft/repair)
+      if (outputs.length === 0 && edgeType !== 'salvage') {
+        outputs = [{ guid: entry.guid, quantity: 1, isTool: false }];
+      }
+
+      if (edgeType === 'salvage') {
+        // Salvage: owning item -> outputs
+        for (const out of outputs) {
+          ensureNode(entry.guid);
+          ensureNode(out.guid);
+          edges.push({
+            source: entry.guid,
+            target: out.guid,
+            type: 'salvage',
+            quantity: out.quantity,
+            tool: false,
+            workstations,
+            skill: bp.skill || '',
+            skillLevel: bp.skill_level || 0,
+            blueprintId,
+            byproduct: false,
+            craftingCategory,
+          });
+        }
+      } else {
+        // Craft/Repair: inputs -> outputs
+        for (const inp of inputs) {
+          for (const out of outputs) {
+            ensureNode(inp.guid);
+            ensureNode(out.guid);
+            edges.push({
+              source: inp.guid,
+              target: out.guid,
+              type: edgeType,
+              quantity: inp.quantity,
+              tool: inp.isTool,
+              workstations,
+              skill: bp.skill || '',
+              skillLevel: bp.skill_level || 0,
+              blueprintId,
+              byproduct: false,
+              craftingCategory,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  // Enrich nodes with full entry data where available
+  for (const node of nodes) {
+    const entry = entryByGuid[node.id];
+    if (entry) {
+      node.rarity = entry.rarity || '';
+      node.category = entry.category || [];
+      node.name = entry.name;
+      node.type = entry.type;
+    }
+  }
+
+  // Build blueprint groups
+  const blueprintGroups = {};
+  for (const e of edges) {
+    if (!blueprintGroups[e.blueprintId]) blueprintGroups[e.blueprintId] = [];
+    blueprintGroups[e.blueprintId].push(e);
+  }
+
+  return {
+    nodes,
+    edges,
+    blueprintGroups,
+    craftingCategories: [...craftingCategories].sort(),
+  };
+}
