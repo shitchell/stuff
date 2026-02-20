@@ -47,6 +47,39 @@
     </div>
   </div>
 
+  <!-- Query Builder Modal -->
+  <div class="modal-overlay" id="modal-overlay" style="display:none">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-title">New Table</h2>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-field">
+          <label for="modal-label">Table Name</label>
+          <input type="text" id="modal-label" placeholder="e.g. My Weapons">
+        </div>
+        <div class="modal-section">
+          <h3>Any of these <span class="modal-hint">(items matching at least one)</span></h3>
+          <div id="modal-any-conditions"></div>
+          <button class="add-condition-btn" onclick="addModalCondition('any')">+ Add condition</button>
+        </div>
+        <div class="modal-section">
+          <h3>All of these <span class="modal-hint">(every condition must match)</span></h3>
+          <div id="modal-all-conditions"></div>
+          <button class="add-condition-btn" onclick="addModalCondition('all')">+ Add condition</button>
+        </div>
+        <div class="modal-preview">
+          <span id="modal-match-count">0</span> entries match
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="modal-btn modal-btn-save" onclick="saveModal()">Save</button>
+      </div>
+    </div>
+  </div>
+
   <script src="../js/common.js"></script>
   <script src="catalog.js"></script>
 </body>

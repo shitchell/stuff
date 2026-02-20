@@ -293,6 +293,82 @@ td.num-cell { font-variant-numeric: tabular-nums; }
 }
 .col-target-select:focus { outline: none; border-color: var(--accent); }
 
+/* === Modal === */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal {
+  background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  width: 90%; max-width: 560px; max-height: 85vh; display: flex; flex-direction: column;
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.8rem 1.2rem; border-bottom: 1px solid var(--border);
+}
+.modal-header h2 { font-size: var(--font-lg); color: var(--accent); margin: 0; }
+.modal-close {
+  background: none; border: none; color: var(--text-muted); font-size: 1.4rem;
+  cursor: pointer; line-height: 1; padding: 0 0.2rem;
+}
+.modal-close:hover { color: var(--text-primary); }
+.modal-body { padding: 1rem 1.2rem; overflow-y: auto; flex: 1; }
+.modal-field { margin-bottom: 1rem; }
+.modal-field label {
+  display: block; font-size: var(--font-sm); color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.3rem;
+}
+.modal-field input {
+  width: 100%; padding: 0.4rem 0.6rem;
+  background: var(--bg-primary); border: 1px solid var(--border); border-radius: var(--radius);
+  color: var(--text-primary); font-size: var(--font-base);
+}
+.modal-field input:focus { outline: none; border-color: var(--accent); }
+.modal-section { margin-bottom: 1rem; }
+.modal-section h3 {
+  font-size: var(--font-base); color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600;
+}
+.modal-hint { font-weight: 400; color: var(--text-muted); font-size: var(--font-sm); }
+.condition-row {
+  display: flex; gap: 0.4rem; align-items: center; margin-bottom: 0.4rem;
+}
+.condition-row select, .condition-row input {
+  padding: 0.35rem 0.5rem; background: var(--bg-primary); border: 1px solid var(--border);
+  border-radius: var(--radius); color: var(--text-primary); font-size: var(--font-sm);
+}
+.condition-row select:focus, .condition-row input:focus { outline: none; border-color: var(--accent); }
+.condition-field-select { flex: 2; min-width: 0; }
+.condition-op-select { flex: 0 0 4.5rem; }
+.condition-value-input { flex: 2; min-width: 0; }
+.condition-remove {
+  background: none; border: none; color: var(--text-muted); cursor: pointer;
+  font-size: 1rem; padding: 0 0.3rem; line-height: 1;
+}
+.condition-remove:hover { color: var(--rarity-mythical); }
+.add-condition-btn {
+  background: none; border: 1px dashed var(--border); border-radius: var(--radius);
+  color: var(--text-muted); cursor: pointer; font-size: var(--font-sm);
+  padding: 0.25rem 0.6rem; margin-top: 0.2rem;
+}
+.add-condition-btn:hover { color: var(--accent); border-color: var(--accent); }
+.modal-preview {
+  padding: 0.5rem 0.8rem; background: var(--bg-primary); border-radius: var(--radius);
+  font-size: var(--font-sm); color: var(--text-secondary); text-align: center;
+}
+.modal-preview span { color: var(--accent); font-weight: 600; }
+.modal-footer {
+  display: flex; justify-content: flex-end; gap: 0.6rem;
+  padding: 0.8rem 1.2rem; border-top: 1px solid var(--border);
+}
+.modal-btn {
+  padding: 0.4rem 1rem; border-radius: var(--radius); font-size: var(--font-base);
+  cursor: pointer; border: 1px solid var(--border);
+}
+.modal-btn-cancel { background: none; color: var(--text-secondary); }
+.modal-btn-cancel:hover { color: var(--text-primary); border-color: var(--text-secondary); }
+.modal-btn-save { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+.modal-btn-save:hover { background: #e6c200; }
+
 /* === Responsive === */
 @media (max-width: 800px) {
   .sidebar { position: fixed; left: 0; top: 44px; bottom: 0; z-index: 50; }
