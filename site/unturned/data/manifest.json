@@ -1,0 +1,100 @@
+{
+  "version": "1.0.0",
+  "schema_name": "unturned-data-export",
+  "generated_at": "2026-02-19T21:46:49.152703+00:00",
+  "generator": "unturned-data",
+  "base_bundles_path": "/home/guy/unturned-server/Bundles",
+  "base_entry_count": 4981,
+  "base_asset_count": 266,
+  "maps": {
+    "alpha_valley": {
+      "map_file": "maps/alpha_valley/map.json",
+      "has_custom_entries": false,
+      "entries_file": null,
+      "assets_file": null,
+      "entry_count": 0,
+      "asset_count": 0
+    },
+    "destruction": {
+      "map_file": "maps/destruction/map.json",
+      "has_custom_entries": false,
+      "entries_file": null,
+      "assets_file": null,
+      "entry_count": 0,
+      "asset_count": 0
+    },
+    "germany": {
+      "map_file": "maps/germany/map.json",
+      "has_custom_entries": false,
+      "entries_file": null,
+      "assets_file": null,
+      "entry_count": 0,
+      "asset_count": 0
+    },
+    "monolith": {
+      "map_file": "maps/monolith/map.json",
+      "has_custom_entries": false,
+      "entries_file": null,
+      "assets_file": null,
+      "entry_count": 0,
+      "asset_count": 0
+    },
+    "pei": {
+      "map_file": "maps/pei/map.json",
+      "has_custom_entries": false,
+      "entries_file": null,
+      "assets_file": null,
+      "entry_count": 0,
+      "asset_count": 0
+    },
+    "paintball_arena_0": {
+      "map_file": "maps/paintball_arena_0/map.json",
+      "has_custom_entries": false,
+      "entries_file": null,
+      "assets_file": null,
+      "entry_count": 0,
+      "asset_count": 0
+    },
+    "russia": {
+      "map_file": "maps/russia/map.json",
+      "has_custom_entries": false,
+      "entries_file": null,
+      "assets_file": null,
+      "entry_count": 0,
+      "asset_count": 0
+    },
+    "tutorial": {
+      "map_file": "maps/tutorial/map.json",
+      "has_custom_entries": false,
+      "entries_file": null,
+      "assets_file": null,
+      "entry_count": 0,
+      "asset_count": 0
+    },
+    "washington": {
+      "map_file": "maps/washington/map.json",
+      "has_custom_entries": false,
+      "entries_file": null,
+      "assets_file": null,
+      "entry_count": 0,
+      "asset_count": 0
+    },
+    "yukon": {
+      "map_file": "maps/yukon/map.json",
+      "has_custom_entries": false,
+      "entries_file": null,
+      "assets_file": null,
+      "entry_count": 0,
+      "asset_count": 0
+    },
+    "a6_polaris": {
+      "map_file": "maps/a6_polaris/map.json",
+      "has_custom_entries": true,
+      "entries_file": "maps/a6_polaris/entries.json",
+      "assets_file": "maps/a6_polaris/assets.json",
+      "entry_count": 2116,
+      "asset_count": 84
+    }
+  },
+  "guid_index_file": "guid_index.json"
+}

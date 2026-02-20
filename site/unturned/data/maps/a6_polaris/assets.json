@@ -1,0 +1,3416 @@
+[
+  {
+    "guid": "bb8add5682a74fffb21055a9661a66e6",
+    "name": "Frost Airdrop 00",
+    "csharp_type": "AirdropAsset",
+    "source_path": "Content/Level/Frost_Airdrop_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "bb8add5682a74fffb21055a9661a66e6",
+        "Type": "SDG.Unturned.AirdropAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "Landed_Barricade": {
+          "GUID": "1b7d9482618940f3b694f326235eb87f"
+        },
+        "Carepackage_Prefab": {
+          "MasterBundle": "frost.masterbundle",
+          "AssetPath": "Content/Airdrop/Carepackage.prefab"
+        }
+      }
+    }
+  },
+  {
+    "guid": "dcddca4d05564563aa2aac8144615c46",
+    "name": "Frost Craft",
+    "csharp_type": "CraftingBlacklistAsset",
+    "source_path": "Content/Level/Frost_Craft.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "dcddca4d05564563aa2aac8144615c46",
+        "Type": "SDG.Unturned.CraftingBlacklistAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "Allow_Core_Blueprints": false,
+        "Input_Items": [
+          {
+            "NoteToSelf": "car battery",
+            "GUID": "098b13be34a7411db7736b7f866ada69"
+          }
+        ],
+        "Output_Items": [
+          {
+            "NoteToSelf": "car battery",
+            "GUID": "098b13be34a7411db7736b7f866ada69"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "45008b35d8184e338d756c6f1b2a0813",
+    "name": "Frost Currency Coils",
+    "csharp_type": "ItemCurrencyAsset",
+    "source_path": "Content/Level/Frost_Currency_Coils.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "45008b35d8184e338d756c6f1b2a0813",
+        "Type": "SDG.Unturned.ItemCurrencyAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ValueFormat": "{0:N0}x Copper Coils",
+        "Entries": [
+          {
+            "Item": {
+              "GUID": "4d68c01415d9432e8ef66630578f15cf"
+            },
+            "Value": 1
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "098db83c83014406ad73689efa142042",
+    "name": "Frost Currency Crystals",
+    "csharp_type": "ItemCurrencyAsset",
+    "source_path": "Content/Level/Frost_Currency_Crystals.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "098db83c83014406ad73689efa142042",
+        "Type": "SDG.Unturned.ItemCurrencyAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ValueFormat": "{0:N0}x Cyan Crystals",
+        "Entries": [
+          {
+            "Item": {
+              "GUID": "9d7d4e6997ed4db5b99a2af6dc267e97"
+            },
+            "Value": 1
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "089d9c6b40f041809101e4a730a0b43d",
+    "name": "Frost Currency Flowers",
+    "csharp_type": "ItemCurrencyAsset",
+    "source_path": "Content/Level/Frost_Currency_Flowers.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "089d9c6b40f041809101e4a730a0b43d",
+        "Type": "SDG.Unturned.ItemCurrencyAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ValueFormat": "{0:N0}x Polaris Roses",
+        "Entries": [
+          {
+            "Item": {
+              "GUID": "850c7af83f124cd395e98b2f084de60f"
+            },
+            "Value": 1
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "2c91037138504ba39131a5e5bee921ef",
+    "name": "Frost Currency Money",
+    "csharp_type": "ItemCurrencyAsset",
+    "source_path": "Content/Level/Frost_Currency_Money.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "2c91037138504ba39131a5e5bee921ef",
+        "Type": "SDG.Unturned.ItemCurrencyAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ValueFormat": "金{0:N0} Quid",
+        "Entries": [
+          {
+            "Item": {
+              "GUID": "482e24292245467c96d23330b849462d"
+            },
+            "Value": 1
+          },
+          {
+            "Item": {
+              "GUID": "78e8c021fe554a33b8ebbe89f95fd775"
+            },
+            "Value": 5
+          },
+          {
+            "Item": {
+              "GUID": "5f1868b1ec7949cc915525a1eb1cf471"
+            },
+            "Value": 20
+          },
+          {
+            "Item": {
+              "GUID": "4f8363feab7a4b9b8526bafa5ea875b0"
+            },
+            "Value": 100
+          },
+          {
+            "Item": {
+              "GUID": "fe88122200bc402aad01b3a098d11b9b"
+            },
+            "Value": 500
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "a26ceb552f244563a2aa0b2c967731a6",
+    "name": "Frost Fog 00 Weather",
+    "csharp_type": "WeatherAsset",
+    "source_path": "Content/Level/Frost_Fog_00_Weather.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "a26ceb552f244563a2aa0b2c967731a6",
+        "Type": "SDG.Unturned.WeatherAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "Fade_In_Duration": 25.0,
+        "Fade_Out_Duration": 25.0,
+        "Override_Fog": true,
+        "Override_Atmospheric_Fog": true,
+        "Shadow_Strength_Multiplier": 0.4,
+        "Dawn": {
+          "Fog_Color": {
+            "R": 157,
+            "G": 153,
+            "B": 150
+          },
+          "Fog_Density": 0.9,
+          "Brightness_Multiplier": 0.85
+        },
+        "Midday": {
+          "Fog_Color": {
+            "R": 165,
+            "G": 161,
+            "B": 163
+          },
+          "Fog_Density": 0.75,
+          "Brightness_Multiplier": 0.7
+        },
+        "Dusk": {
+          "Fog_Color": {
+            "R": 129,
+            "G": 112,
+            "B": 112
+          },
+          "Fog_Density": 0.85,
+          "Brightness_Multiplier": 0.85
+        },
+        "Midnight": {
+          "Fog_Color": {
+            "R": 30,
+            "G": 40,
+            "B": 52
+          },
+          "Fog_Density": 1.2
+        }
+      }
+    }
+  },
+  {
+    "guid": "77e3a2e0fd6b4c768928dc2861888a6e",
+    "name": "Frost Level 00",
+    "csharp_type": "LevelAsset",
+    "source_path": "Content/Level/Frost_Level_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "77e3a2e0fd6b4c768928dc2861888a6e",
+        "Type": "SDG.Unturned.LevelAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Dropship": {
+          "MasterBundle": "frost.masterbundle",
+          "AssetPath": "Content/Airdrop/Dropship.prefab"
+        },
+        "Airdrop": {
+          "GUID": "bb8add5682a74fffb21055a9661a66e6"
+        },
+        "Loading_Screen_Music": [
+          {
+            "Loop": "Content/Ambience/Quiet.wav",
+            "Outro": "Content/Ambience/Intro.wav"
+          }
+        ],
+        "Crafting_Blacklists": [
+          {
+            "GUID": "dcddca4d05564563aa2aac8144615c46"
+          }
+        ],
+        "Should_Animate_Background_Image": false,
+        "Skills": [
+          {
+            "Id": "Sharpshooter",
+            "Default_Level": 4,
+            "Cost_Multiplier": 0.5
+          },
+          {
+            "Id": "Diving",
+            "Default_Level": 0,
+            "Max_Unlockable_Level": 2
+          },
+          {
+            "Id": "Agriculture",
+            "Default_Level": 0,
+            "Max_Unlockable_Level": 0
+          },
+          {
+            "Id": "Cooking",
+            "Default_Level": 1
+          },
+          {
+            "Id": "Sneakybeaky",
+            "Max_Unlockable_Level": 4
+          },
+          {
+            "Id": "Warmblooded",
+            "Max_Unlockable_Level": 0
+          },
+          {
+            "Id": "Mechanic",
+            "Max_Unlockable_Level": 0
+          }
+        ],
+        "Weather_Types": [
+          {
+            "Asset": "6574c05111e84c4c985d463a830f9a7a",
+            "Min_Frequency": 1,
+            "Max_Frequency": 3,
+            "Min_Duration": 0.7,
+            "Max_Duration": 1,
+            "{": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "f30a01005f0b42baacd78f2d3002bfd2",
+    "name": "Frost Rain 00 Weather",
+    "csharp_type": "WeatherAsset",
+    "source_path": "Content/Level/Frost_Rain_00_Weather.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "f30a01005f0b42baacd78f2d3002bfd2",
+        "Type": "SDG.Unturned.WeatherAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "Component_Type": "SDG.Unturned.LegacyRainComponent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+        "Volume_Mask": 1,
+        "Fade_In_Duration": 25.0,
+        "Fade_Out_Duration": 25.0,
+        "Override_Fog": true,
+        "Override_Atmospheric_Fog": true,
+        "Override_Cloud_Colors": true,
+        "Shadow_Strength_Multiplier": 0.15,
+        "Fog_Blend_Exponent": 1.25,
+        "Cloud_Blend_Exponent": 0.5,
+        "Wind_Main": 0.5,
+        "Dawn": {
+          "Fog_Color": {
+            "Level_Enum": "SKY_SKY",
+            "R": 100,
+            "G": 100,
+            "B": 100
+          },
+          "Fog_Density": 1,
+          "Cloud_Color": {
+            "R": 15,
+            "G": 15,
+            "B": 15
+          },
+          "Cloud_Rim_Color": {
+            "Level_Enum": "Clouds",
+            "R": 30,
+            "G": 30,
+            "B": 30
+          },
+          "Brightness_Multiplier": 0.55
+        },
+        "Midday": {
+          "Fog_Color": {
+            "Level_Enum": "SKY_SKY",
+            "R": 150,
+            "G": 135,
+            "B": 135
+          },
+          "Fog_Density": 1,
+          "Cloud_Color": {
+            "R": 15,
+            "G": 15,
+            "B": 15
+          },
+          "Cloud_Rim_Color": {
+            "Level_Enum": "Clouds",
+            "R": 30,
+            "G": 30,
+            "B": 30
+          },
+          "Brightness_Multiplier": 0.55
+        },
+        "Dusk": {
+          "Fog_Color": {
+            "Level_Enum": "SKY_SKY",
+            "R": 100,
+            "G": 100,
+            "B": 100
+          },
+          "Fog_Density": 1,
+          "Cloud_Color": {
+            "R": 15,
+            "G": 15,
+            "B": 15
+          },
+          "Cloud_Rim_Color": {
+            "Level_Enum": "Clouds",
+            "R": 30,
+            "G": 30,
+            "B": 30
+          },
+          "Brightness_Multiplier": 0.55
+        },
+        "Midnight": {
+          "Fog_Color": {
+            "Level_Enum": "SKY_SKY",
+            "R": 100,
+            "G": 100,
+            "B": 100
+          },
+          "Fog_Density": 1,
+          "Cloud_Color": {
+            "R": 15,
+            "G": 15,
+            "B": 15
+          },
+          "Cloud_Rim_Color": {
+            "Level_Enum": "Clouds",
+            "R": 30,
+            "G": 30,
+            "B": 30
+          },
+          "Brightness_Multiplier": 0.75
+        },
+        "Effects": [
+          {
+            "Prefab": {
+              "MasterBundle": "core.masterbundle",
+              "AssetPath": "Effects/Weather/DefaultRainParticles.prefab"
+            },
+            "Emission_Exponent": 2.0,
+            "Pitch": 75.0,
+            "Translate_With_View": true,
+            "Rotate_Yaw_With_Wind": true
+          }
+        ],
+        "Ambient_Audio_Clip": {
+          "MasterBundle": "core.masterbundle",
+          "AssetPath": "Effects/Weather/DefaultRainAmbience.ogg"
+        }
+      }
+    }
+  },
+  {
+    "guid": "6574c05111e84c4c985d463a830f9a7a",
+    "name": "Frost Snow 00 Weather",
+    "csharp_type": "WeatherAsset",
+    "source_path": "Content/Level/Frost_Snow_00_Weather.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "6574c05111e84c4c985d463a830f9a7a",
+        "Type": "SDG.Unturned.WeatherAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "Volume_Mask": 2,
+        "Fade_In_Duration": 25.0,
+        "Fade_Out_Duration": 25.0,
+        "Override_Fog": true,
+        "Override_Atmospheric_Fog": true,
+        "Fog_Blend_Exponent": 1.25,
+        "Dawn": {
+          "Fog_Color": {
+            "Level_Enum": "SKY_SKY"
+          },
+          "Fog_Density": 0.5
+        },
+        "Midday": {
+          "Fog_Color": {
+            "Level_Enum": "SKY_SKY"
+          },
+          "Fog_Density": 0.45
+        },
+        "Dusk": {
+          "Fog_Color": {
+            "Level_Enum": "SKY_SKY"
+          },
+          "Fog_Density": 0.5
+        },
+        "Midnight": {
+          "Fog_Color": {
+            "Level_Enum": "SKY_SKY"
+          },
+          "Fog_Density": 0.6
+        },
+        "Effects": [
+          {
+            "Prefab": {
+              "MasterBundle": "core.masterbundle",
+              "AssetPath": "Effects/Weather/GentleSnowParticles.prefab"
+            },
+            "Emission_Exponent": 0.1,
+            "Translate_With_View": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "7763cfc4c8104182967e0f85a871c795",
+    "name": "Bed 00",
+    "csharp_type": "MaterialPaletteAsset",
+    "source_path": "Content/Material_Palletes/Bed_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "7763cfc4c8104182967e0f85a871c795",
+        "Type": "SDG.Unturned.MaterialPaletteAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Materials": [
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Bed_00/Material_00.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Bed_00/Material_01.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Bed_00/Material_02.mat"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "38f13228c90b48d1a5716ab2aee7a22a",
+    "name": "Boat 00",
+    "csharp_type": "MaterialPaletteAsset",
+    "source_path": "Content/Material_Palletes/Boat_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "38f13228c90b48d1a5716ab2aee7a22a",
+        "Type": "SDG.Unturned.MaterialPaletteAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Materials": [
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Boat_00/Material_00.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Boat_00/Material_01.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Boat_00/Material_02.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Boat_00/Material_03.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Boat_00/Material_04.mat"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "76d77c900fa2403fa8b8844a13f4526d",
+    "name": "Boat 01",
+    "csharp_type": "MaterialPaletteAsset",
+    "source_path": "Content/Material_Palletes/Boat_01.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "76d77c900fa2403fa8b8844a13f4526d",
+        "Type": "SDG.Unturned.MaterialPaletteAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Materials": [
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Boat_01/Material_00.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Boat_01/Material_01.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Boat_01/Material_02.mat"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "b9a442a3442f4114b1ce5ffb5e138e8b",
+    "name": "Car 00",
+    "csharp_type": "MaterialPaletteAsset",
+    "source_path": "Content/Material_Palletes/Car_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "b9a442a3442f4114b1ce5ffb5e138e8b",
+        "Type": "SDG.Unturned.MaterialPaletteAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Materials": [
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Car_00/Material_00.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Car_00/Material_01.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Car_00/Material_03.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Car_00/Material_04.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Car_00/Material_05.mat"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "509f5a2643c54ebaac30a527c139f59c",
+    "name": "Cardboard 00",
+    "csharp_type": "MaterialPaletteAsset",
+    "source_path": "Content/Material_Palletes/Cardboard_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "509f5a2643c54ebaac30a527c139f59c",
+        "Type": "SDG.Unturned.MaterialPaletteAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Materials": [
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Cardboard_00/Material_00.mat"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "ddafb1c0763a4dcc8d9fbb90a20cfbd6",
+    "name": "Container 00",
+    "csharp_type": "MaterialPaletteAsset",
+    "source_path": "Content/Material_Palletes/Container_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "ddafb1c0763a4dcc8d9fbb90a20cfbd6",
+        "Type": "SDG.Unturned.MaterialPaletteAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Materials": [
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Container_00/Material_00.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Container_00/Material_01.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Container_00/Material_02.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Container_00/Material_03.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Container_00/Material_04.mat"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "a36e76487db54ffdb63346268dd9c975",
+    "name": "Crate 00",
+    "csharp_type": "MaterialPaletteAsset",
+    "source_path": "Content/Material_Palletes/Crate_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "a36e76487db54ffdb63346268dd9c975",
+        "Type": "SDG.Unturned.MaterialPaletteAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Materials": [
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Crate_00/Material_00.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Crate_00/Material_01.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Crate_00/Material_02.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Crate_00/Material_03.mat"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "90fcb9ce0a7645f9a9806a2a71a7a32a",
+    "name": "Debris 00",
+    "csharp_type": "MaterialPaletteAsset",
+    "source_path": "Content/Material_Palletes/Debris_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "90fcb9ce0a7645f9a9806a2a71a7a32a",
+        "Type": "SDG.Unturned.MaterialPaletteAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Materials": [
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Debris_00/Material_00.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Debris_00/Material_01.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Debris_00/Material_02.mat"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "853a6c49920d49499fea19ea91b9ea58",
+    "name": "House 00",
+    "csharp_type": "MaterialPaletteAsset",
+    "source_path": "Content/Material_Palletes/House_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "853a6c49920d49499fea19ea91b9ea58",
+        "Type": "SDG.Unturned.MaterialPaletteAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Materials": [
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/House_00/Material_00.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/House_00/Material_01.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/House_00/Material_02.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/House_00/Material_03.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/House_00/Material_04.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/House_00/Material_05.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/House_00/Material_06.mat"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "8724629a98934a6dae6ef2e29d258f01",
+    "name": "Metal 00",
+    "csharp_type": "MaterialPaletteAsset",
+    "source_path": "Content/Material_Palletes/Metal_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "8724629a98934a6dae6ef2e29d258f01",
+        "Type": "SDG.Unturned.MaterialPaletteAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Materials": [
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Metal_00/Material_00.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Metal_00/Material_01.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Metal_00/Material_02.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Metal_00/Material_03.mat"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "99d4bd29a82d497f9dc1620e04cdd6cc",
+    "name": "Sewer 00",
+    "csharp_type": "MaterialPaletteAsset",
+    "source_path": "Content/Material_Palletes/Sewer_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "99d4bd29a82d497f9dc1620e04cdd6cc",
+        "Type": "SDG.Unturned.MaterialPaletteAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Materials": [
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Sewer_00/Material_00.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Sewer_00/Material_01.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Sewer_00/Material_02.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Sewer_00/Material_03.mat"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "392f9dc186a34584bd58e182e5e0aca7",
+    "name": "Table 00",
+    "csharp_type": "MaterialPaletteAsset",
+    "source_path": "Content/Material_Palletes/Table_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "392f9dc186a34584bd58e182e5e0aca7",
+        "Type": "SDG.Unturned.MaterialPaletteAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Materials": [
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Table_00/Material_00.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Table_00/Material_01.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Table_00/Material_02.mat"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "400fb71e06ba4592bc25630bc8e3335e",
+    "name": "Tent 00",
+    "csharp_type": "MaterialPaletteAsset",
+    "source_path": "Content/Material_Palletes/Tent_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "400fb71e06ba4592bc25630bc8e3335e",
+        "Type": "SDG.Unturned.MaterialPaletteAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Materials": [
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Tent_00/Material_00.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Tent_00/Material_01.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Tent_00/Material_02.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Tent_00/Material_03.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Tent_00/Material_04.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Tent_00/Material_05.mat"
+          },
+          {
+            "Name": "frost.masterbundle",
+            "Path": "Content/Material_Palletes/Tent_00/Material_06.mat"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "94c8eceaabaa4a1f8f07affbc508eb80",
+    "name": "Frost Farm 00 Material",
+    "csharp_type": "LandscapeMaterialAsset",
+    "source_path": "Content/Terrain/Material/Frost_Farm_00_Material.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "94c8eceaabaa4a1f8f07affbc508eb80",
+        "Type": "SDG.Unturned.LandscapeMaterialAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Texture": {
+          "Name": "frost.masterbundle",
+          "Path": "content/terrain/material/farm_00.png"
+        },
+        "Mask": {
+          "Name": "",
+          "Path": ""
+        },
+        "Physics_Material": "FOLIAGE_STATIC",
+        "Foliage": {
+          "GUID": 0
+        },
+        "Christmas_Redirect": {
+          "GUID": 0
+        },
+        "Use_Auto_Slope": false,
+        "Auto_Min_Angle_Begin": 0,
+        "Auto_Min_Angle_End": 0,
+        "Auto_Max_Angle_Begin": 0,
+        "Auto_Max_Angle_End": 0,
+        "Use_Auto_Foundation": false,
+        "Auto_Ray_Radius": 0,
+        "Auto_Ray_Length": 0,
+        "Auto_Ray_Mask": 0
+      }
+    }
+  },
+  {
+    "guid": "2fea2e9022f445f0ad0eb5d9ecf33084",
+    "name": "Frost Grass 00 Material",
+    "csharp_type": "LandscapeMaterialAsset",
+    "source_path": "Content/Terrain/Material/Frost_Grass_00_Material.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "2fea2e9022f445f0ad0eb5d9ecf33084",
+        "Type": "SDG.Unturned.LandscapeMaterialAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Texture": {
+          "Name": "frost.masterbundle",
+          "Path": "content/terrain/material/grass_00.png"
+        },
+        "Mask": {
+          "Name": "",
+          "Path": ""
+        },
+        "Physics_Material": "GRAVEL_STATIC",
+        "Foliage": {
+          "GUID": "b06248bedb3f459db00071a20324b874"
+        },
+        "Christmas_Redirect": {
+          "GUID": 0
+        },
+        "Use_Auto_Slope": false,
+        "Auto_Min_Angle_Begin": 0,
+        "Auto_Min_Angle_End": 0,
+        "Auto_Max_Angle_Begin": 0,
+        "Auto_Max_Angle_End": 0,
+        "Use_Auto_Foundation": false,
+        "Auto_Ray_Radius": 0,
+        "Auto_Ray_Length": 0,
+        "Auto_Ray_Mask": 0
+      }
+    }
+  },
+  {
+    "guid": "e2f8f46bdbb44cf9bf8404fa0832e078",
+    "name": "Frost Grass 01 Material",
+    "csharp_type": "LandscapeMaterialAsset",
+    "source_path": "Content/Terrain/Material/Frost_Grass_01_Material.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "e2f8f46bdbb44cf9bf8404fa0832e078",
+        "Type": "SDG.Unturned.LandscapeMaterialAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Texture": {
+          "Name": "frost.masterbundle",
+          "Path": "content/terrain/material/grass_01.png"
+        },
+        "Mask": {
+          "Name": "",
+          "Path": ""
+        },
+        "Physics_Material": "FOLIAGE_STATIC",
+        "Foliage": {
+          "GUID": 0
+        },
+        "Christmas_Redirect": {
+          "GUID": 0
+        },
+        "Use_Auto_Slope": false,
+        "Auto_Min_Angle_Begin": 0,
+        "Auto_Min_Angle_End": 0,
+        "Auto_Max_Angle_Begin": 0,
+        "Auto_Max_Angle_End": 0,
+        "Use_Auto_Foundation": false,
+        "Auto_Ray_Radius": 0,
+        "Auto_Ray_Length": 0,
+        "Auto_Ray_Mask": 0
+      }
+    }
+  },
+  {
+    "guid": "d405944a90af4db7beead50b2fc0f115",
+    "name": "Frost Grass 02 Material",
+    "csharp_type": "LandscapeMaterialAsset",
+    "source_path": "Content/Terrain/Material/Frost_Grass_02_Material.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "d405944a90af4db7beead50b2fc0f115",
+        "Type": "SDG.Unturned.LandscapeMaterialAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Texture": {
+          "Name": "frost.masterbundle",
+          "Path": "content/terrain/material/grass_02.png"
+        },
+        "Mask": {
+          "Name": "",
+          "Path": ""
+        },
+        "Physics_Material": "FOLIAGE_STATIC",
+        "Foliage": {
+          "GUID": 0
+        },
+        "Christmas_Redirect": {
+          "GUID": 0
+        },
+        "Use_Auto_Slope": false,
+        "Auto_Min_Angle_Begin": 0,
+        "Auto_Min_Angle_End": 0,
+        "Auto_Max_Angle_Begin": 0,
+        "Auto_Max_Angle_End": 0,
+        "Use_Auto_Foundation": false,
+        "Auto_Ray_Radius": 0,
+        "Auto_Ray_Length": 0,
+        "Auto_Ray_Mask": 0
+      }
+    }
+  },
+  {
+    "guid": "5f0442f1f9944765996849edced5ea62",
+    "name": "Frost Grass 03 Material",
+    "csharp_type": "LandscapeMaterialAsset",
+    "source_path": "Content/Terrain/Material/Frost_Grass_03_Material.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "5f0442f1f9944765996849edced5ea62",
+        "Type": "SDG.Unturned.LandscapeMaterialAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Texture": {
+          "Name": "frost.masterbundle",
+          "Path": "content/terrain/material/grass_03.png"
+        },
+        "Mask": {
+          "Name": "",
+          "Path": ""
+        },
+        "Physics_Material": "FOLIAGE_STATIC",
+        "Foliage": {
+          "GUID": 0
+        },
+        "Christmas_Redirect": {
+          "GUID": 0
+        },
+        "Use_Auto_Slope": false,
+        "Auto_Min_Angle_Begin": 0,
+        "Auto_Min_Angle_End": 0,
+        "Auto_Max_Angle_Begin": 0,
+        "Auto_Max_Angle_End": 0,
+        "Use_Auto_Foundation": false,
+        "Auto_Ray_Radius": 0,
+        "Auto_Ray_Length": 0,
+        "Auto_Ray_Mask": 0
+      }
+    }
+  },
+  {
+    "guid": "eb050f433c954c50858192d23040fd00",
+    "name": "Frost Grass 04 Material",
+    "csharp_type": "LandscapeMaterialAsset",
+    "source_path": "Content/Terrain/Material/Frost_Grass_04_Material.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "eb050f433c954c50858192d23040fd00",
+        "Type": "SDG.Unturned.LandscapeMaterialAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Texture": {
+          "Name": "frost.masterbundle",
+          "Path": "content/terrain/material/grass_04.png"
+        },
+        "Mask": {
+          "Name": "",
+          "Path": ""
+        },
+        "Physics_Material": "FOLIAGE_STATIC",
+        "Foliage": {
+          "GUID": 0
+        },
+        "Christmas_Redirect": {
+          "GUID": 0
+        },
+        "Use_Auto_Slope": false,
+        "Auto_Min_Angle_Begin": 0,
+        "Auto_Min_Angle_End": 0,
+        "Auto_Max_Angle_Begin": 0,
+        "Auto_Max_Angle_End": 0,
+        "Use_Auto_Foundation": false,
+        "Auto_Ray_Radius": 0,
+        "Auto_Ray_Length": 0,
+        "Auto_Ray_Mask": 0
+      }
+    }
+  },
+  {
+    "guid": "dfa7d32a642b49ebb3abba0c65854385",
+    "name": "Frost Grass 05 Material",
+    "csharp_type": "LandscapeMaterialAsset",
+    "source_path": "Content/Terrain/Material/Frost_Grass_05_Material.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "dfa7d32a642b49ebb3abba0c65854385",
+        "Type": "SDG.Unturned.LandscapeMaterialAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Texture": {
+          "Name": "frost.masterbundle",
+          "Path": "content/terrain/material/grass_05.png"
+        },
+        "Mask": {
+          "Name": "",
+          "Path": ""
+        },
+        "Physics_Material": "FOLIAGE_STATIC",
+        "Foliage": {
+          "GUID": 0
+        },
+        "Christmas_Redirect": {
+          "GUID": 0
+        },
+        "Use_Auto_Slope": false,
+        "Auto_Min_Angle_Begin": 0,
+        "Auto_Min_Angle_End": 0,
+        "Auto_Max_Angle_Begin": 0,
+        "Auto_Max_Angle_End": 0,
+        "Use_Auto_Foundation": false,
+        "Auto_Ray_Radius": 0,
+        "Auto_Ray_Length": 0,
+        "Auto_Ray_Mask": 0
+      }
+    }
+  },
+  {
+    "guid": "c1a226cf51ba49a4a10930287df624b7",
+    "name": "Frost Grass 06 Material",
+    "csharp_type": "LandscapeMaterialAsset",
+    "source_path": "Content/Terrain/Material/Frost_Grass_06_Material.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "c1a226cf51ba49a4a10930287df624b7",
+        "Type": "SDG.Unturned.LandscapeMaterialAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Texture": {
+          "Name": "frost.masterbundle",
+          "Path": "content/terrain/material/grass_06.png"
+        },
+        "Mask": {
+          "Name": "",
+          "Path": ""
+        },
+        "Physics_Material": "FOLIAGE_STATIC",
+        "Foliage": {
+          "GUID": 0
+        },
+        "Christmas_Redirect": {
+          "GUID": 0
+        },
+        "Use_Auto_Slope": false,
+        "Auto_Min_Angle_Begin": 0,
+        "Auto_Min_Angle_End": 0,
+        "Auto_Max_Angle_Begin": 0,
+        "Auto_Max_Angle_End": 0,
+        "Use_Auto_Foundation": false,
+        "Auto_Ray_Radius": 0,
+        "Auto_Ray_Length": 0,
+        "Auto_Ray_Mask": 0
+      }
+    }
+  },
+  {
+    "guid": "d36f7740a4944c118ca7fc7217cd2a8c",
+    "name": "Frost Gravel 00 Material",
+    "csharp_type": "LandscapeMaterialAsset",
+    "source_path": "Content/Terrain/Material/Frost_Gravel_00_Material.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "d36f7740a4944c118ca7fc7217cd2a8c",
+        "Type": "SDG.Unturned.LandscapeMaterialAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Texture": {
+          "Name": "frost.masterbundle",
+          "Path": "content/terrain/material/gravel_00.png"
+        },
+        "Mask": {
+          "Name": "",
+          "Path": ""
+        },
+        "Physics_Material": "GRAVEL_STATIC",
+        "Foliage": {
+          "GUID": 0
+        },
+        "Christmas_Redirect": {
+          "GUID": 0
+        },
+        "Use_Auto_Slope": false,
+        "Auto_Min_Angle_Begin": 0,
+        "Auto_Min_Angle_End": 0,
+        "Auto_Max_Angle_Begin": 0,
+        "Auto_Max_Angle_End": 0,
+        "Use_Auto_Foundation": false,
+        "Auto_Ray_Radius": 0,
+        "Auto_Ray_Length": 0,
+        "Auto_Ray_Mask": 0
+      }
+    }
+  },
+  {
+    "guid": "8ef83a8ec5df4e03b268544a7aec323b",
+    "name": "Frost Road 00 Material",
+    "csharp_type": "LandscapeMaterialAsset",
+    "source_path": "Content/Terrain/Material/Frost_Road_00_Material.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "8ef83a8ec5df4e03b268544a7aec323b",
+        "Type": "SDG.Unturned.LandscapeMaterialAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Texture": {
+          "Name": "frost.masterbundle",
+          "Path": "content/terrain/material/road_00.png"
+        },
+        "Mask": {
+          "Name": "",
+          "Path": ""
+        },
+        "Physics_Material": "GRAVEl_STATIC",
+        "Foliage": {
+          "GUID": 0
+        },
+        "Christmas_Redirect": {
+          "GUID": 0
+        },
+        "Use_Auto_Slope": false,
+        "Auto_Min_Angle_Begin": 0,
+        "Auto_Min_Angle_End": 0,
+        "Auto_Max_Angle_Begin": 0,
+        "Auto_Max_Angle_End": 0,
+        "Use_Auto_Foundation": false,
+        "Auto_Ray_Radius": 0,
+        "Auto_Ray_Length": 0,
+        "Auto_Ray_Mask": 0
+      }
+    }
+  },
+  {
+    "guid": "c60faef2120a45cb81f585a905e4e595",
+    "name": "Frost Snow 00 Material",
+    "csharp_type": "LandscapeMaterialAsset",
+    "source_path": "Content/Terrain/Material/Frost_Snow_00_Material.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "c60faef2120a45cb81f585a905e4e595",
+        "Type": "SDG.Unturned.LandscapeMaterialAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Texture": {
+          "Name": "frost.masterbundle",
+          "Path": "content/terrain/material/snow_00.png"
+        },
+        "Mask": {
+          "Name": "core.masterbundle",
+          "Path": "Terrain/Materials/Yukon/Snow_mask_00.png"
+        },
+        "Physics_Material": "SNOW_STATIC",
+        "Foliage": {
+          "GUID": "b06248bedb3f459db00071a20324b874"
+        },
+        "Christmas_Redirect": {
+          "GUID": 0
+        },
+        "Use_Auto_Slope": false,
+        "Auto_Min_Angle_Begin": 0,
+        "Auto_Min_Angle_End": 0,
+        "Auto_Max_Angle_Begin": 0,
+        "Auto_Max_Angle_End": 0,
+        "Use_Auto_Foundation": false,
+        "Auto_Ray_Radius": 0,
+        "Auto_Ray_Length": 0,
+        "Auto_Ray_Mask": 0
+      }
+    }
+  },
+  {
+    "guid": "64da581854e2451b8a3d029943fb5ac7",
+    "name": "Frost Snow 01 Material",
+    "csharp_type": "LandscapeMaterialAsset",
+    "source_path": "Content/Terrain/Material/Frost_Snow_01_Material.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "64da581854e2451b8a3d029943fb5ac7",
+        "Type": "SDG.Unturned.LandscapeMaterialAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Texture": {
+          "Name": "frost.masterbundle",
+          "Path": "content/terrain/material/snow_01.png"
+        },
+        "Mask": {
+          "Name": "",
+          "Path": ""
+        },
+        "Physics_Material": "ICE_STATIC",
+        "Foliage": {
+          "GUID": 0
+        },
+        "Christmas_Redirect": {
+          "GUID": 0
+        },
+        "Use_Auto_Slope": false,
+        "Auto_Min_Angle_Begin": 0,
+        "Auto_Min_Angle_End": 0,
+        "Auto_Max_Angle_Begin": 0,
+        "Auto_Max_Angle_End": 0,
+        "Use_Auto_Foundation": false,
+        "Auto_Ray_Radius": 0,
+        "Auto_Ray_Length": 0,
+        "Auto_Ray_Mask": 0
+      }
+    }
+  },
+  {
+    "guid": "9f1dcab9f5b24dd9b0fe99416645ca98",
+    "name": "Frost Snow 02 Material",
+    "csharp_type": "LandscapeMaterialAsset",
+    "source_path": "Content/Terrain/Material/Frost_Snow_02_Material.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "9f1dcab9f5b24dd9b0fe99416645ca98",
+        "Type": "SDG.Unturned.LandscapeMaterialAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Texture": {
+          "Name": "frost.masterbundle",
+          "Path": "content/terrain/material/snow_02.png"
+        },
+        "Mask": {
+          "Name": "",
+          "Path": ""
+        },
+        "Physics_Material": "GRAVEL_STATIC",
+        "Foliage": {
+          "GUID": 0
+        },
+        "Christmas_Redirect": {
+          "GUID": 0
+        },
+        "Use_Auto_Slope": false,
+        "Auto_Min_Angle_Begin": 0,
+        "Auto_Min_Angle_End": 0,
+        "Auto_Max_Angle_Begin": 0,
+        "Auto_Max_Angle_End": 0,
+        "Use_Auto_Foundation": false,
+        "Auto_Ray_Radius": 0,
+        "Auto_Ray_Length": 0,
+        "Auto_Ray_Mask": 0
+      }
+    }
+  },
+  {
+    "guid": "e612810b8c3143e69ae96f6e0b0a712d",
+    "name": "Frost Stone 00 Material",
+    "csharp_type": "LandscapeMaterialAsset",
+    "source_path": "Content/Terrain/Material/Frost_Stone_00_Material.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "e612810b8c3143e69ae96f6e0b0a712d",
+        "Type": "SDG.Unturned.LandscapeMaterialAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Texture": {
+          "Name": "frost.masterbundle",
+          "Path": "content/terrain/material/stone_00.png"
+        },
+        "Mask": {
+          "Name": "",
+          "Path": ""
+        },
+        "Physics_Material": "GRAVEL_STATIC",
+        "Foliage": {
+          "GUID": 0
+        },
+        "Christmas_Redirect": {
+          "GUID": 0
+        },
+        "Use_Auto_Slope": false,
+        "Auto_Min_Angle_Begin": 0,
+        "Auto_Min_Angle_End": 0,
+        "Auto_Max_Angle_Begin": 0,
+        "Auto_Max_Angle_End": 0,
+        "Use_Auto_Foundation": false,
+        "Auto_Ray_Radius": 0,
+        "Auto_Ray_Length": 0,
+        "Auto_Ray_Mask": 0
+      }
+    }
+  },
+  {
+    "guid": "9a551da566d64d93a0779b9f3bf6e3dd",
+    "name": "Frost Tiles 00 Material",
+    "csharp_type": "LandscapeMaterialAsset",
+    "source_path": "Content/Terrain/Material/Frost_Tiles_00_Material.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "9a551da566d64d93a0779b9f3bf6e3dd",
+        "Type": "SDG.Unturned.LandscapeMaterialAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Texture": {
+          "Name": "frost.masterbundle",
+          "Path": "content/terrain/material/tiles_00.png"
+        },
+        "Mask": {
+          "Name": "",
+          "Path": ""
+        },
+        "Physics_Material": "GRAVEl_STATIC",
+        "Foliage": {
+          "GUID": 0
+        },
+        "Christmas_Redirect": {
+          "GUID": 0
+        },
+        "Use_Auto_Slope": false,
+        "Auto_Min_Angle_Begin": 0,
+        "Auto_Min_Angle_End": 0,
+        "Auto_Max_Angle_Begin": 0,
+        "Auto_Max_Angle_End": 0,
+        "Use_Auto_Foundation": false,
+        "Auto_Ray_Radius": 0,
+        "Auto_Ray_Length": 0,
+        "Auto_Ray_Mask": 0
+      }
+    }
+  },
+  {
+    "guid": "5f42a62e586343babeac8e269cf64337",
+    "name": "Frost Axe 00",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Axe_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "5f42a62e586343babeac8e269cf64337",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "890101585e8c4960a4d4d37a91a56312"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "530cc346ef1345848023d3c2a30cf3f7",
+    "name": "Frost Bale 00",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Bale_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "530cc346ef1345848023d3c2a30cf3f7",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "8b704dc9bc624ec39fb90931071b3251"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "2ae9036430494f4d984fcc6c98f058ef",
+    "name": "Frost Bush 00",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Bush_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "2ae9036430494f4d984fcc6c98f058ef",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "f8e9eff79f364de0a438b2bacdf92153"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "79218309859b4bc6b1735705312f2789",
+    "name": "Frost Bush 01",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Bush_01.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "79218309859b4bc6b1735705312f2789",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "b2aa0b9a20944fbaa58fb734c1466b41"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "10f9ce22fb4f49ad97a2b75888149f74",
+    "name": "Frost Bush 02",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Bush_02.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "10f9ce22fb4f49ad97a2b75888149f74",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "b397ea528b3145738e2cd1bf078bda97"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "658cfeb9611f40988b6a2051a909ba4c",
+    "name": "Frost Bush 03",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Bush_03.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "658cfeb9611f40988b6a2051a909ba4c",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "67bd87887d554810a0afa24017fc5692"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "6b4920d5272e490baf0e0c5568dfc98c",
+    "name": "Frost Bush 04",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Bush_04.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "6b4920d5272e490baf0e0c5568dfc98c",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "b8c7a4754bcc4e54a33082100e9f42dc"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "c65e16068a5142a7a89e015f8f3fd059",
+    "name": "Frost Bush 05",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Bush_05.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "c65e16068a5142a7a89e015f8f3fd059",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "f7209570f9c24d16b758abdc90dd37d7"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "77927292e5624257a118d335ad0b7e64",
+    "name": "Frost Bush 06",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Bush_06.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "77927292e5624257a118d335ad0b7e64",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "e449a90741c644bcb1e69d54e974bd5c"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "6ce5403946114847aef1e9cb416d3a3e",
+    "name": "Frost Bush 07",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Bush_07.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "6ce5403946114847aef1e9cb416d3a3e",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "fda32089bddf414c8950cfec5819d1ec"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "f1c08362a24c4d8bbdc6b8a0cfcd1fd6",
+    "name": "Frost Bush 08",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Bush_08.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "f1c08362a24c4d8bbdc6b8a0cfcd1fd6",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "7118416afb5d447282016ed2596c534d"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "63ca1fda78c848be84cb4045f19c1876",
+    "name": "Frost Bush 09",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Bush_09.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "63ca1fda78c848be84cb4045f19c1876",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "3266fad31a90465c94235449dc60fc12"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "2b9f526f437941cd9f05dc703688cc22",
+    "name": "Frost Bush 10",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Bush_10.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "2b9f526f437941cd9f05dc703688cc22",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "59d043aafb7241dca4ac6a99348d75a3"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "9b6a6b722ab04e2ba88f3dd32446b0dc",
+    "name": "Frost Cache 00",
+    "csharp_type": "FoliageObjectInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Cache_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "9b6a6b722ab04e2ba88f3dd32446b0dc",
+        "Type": "SDG.Framework.Foliage.FoliageObjectInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 16384,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": -90,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 1,
+        "Min_Weight": 0.75,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 15,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Object": {
+          "GUID": "9cdf78441bdc44f18b846398faadcdf7"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "b06248bedb3f459db00071a20324b874",
+    "name": "Frost Cache 00 Collection",
+    "csharp_type": "FoliageInfoCollectionAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Cache_00_Collection.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "b06248bedb3f459db00071a20324b874",
+        "Type": "SDG.Framework.Foliage.FoliageInfoCollectionAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Foliage": [
+          {
+            "Asset": {
+              "GUID": "7307f5aa487b4f7f8bcc793dcf74ce40"
+            },
+            "Weight": 1
+          }
+        ]
+      }
+    }
+  },
+  {
+    "guid": "adffa8bfa67442afb72148b89809e695",
+    "name": "Frost Carrot 00",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Carrot_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "adffa8bfa67442afb72148b89809e695",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "4a83bbe94f904f4c867a24e6c4a1a157"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "872920e94a764e0d99d5611d19c7e7d3",
+    "name": "Frost Drive 00",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Drive_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "872920e94a764e0d99d5611d19c7e7d3",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "ae185e97d67e46fa97261b70f94bafca"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "c702605231ea484db4ea8fb0795949bb",
+    "name": "Frost Flower 00",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Flower_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "c702605231ea484db4ea8fb0795949bb",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "41f009118fd14e48b800e7474cb1d19c"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "f3f6a92131f24314a14aae2bc1a0e071",
+    "name": "Frost Metal 00",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Metal_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "f3f6a92131f24314a14aae2bc1a0e071",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "94165969835342299d64c382f1f30e45"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "f695926964cc43498e46841739724889",
+    "name": "Frost Metal 01",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Metal_01.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "f695926964cc43498e46841739724889",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "ea9eb5375fee4834baae0c08be40f9cf"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "40be02b4c48840fa9e871bb2726519fc",
+    "name": "Frost Pebble 00",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Pebble_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "40be02b4c48840fa9e871bb2726519fc",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "88b15a6b9ff546999d92aa922d56d439"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "e5dc08b63e3743b8b591c240925eb7aa",
+    "name": "Frost Pebble 01",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Pebble_01.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "e5dc08b63e3743b8b591c240925eb7aa",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "16d8c7fb17dc427099bcc62632146203"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "531e1de16d064031ba18d728fe0ea878",
+    "name": "Frost Pickaxe 00",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Pickaxe_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "531e1de16d064031ba18d728fe0ea878",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "c0240cae4b1b4f71ab1a3956e1ebeab7"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "7307f5aa487b4f7f8bcc793dcf74ce40",
+    "name": "Frost Snowball 00",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Snowball_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "7307f5aa487b4f7f8bcc793dcf74ce40",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 1024,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.75,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 15,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "62a61bee534b488990cad738f34b5065"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "f538f765e0de4e82ac5b36ac409add5f",
+    "name": "Frost Tree 00",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Tree_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "f538f765e0de4e82ac5b36ac409add5f",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "e1b302f2ead34636866e78cfede8a004"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "d40a5ef560494348bb0eedec44695898",
+    "name": "Frost Tree 01",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Tree_01.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "d40a5ef560494348bb0eedec44695898",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "315007e9410e4098a1b30ff59076ed67"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "1877f69f299d47a781bc3c932e65700c",
+    "name": "Frost Tree 02",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Tree_02.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "1877f69f299d47a781bc3c932e65700c",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "5a4f68c07bb049a5ababb73daf6712e1"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "f333f2f5e333472fb617158d6c8e0b9f",
+    "name": "Frost Tree 03",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Tree_03.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "f333f2f5e333472fb617158d6c8e0b9f",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "0eaf81544f5248fb81b765cc708fb20b"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "1fe1ff56611d44118dd01b9102ea241a",
+    "name": "Frost Tree 04",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Tree_04.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "1fe1ff56611d44118dd01b9102ea241a",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "7b1410a9f68f4c9c8afd0d26e4a97254"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "4fc843cbe94e4a549eee96e561512099",
+    "name": "Frost Wood 00",
+    "csharp_type": "FoliageResourceInfoAsset",
+    "source_path": "Content/Terrain/Resources/Frost_Wood_00.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "4fc843cbe94e4a549eee96e561512099",
+        "Type": "SDG.Framework.Foliage.FoliageResourceInfoAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Density": 5000,
+        "Min_Normal_Position_Offset": 0,
+        "Max_Normal_Position_Offset": 0,
+        "Normal_Rotation_Offset": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Normal_Rotation_Alignment": 0,
+        "Min_Weight": 0.5,
+        "Max_Weight": 1,
+        "Min_Angle": 0,
+        "Max_Angle": 60,
+        "Min_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Max_Rotation": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "Min_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Max_Scale": {
+          "X": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "Resource": {
+          "GUID": "4e1d1093862f493da6b2c7561cae025b"
+        },
+        "Obstruction_Radius": 4
+      }
+    }
+  },
+  {
+    "guid": "3738ac46470b4a979a53df99bcf93069",
+    "name": "Car Profile",
+    "csharp_type": "VehiclePhysicsProfileAsset",
+    "source_path": "Content/Vehicle/Car_Profile.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "3738ac46470b4a979a53df99bcf93069",
+        "Type": "SDG.Unturned.VehiclePhysicsProfileAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "Wheel_Suspension_Damper": "\"7\",",
+        "Carjack_Force_Multiplier": 0.05
+      }
+    }
+  },
+  {
+    "guid": "d52e54738b3c41209b02ad8f10f210d5",
+    "name": "Hovercraft Profile",
+    "csharp_type": "VehiclePhysicsProfileAsset",
+    "source_path": "Content/Vehicle/Hovercraft_Profile.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "d52e54738b3c41209b02ad8f10f210d5",
+        "Type": "SDG.Unturned.VehiclePhysicsProfileAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "Wheel_Suspension_Damper": "\"10\",",
+        "Wheel_Drive_Model": "\"All\",",
+        "Wheel_Damping_Rate": "\"0.7\",",
+        "Carjack_Force_Multiplier": 5
+      }
+    }
+  },
+  {
+    "guid": "b6086c0cdc604908a5da339ed28acbe0",
+    "name": "Renaxon Profile",
+    "csharp_type": "VehiclePhysicsProfileAsset",
+    "source_path": "Content/Vehicle/Renaxon_Profile.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "b6086c0cdc604908a5da339ed28acbe0",
+        "Type": "SDG.Unturned.VehiclePhysicsProfileAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "Wheel_Suspension_Damper": "\"17\",",
+        "Carjack_Force_Multiplier": "\"8\",",
+        "Wheel_Damping_Rate": "\"0.2\",",
+        "Root_Drag_Multiplier": "\"0.1\",",
+        "Wheel_Mass_Multiplier": "\"6\",",
+        "Root_Mass": "\"4\",",
+        "Wheel_Drive_Model": "\"Front\",",
+        "Wheel_Brake_Model": "\"Rear\",",
+        "Wheel_Friction_Sideway": {
+          "Extremum_Slip": 0.4,
+          "Extremum_Value": 0.3,
+          "Asymptote_Slip": 0.1,
+          "Asymptote_Value": 0.2,
+          "Stiffness": 0.7
+        }
+      }
+    }
+  },
+  {
+    "guid": "12075bbfe3ce40c397fe17921e8f285f",
+    "name": "Snow Profile",
+    "csharp_type": "VehiclePhysicsProfileAsset",
+    "source_path": "Content/Vehicle/Snow_Profile.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "12075bbfe3ce40c397fe17921e8f285f",
+        "Type": "SDG.Unturned.VehiclePhysicsProfileAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "Wheel_Suspension_Damper": "\"7\",",
+        "Wheel_Drive_Model": "\"All\",",
+        "Wheel_Damping_Rate": "\"0.6\",",
+        "Carjack_Force_Multiplier": 1
+      }
+    }
+  },
+  {
+    "guid": "879766f5d15e4269b605c261ab14a6a9",
+    "name": "Tank New Profile",
+    "csharp_type": "VehiclePhysicsProfileAsset",
+    "source_path": "Content/Vehicle/Tank_New_Profile.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "879766f5d15e4269b605c261ab14a6a9",
+        "Type": "SDG.Unturned.VehiclePhysicsProfileAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "Wheel_Suspension_Damper": "\"10\",",
+        "Wheel_Drive_Model": "\"All\",",
+        "Wheel_Damping_Rate": "\"0.7\",",
+        "Carjack_Force_Multiplier": 5
+      }
+    }
+  },
+  {
+    "guid": "3e927d82f7f54282bb43afd62e036225",
+    "name": "Tank Profile",
+    "csharp_type": "VehiclePhysicsProfileAsset",
+    "source_path": "Content/Vehicle/Tank_Profile.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "3e927d82f7f54282bb43afd62e036225",
+        "Type": "SDG.Unturned.VehiclePhysicsProfileAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "Wheel_Suspension_Damper": "\"10\",",
+        "Wheel_Drive_Model": "\"All\",",
+        "Wheel_Damping_Rate": "\"0.7\",",
+        "Carjack_Force_Multiplier": 1
+      }
+    }
+  },
+  {
+    "guid": "34c0de578eb4486eb7d1adfc3d0f8d15",
+    "name": "Frost Zombie Boss",
+    "csharp_type": "ZombieDifficultyAsset",
+    "source_path": "Content/Zombie_Difficulty/Frost_Zombie_Boss.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "34c0de578eb4486eb7d1adfc3d0f8d15",
+        "Type": "SDG.Unturned.ZombieDifficultyAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Overrides_Spawn_Chance": true,
+        "Crawler_Chance": 0,
+        "Sprinter_Chance": 0,
+        "Flanker_Chance": 0,
+        "Burner_Chance": 0,
+        "Acid_Chance": 0,
+        "Boss_Electric_Chance": 1,
+        "Boss_Wind_Chance": 0,
+        "Boss_Fire_Chance": 0,
+        "Boss_Elver_Stomper_Chance": 0,
+        "Spirit_Chance": 0,
+        "Mega_Stun_Threshold": 10000,
+        "Normal_Stun_Threshold": 10000,
+        "Allow_Horde_Beacon": false
+      }
+    }
+  },
+  {
+    "guid": "9c2c9f42c07f4d229323643c504c7836",
+    "name": "Frost Zombie Boss Deadzone",
+    "csharp_type": "ZombieDifficultyAsset",
+    "source_path": "Content/Zombie_Difficulty/Frost_Zombie_Boss_Deadzone.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "9c2c9f42c07f4d229323643c504c7836",
+        "Type": "SDG.Unturned.ZombieDifficultyAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Overrides_Spawn_Chance": true,
+        "Crawler_Chance": 0,
+        "Sprinter_Chance": 0,
+        "Flanker_Chance": 0,
+        "Burner_Chance": 0,
+        "Acid_Chance": 0,
+        "Boss_Electric_Chance": 0,
+        "Boss_Wind_Chance": 1,
+        "Boss_Fire_Chance": 0,
+        "Boss_Elver_Stomper_Chance": 0,
+        "Spirit_Chance": 0,
+        "Mega_Stun_Threshold": 10000,
+        "Normal_Stun_Threshold": 10000,
+        "Allow_Horde_Beacon": false
+      }
+    }
+  },
+  {
+    "guid": "23fa55a9bdb2491f8fd9c95b380f68c3",
+    "name": "Frost Zombie Boss Military",
+    "csharp_type": "ZombieDifficultyAsset",
+    "source_path": "Content/Zombie_Difficulty/Frost_Zombie_Boss_Military.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "23fa55a9bdb2491f8fd9c95b380f68c3",
+        "Type": "SDG.Unturned.ZombieDifficultyAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Overrides_Spawn_Chance": true,
+        "Crawler_Chance": 0,
+        "Sprinter_Chance": 0,
+        "Flanker_Chance": 0,
+        "Burner_Chance": 0,
+        "Acid_Chance": 0,
+        "Boss_Electric_Chance": 0,
+        "Boss_Wind_Chance": 0,
+        "Boss_Fire_Chance": 1,
+        "Boss_Elver_Stomper_Chance": 0,
+        "Spirit_Chance": 0,
+        "Mega_Stun_Threshold": 10000,
+        "Normal_Stun_Threshold": 10000,
+        "Allow_Horde_Beacon": false
+      }
+    }
+  },
+  {
+    "guid": "09e84747658049e1a82a65aa150e2c21",
+    "name": "Frost Zombie Deadzone",
+    "csharp_type": "ZombieDifficultyAsset",
+    "source_path": "Content/Zombie_Difficulty/Frost_Zombie_Deadzone.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "09e84747658049e1a82a65aa150e2c21",
+        "Type": "SDG.Unturned.ZombieDifficultyAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Overrides_Spawn_Chance": true,
+        "Crawler_Chance": 0.2,
+        "Sprinter_Chance": 0,
+        "Flanker_Chance": 0.1,
+        "Burner_Chance": 0.075,
+        "Acid_Chance": 0.025,
+        "Boss_Electric_Chance": 0,
+        "Boss_Wind_Chance": 0,
+        "Boss_Fire_Chance": 0,
+        "Boss_Elver_Stomper_Chance": 0,
+        "Spirit_Chance": 0,
+        "Mega_Stun_Threshold": 1000,
+        "Normal_Stun_Threshold": 25,
+        "Allow_Horde_Beacon": false
+      }
+    }
+  },
+  {
+    "guid": "2d0c67c9a01b455dab66e43596b9d9c7",
+    "name": "Frost Zombie Generic",
+    "csharp_type": "ZombieDifficultyAsset",
+    "source_path": "Content/Zombie_Difficulty/Frost_Zombie_Generic.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "2d0c67c9a01b455dab66e43596b9d9c7",
+        "Type": "SDG.Unturned.ZombieDifficultyAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Overrides_Spawn_Chance": true,
+        "Crawler_Chance": 0,
+        "Sprinter_Chance": 0,
+        "Flanker_Chance": 0.05,
+        "Burner_Chance": 0,
+        "Acid_Chance": 0,
+        "Boss_Electric_Chance": 0,
+        "Boss_Wind_Chance": 0,
+        "Boss_Fire_Chance": 0,
+        "Boss_Elver_Stomper_Chance": 0,
+        "Spirit_Chance": 0,
+        "Mega_Stun_Threshold": 1000,
+        "Normal_Stun_Threshold": 5,
+        "Allow_Horde_Beacon": true
+      }
+    }
+  },
+  {
+    "guid": "bee745f5b7604effb457a3853833c672",
+    "name": "Frost Zombie Infected",
+    "csharp_type": "ZombieDifficultyAsset",
+    "source_path": "Content/Zombie_Difficulty/Frost_Zombie_Infected.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "bee745f5b7604effb457a3853833c672",
+        "Type": "SDG.Unturned.ZombieDifficultyAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Overrides_Spawn_Chance": true,
+        "Crawler_Chance": 1,
+        "Sprinter_Chance": 0,
+        "Flanker_Chance": 0,
+        "Burner_Chance": 0,
+        "Acid_Chance": 0,
+        "Boss_Electric_Chance": 0,
+        "Boss_Wind_Chance": 0,
+        "Boss_Fire_Chance": 0,
+        "Boss_Elver_Stomper_Chance": 0,
+        "Spirit_Chance": 0,
+        "Mega_Stun_Threshold": 1000,
+        "Normal_Stun_Threshold": 1,
+        "Allow_Horde_Beacon": false
+      }
+    }
+  },
+  {
+    "guid": "061e140a3af14ed4baaeb99d1a8461c4",
+    "name": "A6",
+    "csharp_type": "StereoSongAsset",
+    "source_path": "Music/A6/A6.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "061e140a3af14ed4baaeb99d1a8461c4",
+        "Type": "SDG.Unturned.StereoSongAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Title": {
+          "Namespace": "SDG",
+          "Token": "Stereo_Songs.A6.Title"
+        },
+        "Song": {
+          "MasterBundle": "frost.masterbundle",
+          "AssetPath": "A6.wav"
+        },
+        "Link_URL": "https://soundcloud.com/user-153434712/hello"
+      }
+    }
+  },
+  {
+    "guid": "e9ba140a3c1c4ce6a58f46cd1a50b971",
+    "name": "Cryo",
+    "csharp_type": "StereoSongAsset",
+    "source_path": "Music/Cryo/Cryo.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "e9ba140a3c1c4ce6a58f46cd1a50b971",
+        "Type": "SDG.Unturned.StereoSongAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Title": {
+          "Namespace": "SDG",
+          "Token": "Stereo_Songs.Cryo0.Title"
+        },
+        "Song": {
+          "MasterBundle": "frost.masterbundle",
+          "AssetPath": "Cryophobia.wav"
+        },
+        "Link_URL": "https://youtu.be/G98NzvDuDHA"
+      }
+    }
+  },
+  {
+    "guid": "5010d59e48da4c2182b0b711540bc52c",
+    "name": "Cryo-Remix",
+    "csharp_type": "StereoSongAsset",
+    "source_path": "Music/Cryo-Remix/Cryo-Remix.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "5010d59e48da4c2182b0b711540bc52c",
+        "Type": "SDG.Unturned.StereoSongAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Title": {
+          "Namespace": "SDG",
+          "Token": "Stereo_Songs.Cryo1.Title"
+        },
+        "Song": {
+          "MasterBundle": "frost.masterbundle",
+          "AssetPath": "F_soundtrack10.wav"
+        },
+        "Link_URL": "https://www.youtube.com/watch?v=p9rU1A2cELs"
+      }
+    }
+  },
+  {
+    "guid": "abd7a345a6654d818a62941f2c8723ee",
+    "name": "Hazardous Gaze",
+    "csharp_type": "StereoSongAsset",
+    "source_path": "Music/Hazardous_Gaze/Hazardous_Gaze.asset",
+    "raw": {
+      "Metadata": {
+        "GUID": "abd7a345a6654d818a62941f2c8723ee",
+        "Type": "SDG.Unturned.StereoSongAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "Asset": {
+        "ID": 0,
+        "Title": {
+          "Namespace": "SDG",
+          "Token": "Stereo_Songs.Hazardous_Gaze0.Title"
+        },
+        "Song": {
+          "MasterBundle": "frost.masterbundle",
+          "AssetPath": "Hazardous_Gaze.wav"
+        },
+        "Link_URL": "https://www.youtube.com/@staswalle"
+      }
+    }
+  }
+]

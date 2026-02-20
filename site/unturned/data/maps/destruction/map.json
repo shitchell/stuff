@@ -1,0 +1,85 @@
+{
+  "name": "Destruction",
+  "source_path": "/home/guy/unturned-server/Maps/Destruction",
+  "workshop_id": null,
+  "config": {
+    "Use_Rain_Volumes": true,
+    "Use_Snow_Volumes": true,
+    "Use_Legacy_Snow_Height": false,
+    "Terrain_Snow_Sparkle": true,
+    "Allow_Crafting": false,
+    "Allow_Skills": false,
+    "Allow_Information": false,
+    "Mode_Config_Overrides": {
+      "Zombies.Min_Drops": 5,
+      "Zombies.Max_Drops": 10,
+      "Vehicles.Armor_Multiplier": 0.1,
+      "Gameplay.Allow_Shoulder_Camera": false
+    },
+    "Trains": [
+      {
+        "VehicleID": 186,
+        "RoadIndex": 0
+      }
+    ],
+    "PlayerUI_HealthVisible": false,
+    "PlayerUI_FoodVisible": false,
+    "PlayerUI_WaterVisible": false,
+    "PlayerUI_VirusVisible": false,
+    "PlayerUI_StaminaVisible": false,
+    "PlayerUI_OxygenVisible": false,
+    "PlayerUI_GunVisible": false,
+    "Batching_Version": 2,
+    "Enable_Clutter_Option": true,
+    "Tips": 2
+  },
+  "level_asset": null,
+  "crafting_blacklists": [],
+  "spawn_resolution": {
+    "active_table_ids": [
+      4
+    ],
+    "active_table_names": [
+      "Arena Guns Military"
+    ],
+    "spawnable_item_ids": [
+      4,
+      18,
+      116,
+      132,
+      297,
+      363,
+      1018,
+      1024,
+      1027,
+      1037
+    ],
+    "spawnable_item_guids": [
+      "31821aa816354be8bbb0655be8ed7a90",
+      "3899b4643a064b8daeb4af1f6bcc2ebf",
+      "73cc723fbdf34e859b2735125891e571",
+      "7a144f4e5b674c3487a10d1343b307a7",
+      "9ca607566b1749fb8b0bf643c3221b23",
+      "ac781ceb4ea34e9383fb1821b1081dfb",
+      "bc272500e29d4f14b4b8723a1274d0a4",
+      "c25f4502b6484b52a867254fb8124436",
+      "d614c2199c7146afafdd28b1c53c98d7",
+      "f09caf08c33c415c9caae0e49e5829fa"
+    ],
+    "table_chains": {
+      "4": [
+        4,
+        18,
+        116,
+        132,
+        297,
+        363,
+        1018,
+        1024,
+        1027,
+        1037
+      ]
+    }
+  },
+  "master_bundle": null
+}
