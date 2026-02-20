@@ -17,6 +17,7 @@ let selectedMaps = {};      // mapName -> true
 let mapDataCache = {};      // mapName -> { map, entries?, assets? }
 let mapFilterIds = null;    // Set of entry IDs, or null (show all)
 let manifest = null;
+let modalState = null; // { editIndex: number|null, anyConditions: [], allConditions: [] }
 
 // Load persisted state
 try { hiddenTables = JSON.parse(localStorage.getItem('ut:catalog:hidden') || '{}'); } catch {}
@@ -452,6 +453,190 @@ function onColDrop(e, idx) {
   render();
 }
 function onColDragEnd(e) { e.target.classList.remove('dragging'); dragSrcIdx = null; }
+
+// ── Query Builder Modal ──────────────────────────────────────────────────────
+
+function openModal(editIndex) {
+  const overlay = document.getElementById('modal-overlay');
+  const titleEl = document.getElementById('modal-title');
+  const labelInput = document.getElementById('modal-label');
+
+  if (editIndex != null && editIndex >= 0 && editIndex < tableDefs.length) {
+    const def = tableDefs[editIndex];
+    modalState = {
+      editIndex,
+      anyConditions: JSON.parse(JSON.stringify(def.anyConditions)),
+      allConditions: JSON.parse(JSON.stringify(def.allConditions)),
+    };
+    titleEl.textContent = 'Edit Table';
+    labelInput.value = def.label;
+  } else {
+    modalState = { editIndex: null, anyConditions: [], allConditions: [] };
+    titleEl.textContent = 'New Table';
+    labelInput.value = '';
+  }
+
+  renderModalConditions();
+  updateModalPreview();
+  overlay.style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').style.display = 'none';
+  modalState = null;
+}
+
+function renderModalConditions() {
+  renderConditionGroup('any');
+  renderConditionGroup('all');
+}
+
+function renderConditionGroup(group) {
+  const container = document.getElementById(`modal-${group}-conditions`);
+  const conditions = group === 'any' ? modalState.anyConditions : modalState.allConditions;
+
+  container.innerHTML = conditions.map((cond, i) => {
+    const fieldOptions = buildFieldOptions(cond.field);
+    const opOptions = TABLE_OPERATORS.map(op =>
+      `<option value="${escapeHtml(op)}" ${op === cond.operator ? 'selected' : ''}>${escapeHtml(op)}</option>`
+    ).join('');
+    const valueInput = buildValueInput(cond.field, cond.value, group, i);
+
+    return `<div class="condition-row">
+      <select class="condition-field-select" onchange="onConditionFieldChange('${group}', ${i}, this.value)">
+        ${fieldOptions}
+      </select>
+      <select class="condition-op-select" onchange="onConditionOpChange('${group}', ${i}, this.value)">
+        ${opOptions}
+      </select>
+      ${valueInput}
+      <button class="condition-remove" onclick="removeCondition('${group}', ${i})">&times;</button>
+    </div>`;
+  }).join('');
+}
+
+function buildFieldOptions(selectedField) {
+  // Combine top-level fields + parsed fields from ALL_AVAILABLE_COLUMNS
+  const fields = [
+    { key: 'type', label: 'Type' },
+    { key: 'rarity', label: 'Rarity' },
+    { key: 'name', label: 'Name' },
+    { key: 'id', label: 'ID' },
+    { key: 'description', label: 'Description' },
+    { key: 'size_x', label: 'Size X' },
+    { key: 'size_y', label: 'Size Y' },
+  ];
+  // Add all parsed fields from ALL_AVAILABLE_COLUMNS not already listed
+  const seen = new Set(fields.map(f => f.key));
+  for (const col of ALL_AVAILABLE_COLUMNS) {
+    if (!seen.has(col.key)) {
+      seen.add(col.key);
+      fields.push(col);
+    }
+  }
+
+  return `<option value="">-- field --</option>` +
+    fields.map(f =>
+      `<option value="${escapeHtml(f.key)}" ${f.key === selectedField ? 'selected' : ''}>${escapeHtml(f.label)} (${escapeHtml(f.key)})</option>`
+    ).join('');
+}
+
+function buildValueInput(fieldKey, currentValue, group, index) {
+  // For known discrete-value fields, show a dropdown
+  const discreteFields = ['type', 'rarity'];
+  if (discreteFields.includes(fieldKey)) {
+    const values = getKnownFieldValues(allEntries, fieldKey);
+    const options = values.map(v =>
+      `<option value="${escapeHtml(v)}" ${v === currentValue ? 'selected' : ''}>${escapeHtml(v)}</option>`
+    ).join('');
+    return `<select class="condition-value-input" onchange="onConditionValueChange('${group}', ${index}, this.value)">
+      <option value="">-- value --</option>${options}
+    </select>`;
+  }
+  // For everything else, show a text input
+  return `<input class="condition-value-input" type="text" value="${escapeHtml(currentValue || '')}"
+    placeholder="value" oninput="onConditionValueChange('${group}', ${index}, this.value)">`;
+}
+
+function addModalCondition(group) {
+  const conditions = group === 'any' ? modalState.anyConditions : modalState.allConditions;
+  conditions.push({ field: 'type', operator: '=', value: '' });
+  renderModalConditions();
+  updateModalPreview();
+}
+
+function removeCondition(group, index) {
+  const conditions = group === 'any' ? modalState.anyConditions : modalState.allConditions;
+  conditions.splice(index, 1);
+  renderModalConditions();
+  updateModalPreview();
+}
+
+function onConditionFieldChange(group, index, value) {
+  const conditions = group === 'any' ? modalState.anyConditions : modalState.allConditions;
+  conditions[index].field = value;
+  conditions[index].value = ''; // reset value when field changes
+  renderModalConditions();
+  updateModalPreview();
+}
+
+function onConditionOpChange(group, index, value) {
+  const conditions = group === 'any' ? modalState.anyConditions : modalState.allConditions;
+  conditions[index].operator = value;
+  updateModalPreview();
+}
+
+function onConditionValueChange(group, index, value) {
+  const conditions = group === 'any' ? modalState.anyConditions : modalState.allConditions;
+  conditions[index].value = value;
+  updateModalPreview();
+}
+
+function updateModalPreview() {
+  if (!modalState) return;
+  const tempDef = {
+    anyConditions: modalState.anyConditions.filter(c => c.field && c.value !== ''),
+    allConditions: modalState.allConditions.filter(c => c.field && c.value !== ''),
+  };
+  const matches = filterEntriesByTable(filteredEntries, tempDef);
+  document.getElementById('modal-match-count').textContent = matches.length;
+}
+
+function saveModal() {
+  const label = document.getElementById('modal-label').value.trim();
+  if (!label) {
+    document.getElementById('modal-label').focus();
+    return;
+  }
+
+  const newDef = {
+    label,
+    anyConditions: modalState.anyConditions.filter(c => c.field && c.value !== ''),
+    allConditions: modalState.allConditions.filter(c => c.field && c.value !== ''),
+    visible: true,
+  };
+
+  if (modalState.editIndex != null) {
+    // Editing existing table
+    const oldLabel = tableDefs[modalState.editIndex].label;
+    tableDefs[modalState.editIndex] = newDef;
+    // If label changed, migrate column overrides
+    if (oldLabel !== label) {
+      const oldCols = loadTableColumns(oldLabel);
+      if (oldCols) {
+        saveTableColumns(label, oldCols);
+        saveTableColumns(oldLabel, null);
+      }
+    }
+  } else {
+    // Adding new table
+    tableDefs.push(newDef);
+  }
+
+  saveTableDefs(tableDefs);
+  closeModal();
+  render();
+}
 
 // ── Actions ─────────────────────────────────────────────────────────────────
 
