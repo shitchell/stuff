@@ -137,3 +137,18 @@ Candidate important columns: name, type, rarity, description, size, player_damag
   - Rationale: Presets are suggestions, not constraints. Power users should be able to tweak everything.
 - **Hiding != deleting**: Unchecking visibility keeps the definition and tab
   - Rationale: Rebuilding a filter from scratch is annoying. Hide/show is cheap.
+
+## Future Work
+
+### Custom Computed Columns
+
+The inline "+" column dropdown currently only lets users pick from known fields. A "Custom..." option at the top of the dropdown should open a mini modal for defining a computed column with:
+
+- **Label**: display name for the column header (e.g., "Food:Water Ratio")
+- **Expression**: a math expression referencing entry fields (e.g., `parsed.consumable.food / parsed.consumable.water`)
+
+This would need:
+- A safe expression parser/evaluator (no `eval`) that resolves field references and supports basic arithmetic (`+`, `-`, `*`, `/`, parentheses)
+- Error handling for division by zero, missing fields, non-numeric values
+- Persistence in per-table column config (stored alongside regular column defs, distinguished by a `compute` or `expr` property)
+- The existing `resolveColumnValue` already has a `colDef.expr` branch stubbed out (`if (colDef.expr) return null; // future`) — this is where evaluation would hook in

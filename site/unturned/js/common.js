@@ -391,7 +391,9 @@ const PRESET_TABLES = [
       { field: 'type', operator: '=', value: 'Melee' },
       { field: 'type', operator: '=', value: 'Throwable' },
     ],
-    allConditions: [],
+    allConditions: [
+      { field: 'parsed.damage.zombie', operator: '>', value: '0' },
+    ],
     visible: true,
   },
   {

@@ -23,24 +23,19 @@
   <div class="outer-layout">
     <div class="sidebar" id="sidebar">
       <div class="section">
-        <h3>Visible Tables</h3>
-        <div id="tab-toggles" class="filter-group"></div>
+        <h3>Tables</h3>
+        <ul class="table-list" id="table-list"></ul>
+        <button class="add-col-btn" onclick="openModal()" style="margin-top:0.5rem">+ Add Table</button>
       </div>
       <div class="section">
         <h3>Map Filter</h3>
         <div id="map-filters" class="filter-group"></div>
       </div>
-      <div class="section">
-        <h3>Columns</h3>
-        <div id="col-target-area"></div>
-        <div id="col-path-hint" class="col-path-hint"></div>
-        <ul class="col-list" id="col-list"></ul>
-        <div id="add-col-area"></div>
-      </div>
     </div>
 
     <div class="right-panel">
       <div class="tabs" id="tabs"></div>
+      <div class="result-info" id="table-info" style="display:none"></div>
       <div class="content" id="content">
         <div style="text-align:center;padding:2rem;color:#888;">Loading...</div>
       </div>

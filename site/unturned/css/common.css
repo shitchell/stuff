@@ -29,6 +29,8 @@
   --font-lg: 1rem;
   --radius: 4px;
   --radius-lg: 6px;
+  --cell-pad-x: 0.8rem;
+  --cell-pad-y: 0.45rem;
 }
 
 /* === Base Reset === */
@@ -38,7 +40,10 @@ body {
   background: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.5;
-  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   scrollbar-width: thin;
   scrollbar-color: var(--text-muted) transparent;
 }
@@ -145,7 +150,8 @@ a:hover { text-decoration: underline; }
 .tab.all-tab { font-style: italic; }
 
 /* === Content === */
-.content { flex: 1; padding: 1.2rem; overflow: auto; }
+.content { flex: 1; min-height: 0; padding: 1.2rem; overflow: auto; }
+.content.focused { padding: 0; }
 
 /* === Subcategory Chips === */
 .subcategories { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.2rem; }
@@ -158,13 +164,14 @@ a:hover { text-decoration: underline; }
 .subcat-chip .chip-count { font-size: 0.7rem; color: var(--text-muted); margin-left: 0.3rem; }
 .subcat-chip:hover .chip-count { color: var(--accent-dim); }
 
-.result-info { font-size: 0.8rem; color: #666; margin-bottom: 0.8rem; }
+.result-info { font-size: 0.8rem; color: #666; padding: var(--cell-pad-x); }
 
 /* === Table === */
-table { width: 100%; border-collapse: collapse; font-size: var(--font-base); }
+table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: var(--font-base); }
+thead { position: sticky; top: 0; z-index: 2; }
 thead th {
-  position: sticky; top: 0; z-index: 2; background: var(--bg-header); text-align: left;
-  padding: 0.5rem 0.8rem; color: #999; font-weight: 600; font-size: var(--font-sm);
+  background: var(--bg-header); text-align: left;
+  padding: var(--cell-pad-y) var(--cell-pad-x); color: #999; font-weight: 600; font-size: var(--font-sm);
   text-transform: uppercase; letter-spacing: 0.04em;
   border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; white-space: nowrap;
 }
@@ -173,7 +180,6 @@ thead th .sort-arrow { margin-left: 0.3rem; font-size: 0.65rem; }
 
 /* Column filter row */
 .filter-row th {
-  position: sticky; top: 1.85rem; z-index: 1;
   padding: 0.25rem 0.4rem;
   background: var(--bg-header);
   border-bottom: 1px solid var(--border);
@@ -198,7 +204,7 @@ thead th .sort-arrow { margin-left: 0.3rem; font-size: 0.65rem; }
 
 tbody tr { border-bottom: 1px solid var(--border-subtle); transition: background 0.1s; }
 tbody tr:hover { background: var(--bg-hover); }
-td { padding: 0.45rem 0.8rem; white-space: nowrap; }
+td { padding: var(--cell-pad-y) var(--cell-pad-x); white-space: nowrap; }
 td.id-cell, th.id-col { width: 1%; white-space: nowrap; }
 td.name-cell { color: var(--text-primary); font-weight: 500; }
 td.type-cell { color: var(--text-secondary); }
@@ -369,8 +375,71 @@ td.num-cell { font-variant-numeric: tabular-nums; }
 .modal-btn-save { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
 .modal-btn-save:hover { background: #e6c200; }
 
+/* === Table List (sidebar) === */
+.table-list { list-style: none; }
+.table-list-item {
+  display: flex; align-items: center; gap: 0.4rem;
+  padding: 0.3rem 0.4rem; border-radius: var(--radius);
+  font-size: var(--font-base); cursor: grab; user-select: none;
+}
+.table-list-item:hover { background: var(--bg-hover); }
+.table-list-item.dragging { opacity: 0.4; }
+.table-list-item .drag-handle { color: var(--text-dim); cursor: grab; font-size: var(--font-sm); line-height: 1; }
+.table-list-item .drag-handle:hover { color: var(--text-secondary); }
+.table-list-item .table-label { flex: 1; color: #ccc; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.table-list-item .table-edit-btn {
+  color: var(--text-dim); cursor: pointer; font-size: 0.85rem;
+  padding: 0 0.2rem; line-height: 1; background: none; border: none;
+}
+.table-list-item .table-edit-btn:hover { color: var(--accent); }
+.table-list-item .table-remove-btn {
+  color: #666; cursor: pointer; font-size: 0.9rem;
+  width: 1.2rem; text-align: center; border-radius: 3px; line-height: 1.2rem;
+  background: none; border: none;
+}
+.table-list-item .table-remove-btn:hover { color: var(--rarity-mythical); background: rgba(227, 79, 79, 0.15); }
+
+/* === Inline Column Controls === */
+/* col-header: sticky from thead th already acts as positioning context */
+.col-header .col-sort { cursor: pointer; }
+.col-header .col-remove-btn {
+  display: none; position: absolute; top: var(--cell-pad-y); right: var(--cell-pad-x);
+  background: var(--bg-header); border: none; color: var(--text-dim);
+  cursor: pointer; font-size: 0.8rem; line-height: 1; padding: 0 0.2rem;
+  border-radius: 2px;
+}
+.col-header:hover .col-remove-btn { display: block; }
+.col-header .col-remove-btn:hover { color: var(--rarity-mythical); }
+.col-header.dragging { opacity: 0.4; }
+
+.col-add-th { width: 1%; padding: 0; vertical-align: middle; border-bottom: 1px solid var(--border); background: var(--bg-header); }
+.col-add-btn {
+  background: none; border: 1px dashed var(--border); border-radius: 3px;
+  color: var(--text-dim); cursor: pointer; font-size: 0.9rem;
+  width: 1.5rem; height: 1.5rem; display: flex; align-items: center; justify-content: center;
+  margin: 0 0.3rem;
+}
+.col-add-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+.inline-col-dropdown {
+  position: fixed; z-index: 300; background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--radius); width: 220px; max-height: 250px; display: flex; flex-direction: column;
+}
+.inline-col-search {
+  padding: 0.4rem 0.6rem; background: var(--bg-primary); border: none; border-bottom: 1px solid var(--border);
+  color: var(--text-primary); font-size: var(--font-sm);
+}
+.inline-col-search:focus { outline: none; }
+.inline-col-options { overflow-y: auto; flex: 1; }
+.inline-col-option { padding: 0.35rem 0.6rem; cursor: pointer; font-size: var(--font-sm); }
+.inline-col-option:hover { background: var(--bg-hover); color: var(--accent); }
+.inline-col-option .ac-key { color: var(--text-muted); font-size: 0.7rem; margin-left: 0.4rem; }
+
 /* === Responsive === */
 @media (max-width: 800px) {
   .sidebar { position: fixed; left: 0; top: 44px; bottom: 0; z-index: 50; }
   .tab { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
+  .modal { width: 95%; max-width: none; max-height: 90vh; }
+  .condition-row { flex-wrap: wrap; }
+  .condition-field-select { flex: 1 1 100%; }
 }

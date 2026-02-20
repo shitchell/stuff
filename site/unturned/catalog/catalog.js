@@ -4,66 +4,32 @@
 
 let allEntries = [];
 let filteredEntries = [];
-let currentPath = [];
-let activeTab = null;
-let sortState = {};         // pathKey -> { col, dir }
-let colFilters = {};        // pathKey -> { colKey: filterString }
-let addingColumn = false;
-let colEditTarget = null;
-let hiddenTables = {};
+let activeTableIndex = null;  // null = All view, number = index into tableDefs
+let sortState = {};           // tableKey -> { col, dir }
+let colFilters = {};          // tableKey -> { colKey: filterString }
 let collapsedSections = {};
-let columnOverrides = loadColumnOverrides();
-let selectedMaps = {};      // mapName -> true
-let mapDataCache = {};      // mapName -> { map, entries?, assets? }
-let mapFilterIds = null;    // Set of entry IDs, or null (show all)
+let tableDefs = loadTableDefs();
+let selectedMaps = {};        // mapName -> true
+let mapDataCache = {};        // mapName -> { map, entries?, assets? }
+let mapFilterIds = null;      // Set of entry IDs, or null (show all)
 let manifest = null;
-let modalState = null; // { editIndex: number|null, anyConditions: [], allConditions: [] }
+let modalState = null;        // { editIndex: number|null, anyConditions: [], allConditions: [] }
 
 // Load persisted state
-try { hiddenTables = JSON.parse(localStorage.getItem('ut:catalog:hidden') || '{}'); } catch {}
 try { collapsedSections = JSON.parse(localStorage.getItem('ut:catalog:collapsed') || '{}'); } catch {}
 try { selectedMaps = JSON.parse(localStorage.getItem('ut:catalog:maps') || '{}'); } catch {}
 
 function saveState() {
-  saveColumnOverrides(columnOverrides);
-  localStorage.setItem('ut:catalog:hidden', JSON.stringify(hiddenTables));
+  saveTableDefs(tableDefs);
   localStorage.setItem('ut:catalog:collapsed', JSON.stringify(collapsedSections));
   localStorage.setItem('ut:catalog:maps', JSON.stringify(selectedMaps));
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-function pk(path) { return path.join('/'); }
-function isOverviewMode() { return currentPath.length === 0; }
+function isOverviewMode() { return activeTableIndex === null; }
 
-function getEntriesAtPath(path) {
-  return filteredEntries.filter(e => pathStartsWith(e.category || [], path));
-}
-
-function getSubcategories(path, entries) {
-  const depth = path.length;
-  const subs = new Map();
-  for (const e of entries) {
-    if ((e.category || []).length > depth) {
-      const sub = e.category[depth];
-      subs.set(sub, (subs.get(sub) || 0) + 1);
-    }
-  }
-  return [...subs.entries()].sort((a, b) => a[0].localeCompare(b[0]));
-}
-
-function getTopLevelCategories() {
-  const cats = new Map();
-  for (const e of filteredEntries) {
-    if ((e.category || []).length > 0) {
-      const c = e.category[0];
-      cats.set(c, (cats.get(c) || 0) + 1);
-    }
-  }
-  return [...cats.entries()].sort((a, b) => b[1] - a[1]);
-}
-
-function getSort(pathKey) { return sortState[pathKey] || { col: null, dir: 1 }; }
+function getSort(tableKey) { return sortState[tableKey] || { col: null, dir: 1 }; }
 
 function searchFilter(entries) {
   const q = document.getElementById('search').value.toLowerCase();
@@ -82,14 +48,38 @@ function isNumericColumn(colKey, entries) {
   return numCount > 0;
 }
 
-function getColsForPath(path) {
-  const entries = getEntriesAtPath(path);
-  return getColumnsForPath(path, columnOverrides, entries);
+function getTableLabel(tableKey) {
+  return tableKey.startsWith('table:') ? tableKey.substring(6) : tableKey;
+}
+
+function getTableColumns(tableKey) {
+  const label = getTableLabel(tableKey);
+  const saved = loadTableColumns(label);
+  if (saved) return saved;
+  const def = tableDefs.find(d => d.label === label);
+  if (!def) return IMPORTANT_COLUMNS.slice(0, 4);
+  const entries = filterEntriesByTable(filteredEntries, def);
+  return detectColumnsForEntries(entries);
+}
+
+function setTableColumns(tableKey, columns) {
+  saveTableColumns(getTableLabel(tableKey), columns);
+}
+
+function describeTableFilter(def) {
+  const parts = [];
+  if (def.anyConditions.length > 0) {
+    parts.push(def.anyConditions.map(c => `${c.field} ${c.operator} ${c.value}`).join(' OR '));
+  }
+  if (def.allConditions.length > 0) {
+    parts.push(def.allConditions.map(c => `${c.field} ${c.operator} ${c.value}`).join(' AND '));
+  }
+  return parts.join(' AND ');
 }
 
 // ── Table Builder ───────────────────────────────────────────────────────────
 
-function buildTableHTML(entries, columns, sortKey, sortDir, pathKeyForSort) {
+function buildTableHTML(entries, columns, sortKey, sortDir, tableKey) {
   let sorted = [...entries];
   if (sortKey) {
     sorted.sort((a, b) => {
@@ -102,16 +92,26 @@ function buildTableHTML(entries, columns, sortKey, sortDir, pathKeyForSort) {
     });
   }
   sorted = searchFilter(sorted);
-  sorted = applyColFilters(sorted, columns, colFilters[pathKeyForSort]);
+  sorted = applyColFilters(sorted, columns, colFilters[tableKey]);
 
   const esc = escapeHtml;
-  const filters = colFilters[pathKeyForSort] || {};
+  const filters = colFilters[tableKey] || {};
 
-  const headerRow = `<tr>${columns.map(c => {
+  const headerRow = `<tr>${columns.map((c, i) => {
     const arrow = sortKey === c.key ? (sortDir === 1 ? '&#9650;' : '&#9660;') : '';
-    const thCls = c.key === 'id' ? ' class="id-col"' : '';
-    return `<th${thCls} onclick="doSort('${esc(pathKeyForSort)}','${esc(c.key)}')">${esc(c.label)}<span class="sort-arrow">${arrow}</span></th>`;
-  }).join('')}</tr>`;
+    const idCls = c.key === 'id' ? ' id-col' : '';
+    return `<th class="col-header${idCls}" draggable="true"
+      data-tablekey="${esc(tableKey)}" data-colidx="${i}"
+      ondragstart="onInlineColDragStart(event,'${esc(tableKey)}',${i})"
+      ondragover="onInlineColDragOver(event)"
+      ondrop="onInlineColDrop(event,'${esc(tableKey)}',${i})"
+      ondragend="onInlineColDragEnd(event)">
+      <span class="col-sort" onclick="doSort('${esc(tableKey)}','${esc(c.key)}')">${esc(c.label)}<span class="sort-arrow">${arrow}</span></span>
+      <button class="col-remove-btn" onclick="event.stopPropagation();removeInlineColumn('${esc(tableKey)}',${i})" title="Remove column">&times;</button>
+    </th>`;
+  }).join('')}<th class="col-add-th">
+    <button class="col-add-btn" onclick="showInlineAddColumn(event,'${esc(tableKey)}')" title="Add column">+</button>
+  </th></tr>`;
 
   const filterRow = `<tr class="filter-row">${columns.map(c => {
     const val = esc(filters[c.key] || '');
@@ -119,9 +119,9 @@ function buildTableHTML(entries, columns, sortKey, sortDir, pathKeyForSort) {
     const placeholder = isNumericColumn(c.key, entries) ? '&gt;, &lt;, =...' : 'filter...';
     return `<th><input class="col-filter ${isActive}" type="text" value="${val}"
       placeholder="${placeholder}"
-      data-pathkey="${esc(pathKeyForSort)}" data-colkey="${esc(c.key)}"
+      data-pathkey="${esc(tableKey)}" data-colkey="${esc(c.key)}"
       oninput="onColFilter(this)" /></th>`;
-  }).join('')}</tr>`;
+  }).join('')}<th></th></tr>`;
 
   const thead = headerRow + filterRow;
 
@@ -132,53 +132,135 @@ function buildTableHTML(entries, columns, sortKey, sortDir, pathKeyForSort) {
     const cls = c.key === 'id' ? 'id-cell' : c.key === 'name' ? 'name-cell' : c.key === 'type' ? 'type-cell' : isNum ? 'num-cell' : '';
     const rar = c.key === 'rarity' ? `rarity-${val}` : '';
     return `<td class="${cls} ${rar}">${esc(val)}</td>`;
-  }).join('')}</tr>`).join('');
+  }).join('')}<td></td></tr>`).join('');
 
   return { thead, tbody, visibleCount: sorted.length, totalCount: entries.length };
+}
+
+// ── Inline Column Controls ───────────────────────────────────────────────────
+
+let inlineColDragState = null;
+
+function removeInlineColumn(tableKey, colIdx) {
+  const columns = [...getTableColumns(tableKey)];
+  columns.splice(colIdx, 1);
+  setTableColumns(tableKey, columns);
+  render();
+}
+
+function onInlineColDragStart(e, tableKey, idx) {
+  inlineColDragState = { tableKey, fromIdx: idx };
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function onInlineColDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+function onInlineColDrop(e, tableKey, idx) {
+  e.preventDefault();
+  if (!inlineColDragState || inlineColDragState.tableKey !== tableKey) return;
+  const fromIdx = inlineColDragState.fromIdx;
+  if (fromIdx === idx) return;
+  const columns = [...getTableColumns(tableKey)];
+  const [moved] = columns.splice(fromIdx, 1);
+  columns.splice(idx, 0, moved);
+  setTableColumns(tableKey, columns);
+  inlineColDragState = null;
+  render();
+}
+function onInlineColDragEnd(e) { e.target.classList.remove('dragging'); inlineColDragState = null; }
+
+function showInlineAddColumn(event, tableKey) {
+  event.stopPropagation();
+  const existing = document.querySelector('.inline-col-dropdown');
+  if (existing) existing.remove();
+
+  const btn = event.target;
+  const rect = btn.getBoundingClientRect();
+  const currentCols = new Set(getTableColumns(tableKey).map(c => c.key));
+  const available = ALL_AVAILABLE_COLUMNS.filter(c => !currentCols.has(c.key));
+
+  const dropdown = document.createElement('div');
+  dropdown.className = 'inline-col-dropdown';
+  dropdown.style.top = `${rect.bottom + 4}px`;
+  dropdown.style.left = `${Math.min(rect.left, window.innerWidth - 220)}px`;
+
+  dropdown.innerHTML = `
+    <input type="text" class="inline-col-search" placeholder="Search columns..." oninput="filterInlineColDropdown(this, '${escapeHtml(tableKey)}')">
+    <div class="inline-col-options">${available.slice(0, 15).map(c =>
+      `<div class="inline-col-option" onclick="addInlineColumn('${escapeHtml(tableKey)}','${escapeHtml(c.key)}','${escapeHtml(c.label)}')">${escapeHtml(c.label)} <span class="ac-key">${escapeHtml(c.key)}</span></div>`
+    ).join('')}</div>`;
+
+  document.body.appendChild(dropdown);
+  dropdown.querySelector('.inline-col-search').focus();
+
+  setTimeout(() => document.addEventListener('click', function handler(e) {
+    if (!dropdown.contains(e.target) && e.target !== btn) {
+      dropdown.remove();
+      document.removeEventListener('click', handler);
+    }
+  }), 0);
+}
+
+function filterInlineColDropdown(input, tableKey) {
+  const q = input.value.toLowerCase();
+  const currentCols = new Set(getTableColumns(tableKey).map(c => c.key));
+  const matches = ALL_AVAILABLE_COLUMNS.filter(c => !currentCols.has(c.key) &&
+    (c.label.toLowerCase().includes(q) || c.key.toLowerCase().includes(q)));
+  input.parentElement.querySelector('.inline-col-options').innerHTML = matches.slice(0, 15).map(c =>
+    `<div class="inline-col-option" onclick="addInlineColumn('${escapeHtml(tableKey)}','${escapeHtml(c.key)}','${escapeHtml(c.label)}')">${escapeHtml(c.label)} <span class="ac-key">${escapeHtml(c.key)}</span></div>`
+  ).join('');
+}
+
+function addInlineColumn(tableKey, key, label) {
+  const columns = [...getTableColumns(tableKey), { key, label }];
+  setTableColumns(tableKey, columns);
+  const dropdown = document.querySelector('.inline-col-dropdown');
+  if (dropdown) dropdown.remove();
+  render();
 }
 
 // ── Render Functions ────────────────────────────────────────────────────────
 
 function renderTabs() {
   const tabsEl = document.getElementById('tabs');
-  const cats = getTopLevelCategories();
-  const allTab = `<div class="tab all-tab ${isOverviewMode() ? 'active' : ''}" onclick="navigate([])">
-    All<span class="count">${filteredEntries.length}</span></div>`;
-  const catTabs = cats.map(([name, count]) => `
-    <div class="tab ${activeTab === name ? 'active' : ''}" onclick="navigate(['${escapeHtml(name)}'])">
-      ${escapeHtml(name)}<span class="count">${count}</span>
-    </div>`).join('');
-  tabsEl.innerHTML = allTab + catTabs;
+  const allCount = filteredEntries.length;
+  const allTab = `<div class="tab all-tab ${activeTableIndex === null ? 'active' : ''}" onclick="navigateTable(null)">
+    All<span class="count">${allCount}</span></div>`;
+
+  const tableTabs = tableDefs.map((def, i) => {
+    const entries = filterEntriesByTable(filteredEntries, def);
+    return `<div class="tab ${activeTableIndex === i ? 'active' : ''}" onclick="navigateTable(${i})">
+      ${escapeHtml(def.label)}<span class="count">${entries.length}</span></div>`;
+  }).join('');
+
+  tabsEl.innerHTML = allTab + tableTabs;
 }
 
 function renderBreadcrumb() {
-  const root = document.getElementById('breadcrumb-root');
-  root.onclick = (e) => { e.preventDefault(); navigate([]); };
-
   const trail = document.getElementById('breadcrumb-trail');
-  if (currentPath.length === 0) { trail.innerHTML = ''; return; }
-  let html = '';
-  for (let i = 0; i < currentPath.length; i++) {
-    const sub = currentPath.slice(0, i + 1);
-    const isLast = i === currentPath.length - 1;
-    html += '<span class="sep">/</span>';
-    html += isLast
-      ? `<span style="color:var(--text-primary)">${escapeHtml(currentPath[i])}</span>`
-      : `<a href="#" onclick="navigate(${escapeHtml(JSON.stringify(sub))});return false;">${escapeHtml(currentPath[i])}</a>`;
+  const root = document.getElementById('breadcrumb-root');
+  root.onclick = (e) => { e.preventDefault(); navigateTable(null); };
+
+  if (activeTableIndex != null && tableDefs[activeTableIndex]) {
+    const def = tableDefs[activeTableIndex];
+    trail.innerHTML = `<span class="sep">/</span><span style="color:var(--text-primary)">${escapeHtml(def.label)}</span>`;
+  } else {
+    trail.innerHTML = '';
   }
-  trail.innerHTML = html;
 }
 
-function renderCategoryToggles() {
-  const el = document.getElementById('tab-toggles');
-  const cats = getTopLevelCategories();
-  el.innerHTML = cats.map(([name, count]) => `
-    <label>
-      <input type="checkbox" ${hiddenTables[name] ? '' : 'checked'}
-             onchange="toggleTableVisibility('${escapeHtml(name)}', this.checked)">
-      ${escapeHtml(name)} <span style="color:var(--text-muted);font-size:0.75rem">(${count})</span>
-    </label>
-  `).join('');
+function renderTableList() {
+  const el = document.getElementById('table-list');
+  el.innerHTML = tableDefs.map((def, i) => `
+    <li class="table-list-item" draggable="true" data-idx="${i}"
+        ondragstart="onTableDragStart(event,${i})" ondragover="onTableDragOver(event,${i})"
+        ondrop="onTableDrop(event,${i})" ondragend="onTableDragEnd(event)">
+      <span class="drag-handle">&#9776;</span>
+      <input type="checkbox" ${def.visible ? 'checked' : ''}
+             onchange="toggleTableVisible(${i}, this.checked)" title="Show in All view">
+      <span class="table-label">${escapeHtml(def.label)}</span>
+      <button class="table-edit-btn" onclick="openModal(${i})" title="Edit">&#9881;</button>
+      <button class="table-remove-btn" onclick="removeTableDef(${i})" title="Delete">&times;</button>
+    </li>`).join('');
 }
 
 function renderMapFilters() {
@@ -196,100 +278,31 @@ function renderMapFilters() {
       onchange="toggleMapFilter('${escapeHtml(m)}', this.checked)"> ${escapeHtml(m)}</label>`).join('');
 }
 
-async function toggleAllMaps(checked) {
-  if (!manifest) return;
-  const maps = Object.keys(manifest.maps);
-  if (checked) {
-    for (const m of maps) selectedMaps[m] = true;
-  } else {
-    selectedMaps = {};
-  }
-  saveState();
-  await applyMapFilter();
-}
-
-async function toggleMapFilter(mapName, checked) {
-  if (checked) selectedMaps[mapName] = true;
-  else delete selectedMaps[mapName];
-  saveState();
-  await applyMapFilter();
-}
-
-async function applyMapFilter() {
-  const selected = Object.keys(selectedMaps).filter(m => selectedMaps[m]);
-
-  if (selected.length === 0) {
-    // No maps selected: show all entries
-    mapFilterIds = null;
-    filteredEntries = allEntries;
-  } else {
-    // Build set of IDs available on any selected map, and collect map-specific
-    // entries that aren't part of the base data
-    const ids = new Set();
-    const mapEntries = [];          // map-specific entries to merge in
-    const seenGuids = new Set(allEntries.map(e => e.guid));
-
-    for (const mapName of selected) {
-      // Load map data (cached by dataLoader)
-      if (!mapDataCache[mapName]) {
-        mapDataCache[mapName] = await dataLoader.getMapData(mapName);
-      }
-      const md = mapDataCache[mapName];
-      if (!md) continue;
-
-      // Add spawnable IDs (core items available on this map)
-      const spawnable = getSpawnableIds(md);
-      if (spawnable) {
-        for (const id of spawnable) ids.add(id);
-      }
-
-      // Add map-specific entries (for maps with has_custom_entries)
-      const mapInfo = manifest.maps[mapName];
-      if (mapInfo && mapInfo.has_custom_entries && md.entries) {
-        for (const entry of md.entries) {
-          ids.add(entry.id);
-          // Collect entries not already in the base pool (dedup by guid)
-          if (!seenGuids.has(entry.guid)) {
-            seenGuids.add(entry.guid);
-            mapEntries.push(entry);
-          }
-        }
-      }
-    }
-
-    mapFilterIds = ids;
-    // Filter base entries by spawnable IDs, then append map-specific entries
-    const baseMatches = allEntries.filter(e => ids.has(e.id));
-    filteredEntries = baseMatches.concat(mapEntries);
-  }
-
-  renderMapFilters();
-  render();
-}
-
 function renderOverviewMode() {
   const content = document.getElementById('content');
-  const cats = getTopLevelCategories();
   let html = '';
 
-  for (const [catName, count] of cats) {
-    if (hiddenTables[catName]) continue;
+  for (let i = 0; i < tableDefs.length; i++) {
+    const def = tableDefs[i];
+    if (!def.visible) continue;
 
-    const catPath = [catName];
-    const entries = getEntriesAtPath(catPath);
-    const { columns } = getColsForPath(catPath);
-    const s = getSort(catName);
-    const { thead, tbody, visibleCount, totalCount } = buildTableHTML(entries, columns, s.col, s.dir, catName);
-    const collapsed = collapsedSections[catName];
+    const entries = filterEntriesByTable(filteredEntries, def);
+    if (entries.length === 0) continue;
+
+    const tableKey = `table:${def.label}`;
+    const columns = getTableColumns(tableKey);
+    const s = getSort(tableKey);
+    const { thead, tbody, visibleCount, totalCount } = buildTableHTML(entries, columns, s.col, s.dir, tableKey);
+    const collapsed = collapsedSections[def.label];
 
     html += `
-      <div class="table-section" id="section-${escapeHtml(catName)}">
+      <div class="table-section" id="section-${i}">
         <div class="table-section-header ${collapsed ? 'collapsed' : ''}"
-             onclick="toggleCollapse('${escapeHtml(catName)}')">
+             onclick="toggleCollapse('${escapeHtml(def.label)}')">
           <span class="collapse-arrow">&#9660;</span>
-          <span class="section-title">${escapeHtml(catName)}</span>
+          <span class="section-title">${escapeHtml(def.label)}</span>
           <span class="section-count">${visibleCount} / ${totalCount}</span>
-          <a class="section-drill" href="#" onclick="event.stopPropagation();navigate(['${escapeHtml(catName)}']);return false;">
+          <a class="section-drill" href="#" onclick="event.stopPropagation();navigateTable(${i});return false;">
             Open &rarr;
           </a>
         </div>
@@ -300,159 +313,56 @@ function renderOverviewMode() {
         </div>
       </div>`;
   }
+
+  // "Other" section: entries not matching any visible table
+  const matchedGuids = new Set();
+  for (const def of tableDefs) {
+    if (!def.visible) continue;
+    for (const e of filterEntriesByTable(filteredEntries, def)) {
+      matchedGuids.add(e.guid);
+    }
+  }
+  const otherEntries = filteredEntries.filter(e => !matchedGuids.has(e.guid));
+  if (otherEntries.length > 0) {
+    const columns = detectColumnsForEntries(otherEntries);
+    const tableKey = 'table:__other__';
+    const s = getSort(tableKey);
+    const { thead, tbody, visibleCount, totalCount } = buildTableHTML(otherEntries, columns, s.col, s.dir, tableKey);
+    const collapsed = collapsedSections['__other__'];
+
+    html += `
+      <div class="table-section">
+        <div class="table-section-header ${collapsed ? 'collapsed' : ''}"
+             onclick="toggleCollapse('__other__')">
+          <span class="collapse-arrow">&#9660;</span>
+          <span class="section-title" style="color:var(--text-muted);font-style:italic">Other</span>
+          <span class="section-count">${visibleCount} / ${totalCount}</span>
+        </div>
+        <div class="table-section-body">
+          <div class="table-wrap">
+            <table><thead>${thead}</thead><tbody>${tbody}</tbody></table>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  if (!html) html = '<div style="text-align:center;padding:2rem;color:var(--text-muted);">No visible tables. Add or enable tables in the sidebar.</div>';
   content.innerHTML = html;
 }
 
 function renderFocusedMode() {
   const content = document.getElementById('content');
-  const entries = getEntriesAtPath(currentPath);
-  const subs = getSubcategories(currentPath, entries);
-  const { columns } = getColsForPath(currentPath);
-  const key = pk(currentPath);
-  const s = getSort(key);
-  const { thead, tbody, visibleCount, totalCount } = buildTableHTML(entries, columns, s.col, s.dir, key);
+  const def = tableDefs[activeTableIndex];
+  if (!def) { content.innerHTML = ''; return; }
 
-  let html = '';
+  const entries = filterEntriesByTable(filteredEntries, def);
+  const tableKey = `table:${def.label}`;
+  const columns = getTableColumns(tableKey);
+  const s = getSort(tableKey);
+  const { thead, tbody, visibleCount, totalCount } = buildTableHTML(entries, columns, s.col, s.dir, tableKey);
 
-  if (subs.length > 0) {
-    html += `<div class="subcategories">${subs.map(([name, count]) => {
-      const path = [...currentPath, name];
-      return `<a class="subcat-chip" href="#" onclick="navigate(${escapeHtml(JSON.stringify(path))});return false;">
-        ${escapeHtml(name)}<span class="chip-count">${count}</span></a>`;
-    }).join('')}</div>`;
-  }
-
-  html += `<div class="result-info">${visibleCount} of ${totalCount} entries in ${currentPath.map(escapeHtml).join(' > ')}</div>`;
-  html += `<table><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
-  content.innerHTML = html;
+  content.innerHTML = `<table><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
 }
-
-// ── Column Config ───────────────────────────────────────────────────────────
-
-let dragSrcIdx = null;
-
-function getColEditPath() {
-  if (!isOverviewMode()) return currentPath;
-  if (colEditTarget !== null) return colEditTarget.split('/').filter(Boolean);
-  const cats = getTopLevelCategories();
-  for (const [name] of cats) { if (!hiddenTables[name]) return [name]; }
-  return [];
-}
-
-function renderColumnConfig() {
-  const editPath = getColEditPath();
-  const editKey = pk(editPath);
-  const { columns, fromPath, isOverride } = getColsForPath(editPath);
-
-  const targetArea = document.getElementById('col-target-area');
-  if (isOverviewMode()) {
-    const cats = getTopLevelCategories().filter(([n]) => !hiddenTables[n]);
-    targetArea.innerHTML = `<select class="col-target-select" onchange="colEditTarget=this.value;renderColumnConfig();">
-      ${cats.map(([name]) => `<option value="${escapeHtml(name)}" ${editKey === name ? 'selected' : ''}>${escapeHtml(name)}</option>`).join('')}
-    </select>`;
-  } else {
-    targetArea.innerHTML = '';
-  }
-
-  const hint = document.getElementById('col-path-hint');
-  if (fromPath === editKey) {
-    hint.textContent = isOverride ? 'Custom (modified)' : '';
-  } else {
-    hint.textContent = `Inherited from ${fromPath || 'root'}`;
-  }
-
-  const list = document.getElementById('col-list');
-  list.innerHTML = columns.map((col, i) => `
-    <li class="col-item" draggable="true" data-idx="${i}"
-        ondragstart="onColDragStart(event,${i})" ondragover="onColDragOver(event,${i})"
-        ondrop="onColDrop(event,${i})" ondragend="onColDragEnd(event)">
-      <span class="drag-handle">&#9776;</span>
-      <span class="col-label">${escapeHtml(col.label)}</span>
-      <span class="remove-btn" onclick="removeColumn(${i})" title="Remove">&minus;</span>
-    </li>`).join('');
-
-  const addArea = document.getElementById('add-col-area');
-  if (!addingColumn) {
-    addArea.innerHTML = '<button class="add-col-btn" onclick="startAddColumn()">+ Add column</button>';
-  }
-}
-
-function startAddColumn() {
-  addingColumn = true;
-  const addArea = document.getElementById('add-col-area');
-  addArea.innerHTML = `
-    <div class="add-col-input-wrap">
-      <input type="text" id="add-col-input" placeholder="Search columns..."
-             oninput="filterAutocomplete()" onfocus="filterAutocomplete()"
-             onkeydown="if(event.key==='Escape'){cancelAddColumn();}">
-      <div class="autocomplete-list" id="autocomplete-list"></div>
-    </div>`;
-  document.getElementById('add-col-input').focus();
-  filterAutocomplete();
-  setTimeout(() => document.addEventListener('click', onAddColOutsideClick), 0);
-}
-
-function onAddColOutsideClick(e) {
-  const wrap = document.querySelector('.add-col-input-wrap');
-  if (wrap && !wrap.contains(e.target)) cancelAddColumn();
-}
-
-function cancelAddColumn() {
-  addingColumn = false;
-  document.removeEventListener('click', onAddColOutsideClick);
-  renderColumnConfig();
-}
-
-function filterAutocomplete() {
-  const input = document.getElementById('add-col-input');
-  const q = input.value.toLowerCase();
-  const editPath = getColEditPath();
-  const { columns } = getColsForPath(editPath);
-  const active = new Set(columns.map(c => c.key));
-  const matches = ALL_AVAILABLE_COLUMNS.filter(c => !active.has(c.key) &&
-    (c.label.toLowerCase().includes(q) || c.key.toLowerCase().includes(q)));
-  document.getElementById('autocomplete-list').innerHTML = matches.slice(0, 10).map(c => `
-    <div class="autocomplete-item" onclick="addColumn('${escapeHtml(c.key)}','${escapeHtml(c.label)}')">
-      ${escapeHtml(c.label)}<span class="ac-key">${escapeHtml(c.key)}</span></div>`).join('');
-}
-
-function addColumn(key, label) {
-  const editPath = getColEditPath();
-  const k = pk(editPath);
-  const { columns } = getColsForPath(editPath);
-  columnOverrides[k] = [...columns, { key, label }];
-  saveState();
-  addingColumn = false;
-  document.removeEventListener('click', onAddColOutsideClick);
-  render();
-}
-
-function removeColumn(idx) {
-  const editPath = getColEditPath();
-  const k = pk(editPath);
-  const { columns } = getColsForPath(editPath);
-  columnOverrides[k] = columns.filter((_, i) => i !== idx);
-  saveState();
-  render();
-}
-
-function onColDragStart(e, idx) { dragSrcIdx = idx; e.target.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; }
-function onColDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
-function onColDrop(e, idx) {
-  e.preventDefault();
-  if (dragSrcIdx === null || dragSrcIdx === idx) return;
-  const editPath = getColEditPath();
-  const k = pk(editPath);
-  const { columns } = getColsForPath(editPath);
-  const cols = [...columns];
-  const [moved] = cols.splice(dragSrcIdx, 1);
-  cols.splice(idx, 0, moved);
-  columnOverrides[k] = cols;
-  saveState();
-  dragSrcIdx = null;
-  render();
-}
-function onColDragEnd(e) { e.target.classList.remove('dragging'); dragSrcIdx = null; }
 
 // ── Query Builder Modal ──────────────────────────────────────────────────────
 
@@ -516,7 +426,6 @@ function renderConditionGroup(group) {
 }
 
 function buildFieldOptions(selectedField) {
-  // Combine top-level fields + parsed fields from ALL_AVAILABLE_COLUMNS
   const fields = [
     { key: 'type', label: 'Type' },
     { key: 'rarity', label: 'Rarity' },
@@ -526,7 +435,6 @@ function buildFieldOptions(selectedField) {
     { key: 'size_x', label: 'Size X' },
     { key: 'size_y', label: 'Size Y' },
   ];
-  // Add all parsed fields from ALL_AVAILABLE_COLUMNS not already listed
   const seen = new Set(fields.map(f => f.key));
   for (const col of ALL_AVAILABLE_COLUMNS) {
     if (!seen.has(col.key)) {
@@ -542,7 +450,6 @@ function buildFieldOptions(selectedField) {
 }
 
 function buildValueInput(fieldKey, currentValue, group, index) {
-  // For known discrete-value fields, show a dropdown
   const discreteFields = ['type', 'rarity'];
   if (discreteFields.includes(fieldKey)) {
     const values = getKnownFieldValues(allEntries, fieldKey);
@@ -553,7 +460,6 @@ function buildValueInput(fieldKey, currentValue, group, index) {
       <option value="">-- value --</option>${options}
     </select>`;
   }
-  // For everything else, show a text input
   return `<input class="condition-value-input" type="text" value="${escapeHtml(currentValue || '')}"
     placeholder="value" oninput="onConditionValueChange('${group}', ${index}, this.value)">`;
 }
@@ -575,7 +481,7 @@ function removeCondition(group, index) {
 function onConditionFieldChange(group, index, value) {
   const conditions = group === 'any' ? modalState.anyConditions : modalState.allConditions;
   conditions[index].field = value;
-  conditions[index].value = ''; // reset value when field changes
+  conditions[index].value = '';
   renderModalConditions();
   updateModalPreview();
 }
@@ -617,10 +523,8 @@ function saveModal() {
   };
 
   if (modalState.editIndex != null) {
-    // Editing existing table
     const oldLabel = tableDefs[modalState.editIndex].label;
     tableDefs[modalState.editIndex] = newDef;
-    // If label changed, migrate column overrides
     if (oldLabel !== label) {
       const oldCols = loadTableColumns(oldLabel);
       if (oldCols) {
@@ -629,7 +533,6 @@ function saveModal() {
       }
     }
   } else {
-    // Adding new table
     tableDefs.push(newDef);
   }
 
@@ -638,48 +541,79 @@ function saveModal() {
   render();
 }
 
-// ── Actions ─────────────────────────────────────────────────────────────────
+// ── Sidebar Table List ───────────────────────────────────────────────────────
 
-function navigate(path) {
-  currentPath = path;
-  activeTab = path.length > 0 ? path[0] : null;
-  addingColumn = false;
-  colEditTarget = null;
-  location.hash = path.length > 0 ? path.join('/') : '';
+let tableDragSrcIdx = null;
+
+function toggleTableVisible(index, visible) {
+  tableDefs[index].visible = visible;
+  saveTableDefs(tableDefs);
   render();
 }
 
-function doSort(pathKey, colKey) {
-  const s = sortState[pathKey] || { col: null, dir: 1 };
+function removeTableDef(index) {
+  const label = tableDefs[index].label;
+  tableDefs.splice(index, 1);
+  saveTableDefs(tableDefs);
+  saveTableColumns(label, null);
+  // If we were viewing the removed table, go back to All
+  if (activeTableIndex === index) activeTableIndex = null;
+  else if (activeTableIndex != null && activeTableIndex > index) activeTableIndex--;
+  render();
+}
+
+function onTableDragStart(e, idx) { tableDragSrcIdx = idx; e.target.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; }
+function onTableDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+function onTableDrop(e, idx) {
+  e.preventDefault();
+  if (tableDragSrcIdx === null || tableDragSrcIdx === idx) return;
+  // Track the active table through the reorder
+  const activeLabel = activeTableIndex != null ? tableDefs[activeTableIndex].label : null;
+  const [moved] = tableDefs.splice(tableDragSrcIdx, 1);
+  tableDefs.splice(idx, 0, moved);
+  // Restore activeTableIndex to the same label
+  if (activeLabel != null) {
+    activeTableIndex = tableDefs.findIndex(d => d.label === activeLabel);
+    if (activeTableIndex < 0) activeTableIndex = null;
+  }
+  saveTableDefs(tableDefs);
+  tableDragSrcIdx = null;
+  render();
+}
+function onTableDragEnd(e) { e.target.classList.remove('dragging'); tableDragSrcIdx = null; }
+
+// ── Actions ─────────────────────────────────────────────────────────────────
+
+function navigateTable(index) {
+  activeTableIndex = index;
+  location.hash = index != null ? `table:${tableDefs[index].label}` : '';
+  render();
+}
+
+function doSort(tableKey, colKey) {
+  const s = sortState[tableKey] || { col: null, dir: 1 };
   if (s.col === colKey) s.dir *= -1;
   else { s.col = colKey; s.dir = 1; }
-  sortState[pathKey] = s;
+  sortState[tableKey] = s;
   render();
 }
 
 function onColFilter(input) {
-  const pathKey = input.dataset.pathkey;
+  const tableKey = input.dataset.pathkey;
   const colKey = input.dataset.colkey;
-  if (!colFilters[pathKey]) colFilters[pathKey] = {};
-  colFilters[pathKey][colKey] = input.value;
+  if (!colFilters[tableKey]) colFilters[tableKey] = {};
+  colFilters[tableKey][colKey] = input.value;
   input.classList.toggle('active', input.value.trim().length > 0);
   render();
   requestAnimationFrame(() => {
-    const el = document.querySelector(`input[data-pathkey="${pathKey}"][data-colkey="${colKey}"]`);
+    const el = document.querySelector(`input[data-pathkey="${CSS.escape(tableKey)}"][data-colkey="${CSS.escape(colKey)}"]`);
     if (el) { el.focus(); el.selectionStart = el.selectionEnd = el.value.length; }
   });
 }
 
-function toggleTableVisibility(name, visible) {
-  if (visible) delete hiddenTables[name];
-  else hiddenTables[name] = true;
-  saveState();
-  render();
-}
-
-function toggleCollapse(catName) {
-  if (collapsedSections[catName]) delete collapsedSections[catName];
-  else collapsedSections[catName] = true;
+function toggleCollapse(label) {
+  if (collapsedSections[label]) delete collapsedSections[label];
+  else collapsedSections[label] = true;
   saveState();
   render();
 }
@@ -689,21 +623,110 @@ function toggleSidebar() {
   document.getElementById('gear-btn').classList.toggle('active');
 }
 
+// ── Map Filter ──────────────────────────────────────────────────────────────
+
+async function toggleAllMaps(checked) {
+  if (!manifest) return;
+  const maps = Object.keys(manifest.maps);
+  if (checked) {
+    for (const m of maps) selectedMaps[m] = true;
+  } else {
+    selectedMaps = {};
+  }
+  saveState();
+  await applyMapFilter();
+}
+
+async function toggleMapFilter(mapName, checked) {
+  if (checked) selectedMaps[mapName] = true;
+  else delete selectedMaps[mapName];
+  saveState();
+  await applyMapFilter();
+}
+
+async function applyMapFilter() {
+  const selected = Object.keys(selectedMaps).filter(m => selectedMaps[m]);
+
+  if (selected.length === 0) {
+    mapFilterIds = null;
+    filteredEntries = allEntries;
+  } else {
+    const ids = new Set();
+    const mapEntries = [];
+    const seenGuids = new Set(allEntries.map(e => e.guid));
+
+    for (const mapName of selected) {
+      if (!mapDataCache[mapName]) {
+        mapDataCache[mapName] = await dataLoader.getMapData(mapName);
+      }
+      const md = mapDataCache[mapName];
+      if (!md) continue;
+
+      const spawnable = getSpawnableIds(md);
+      if (spawnable) {
+        for (const id of spawnable) ids.add(id);
+      }
+
+      const mapInfo = manifest.maps[mapName];
+      if (mapInfo && mapInfo.has_custom_entries && md.entries) {
+        for (const entry of md.entries) {
+          ids.add(entry.id);
+          if (!seenGuids.has(entry.guid)) {
+            seenGuids.add(entry.guid);
+            mapEntries.push(entry);
+          }
+        }
+      }
+    }
+
+    mapFilterIds = ids;
+    const baseMatches = allEntries.filter(e => ids.has(e.id));
+    filteredEntries = baseMatches.concat(mapEntries);
+  }
+
+  renderMapFilters();
+  render();
+}
+
+// ── Hash Routing ────────────────────────────────────────────────────────────
+
 function parseHash() {
   const hash = decodeURIComponent(location.hash.slice(1));
-  currentPath = hash ? hash.split('/') : [];
-  activeTab = currentPath.length > 0 ? currentPath[0] : null;
+  if (hash.startsWith('table:')) {
+    const label = hash.substring(6);
+    const idx = tableDefs.findIndex(d => d.label === label);
+    activeTableIndex = idx >= 0 ? idx : null;
+  } else {
+    activeTableIndex = null;
+  }
 }
 
 // ── Render ──────────────────────────────────────────────────────────────────
 
+function renderTableInfo() {
+  const el = document.getElementById('table-info');
+  if (isOverviewMode() || activeTableIndex == null || !tableDefs[activeTableIndex]) {
+    el.style.display = 'none';
+    return;
+  }
+  const def = tableDefs[activeTableIndex];
+  const entries = filterEntriesByTable(filteredEntries, def);
+  const filterDesc = describeTableFilter(def);
+  let text = `${entries.length} entries`;
+  if (filterDesc) text += ` — ${filterDesc}`;
+  el.textContent = text;
+  el.style.display = '';
+}
+
 function render() {
+  const content = document.getElementById('content');
+  content.classList.toggle('focused', !isOverviewMode());
   renderTabs();
   renderBreadcrumb();
-  renderCategoryToggles();
+  renderTableInfo();
+  renderTableList();
   if (isOverviewMode()) renderOverviewMode();
   else renderFocusedMode();
-  renderColumnConfig();
 }
 
 // ── Init ────────────────────────────────────────────────────────────────────
@@ -723,7 +746,6 @@ async function init() {
     filteredEntries = allEntries;
     renderMapFilters();
     parseHash();
-    // Apply persisted map filter if any maps were selected
     const hasPersistedMaps = Object.keys(selectedMaps).some(m => selectedMaps[m]);
     if (hasPersistedMaps) {
       await applyMapFilter();
