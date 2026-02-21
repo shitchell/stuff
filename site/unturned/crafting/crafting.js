@@ -1300,8 +1300,9 @@ function onNodeMouseOver(e) {
     const $recipes = $tooltip.querySelector('.tt-recipes');
 
     $name.textContent = n.name;
-    const metaParts = [n.type];
-    if (n.useable && n.useable.toLowerCase() !== n.type.toLowerCase()) metaParts.push(n.useable);
+    const metaParts = [];
+    if (n.useable) metaParts.push(n.useable);
+    if (!n.useable || n.type.toLowerCase() !== n.useable.toLowerCase()) metaParts.push(n.type);
     if (n.rarity) metaParts.push(n.rarity);
     $meta.textContent = metaParts.join(' \u2022 ') || 'Unknown';
 
