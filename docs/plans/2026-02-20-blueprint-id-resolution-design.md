@@ -74,18 +74,21 @@ Last-write-wins across all types. Loses data on collision.
 
 #### New format
 
+Namespace-first, then source. Source keys: `"base"` for core game, workshop ID string (e.g., `"2898548949"`) for mods.
+
 ```json
 {
   "by_id": {
     "36033": {
-      "items": "27b44ccf...",
-      "vehicles": "abc123...",
-      "spawns": "def456...",
-      "objects": "95d1c0f8..."
+      "items": { "base": "27b44ccf...", "2898548949": "dfb0c25f..." },
+      "spawns": { "base": "def456..." },
+      "objects": { "base": "95d1c0f8..." }
     }
   }
 }
 ```
+
+Lookup pattern: `by_id["36033"]?.items?.["2898548949"]` — reads as "item with ID 36033 from workshop mod 2898548949".
 
 Namespace keys derived from top-level source directory:
 
@@ -114,12 +117,15 @@ Within each namespace, IDs are unique (one GUID per namespace per ID). Only name
 
 #### `dataLoader.resolveId` in `common.js`
 
-Update to use namespace-grouped format with optional namespace parameter:
+Update to use namespace+source grouped format:
 
 ```js
-async resolveId(numericId, namespace = 'items') {
+async resolveId(numericId, namespace = 'items', source = null) {
   const gi = await this.getGuidIndex();
-  const guid = gi.by_id[String(numericId)]?.[namespace];
+  const nsMap = gi.by_id[String(numericId)]?.[namespace];
+  if (!nsMap) return null;
+  // If source specified, try that first; otherwise pick first available
+  const guid = source ? (nsMap[source] || Object.values(nsMap)[0]) : Object.values(nsMap)[0];
   if (!guid) return null;
   return gi.entries[guid] || null;
 }
@@ -127,7 +133,7 @@ async resolveId(numericId, namespace = 'items') {
 
 #### Other `by_id` usage
 
-Update any code reading `guidIndex.by_id[id]` (currently expects a string) to use `guidIndex.by_id[id]?.items` or the appropriate namespace.
+Update any code reading `guidIndex.by_id[id]` (currently expects a string) to use the namespace+source grouped format, e.g. `guidIndex.by_id[id]?.items?.base`.
 
 ### 4. Error Handling & Edge Cases
 
