@@ -1330,31 +1330,43 @@ function onNodeMouseOver(e) {
     }
 
     let recipesHtml = '';
+    const seenRecipeText = new Set();
 
     for (const bp of Object.values(craftRecipes)) {
-        recipesHtml += `<div class="tt-recipe">`;
-        recipesHtml += `<span class="tt-recipe-type ${esc(bp.type)}">${esc(bp.type)}</span>`;
-        if (bp.craftingCategory) recipesHtml += ` <span style="color:#888;font-size:0.72rem">[${esc(bp.craftingCategory)}]</span>`;
-        recipesHtml += `: `;
-        recipesHtml += bp.ingredients.map(esc).join(' + ');
-        recipesHtml += ` &rarr; ${esc(n.name)}`;
+        let line = `<div class="tt-recipe">`;
+        line += `<span class="tt-recipe-type ${esc(bp.type)}">${esc(bp.type)}</span>`;
+        if (bp.craftingCategory) line += ` <span style="color:#888;font-size:0.72rem">[${esc(bp.craftingCategory)}]</span>`;
+        line += `: `;
+        line += bp.ingredients.map(esc).join(' + ');
+        line += ` &rarr; ${esc(n.name)}`;
         if (bp.workstations.length) {
-            recipesHtml += `<div class="tt-workstation">Requires: ${bp.workstations.map(esc).join(', ')}</div>`;
+            line += `<div class="tt-workstation">Requires: ${bp.workstations.map(esc).join(', ')}</div>`;
         }
-        recipesHtml += `</div>`;
+        line += `</div>`;
+        // Deduplicate by visible text content
+        const textKey = `${bp.type}:${bp.ingredients.join('+')}→${n.name}`;
+        if (!seenRecipeText.has(textKey)) {
+            seenRecipeText.add(textKey);
+            recipesHtml += line;
+        }
     }
 
     for (const bp of Object.values(outRecipes)) {
-        recipesHtml += `<div class="tt-recipe">`;
-        recipesHtml += `<span class="tt-recipe-type ${esc(bp.type)}">${esc(bp.type)}</span>`;
-        if (bp.craftingCategory) recipesHtml += ` <span style="color:#888;font-size:0.72rem">[${esc(bp.craftingCategory)}]</span>`;
-        recipesHtml += `: `;
-        recipesHtml += `${esc(n.name)} &rarr; `;
-        recipesHtml += bp.products.map(esc).join(' + ');
+        let line = `<div class="tt-recipe">`;
+        line += `<span class="tt-recipe-type ${esc(bp.type)}">${esc(bp.type)}</span>`;
+        if (bp.craftingCategory) line += ` <span style="color:#888;font-size:0.72rem">[${esc(bp.craftingCategory)}]</span>`;
+        line += `: `;
+        line += `${esc(n.name)} &rarr; `;
+        line += bp.products.map(esc).join(' + ');
         if (bp.workstations.length) {
-            recipesHtml += `<div class="tt-workstation">Requires: ${bp.workstations.map(esc).join(', ')}</div>`;
+            line += `<div class="tt-workstation">Requires: ${bp.workstations.map(esc).join(', ')}</div>`;
         }
-        recipesHtml += `</div>`;
+        line += `</div>`;
+        const textKey = `${bp.type}:${n.name}→${bp.products.join('+')}`;
+        if (!seenRecipeText.has(textKey)) {
+            seenRecipeText.add(textKey);
+            recipesHtml += line;
+        }
     }
 
     $recipes.innerHTML = recipesHtml || '<em style="color:#666">No recipes</em>';
