@@ -1022,6 +1022,7 @@ function buildCraftingGraph(entries, guidIndex, assets, blueprintPrefix) {
             blueprintId,
             byproduct: false,
             craftingCategory,
+            conditions: bp.conditions || [],
           });
         }
       } else {
@@ -1042,6 +1043,7 @@ function buildCraftingGraph(entries, guidIndex, assets, blueprintPrefix) {
               blueprintId,
               byproduct: false,
               craftingCategory,
+              conditions: bp.conditions || [],
             });
           }
         }

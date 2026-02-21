@@ -1336,7 +1336,7 @@ function onNodeMouseOver(e) {
     for (const e of incoming) {
         if (!bpTypes.includes(e.type)) continue;
         if (craftCats !== null && e.craftingCategory && !craftCats.includes(e.craftingCategory)) continue;
-        if (!craftRecipes[e.blueprintId]) craftRecipes[e.blueprintId] = { type: e.type, ingredients: [], workstations: e.workstations || [], craftingCategory: e.craftingCategory || '', skill: e.skill || '', skillLevel: e.skillLevel || 0 };
+        if (!craftRecipes[e.blueprintId]) craftRecipes[e.blueprintId] = { type: e.type, ingredients: [], workstations: e.workstations || [], craftingCategory: e.craftingCategory || '', skill: e.skill || '', skillLevel: e.skillLevel || 0, conditions: e.conditions || [] };
         const src = activeNM[e.source];
         craftRecipes[e.blueprintId].ingredients.push(
             (e.quantity > 1 ? e.quantity + 'x ' : '') + (src ? src.name : '?') + (e.tool ? ' (tool)' : '')
@@ -1348,7 +1348,7 @@ function onNodeMouseOver(e) {
     for (const e of outgoing) {
         if (!bpTypes.includes(e.type)) continue;
         if (craftCats !== null && e.craftingCategory && !craftCats.includes(e.craftingCategory)) continue;
-        if (!outRecipes[e.blueprintId]) outRecipes[e.blueprintId] = { type: e.type, products: [], workstations: e.workstations || [], craftingCategory: e.craftingCategory || '', skill: e.skill || '', skillLevel: e.skillLevel || 0 };
+        if (!outRecipes[e.blueprintId]) outRecipes[e.blueprintId] = { type: e.type, products: [], workstations: e.workstations || [], craftingCategory: e.craftingCategory || '', skill: e.skill || '', skillLevel: e.skillLevel || 0, conditions: e.conditions || [] };
         const tgt = activeNM[e.target];
         outRecipes[e.blueprintId].products.push(
             (e.quantity > 1 ? e.quantity + 'x ' : '') + (tgt ? tgt.name : '?')
@@ -1373,6 +1373,12 @@ function onNodeMouseOver(e) {
             if (bp.skillLevel > 0) skillText += ` (Level ${bp.skillLevel})`;
             line += `<div class="tt-skill">Skill: ${esc(skillText)}</div>`;
         }
+        if (bp.conditions && bp.conditions.length) {
+            const condText = bp.conditions
+                .map(c => c.type === 'Holiday' ? c.value : `${c.type}: ${c.value}`)
+                .join(', ');
+            line += `<div class="tt-condition">Requires: ${esc(condText)}</div>`;
+        }
         line += `</div>`;
         // Deduplicate by visible text content
         const textKey = `${bp.type}:${bp.ingredients.join('+')}→${n.name}`;
@@ -1396,6 +1402,12 @@ function onNodeMouseOver(e) {
             let skillText = bp.skill;
             if (bp.skillLevel > 0) skillText += ` (Level ${bp.skillLevel})`;
             line += `<div class="tt-skill">Skill: ${esc(skillText)}</div>`;
+        }
+        if (bp.conditions && bp.conditions.length) {
+            const condText = bp.conditions
+                .map(c => c.type === 'Holiday' ? c.value : `${c.type}: ${c.value}`)
+                .join(', ');
+            line += `<div class="tt-condition">Requires: ${esc(condText)}</div>`;
         }
         line += `</div>`;
         const textKey = `${bp.type}:${n.name}→${bp.products.join('+')}`;
