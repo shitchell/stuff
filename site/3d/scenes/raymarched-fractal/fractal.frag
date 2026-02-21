@@ -40,16 +40,6 @@ uniform int   uMaxIterations;
 // Section: Utility Functions
 // ============================================================
 
-mat3 rotateY(float a) {
-    float s = sin(a), c = cos(a);
-    return mat3(c, 0, s, 0, 1, 0, -s, 0, c);
-}
-
-mat3 rotateX(float a) {
-    float s = sin(a), c = cos(a);
-    return mat3(1, 0, 0, 0, c, -s, 0, s, c);
-}
-
 // IQ cosine palette: a + b * cos(TAU * (c*t + d))
 vec3 iqPalette(float t, vec3 a, vec3 b, vec3 c, vec3 d) {
     return a + b * cos(TAU * (c * t + d));
@@ -145,10 +135,12 @@ float DE_menger(vec3 p) {
     for (int i = 0; i < 8; i++) {
         z = abs(z);
 
-        // Sort so z.x >= z.y >= z.z
-        if (z.x < z.y) z.xy = z.yx;
-        if (z.x < z.z) z.xz = z.zx;
-        if (z.y < z.z) z.yz = z.zy;
+        // Sort so z.x >= z.y >= z.z (using temp to avoid swizzle self-assignment,
+        // which some GPU drivers handle incorrectly)
+        float tmp;
+        if (z.x < z.y) { tmp = z.x; z.x = z.y; z.y = tmp; }
+        if (z.x < z.z) { tmp = z.x; z.x = z.z; z.z = tmp; }
+        if (z.y < z.z) { tmp = z.y; z.y = z.z; z.z = tmp; }
 
         z = z * scale - (scale - 1.0);
         if (z.z < -0.5 * (scale - 1.0)) {

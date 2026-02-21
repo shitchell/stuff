@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head><title>Shader Compile Test</title></head>
+<body>
+<pre id="log" style="font-family:monospace; white-space:pre-wrap; background:#111; color:#0f0; padding:20px;"></pre>
+<script>
+const log = document.getElementById('log');
+function out(msg) { log.textContent += msg + '\n'; }
+
+async function test() {
+    out('Creating WebGL2 context...');
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+    if (!gl) { out('FAIL: No WebGL context'); return; }
+    out('OK: ' + gl.getParameter(gl.RENDERER));
+
+    out('\nFetching shaders...');
+    const vertSrc = await fetch('./fractal.vert').then(r => r.text());
+    const fragSrc = await fetch('./fractal.frag').then(r => r.text());
+    out('Vert: ' + vertSrc.length + ' chars');
+    out('Frag: ' + fragSrc.length + ' chars');
+
+    // For WebGL2, we need #version 300 es and to convert varying/gl_FragColor
+    const isWebGL2 = gl instanceof WebGL2RenderingContext;
+    out('WebGL version: ' + (isWebGL2 ? '2' : '1'));
+
+    let testVert = vertSrc;
+    let testFrag = fragSrc;
+
+    if (isWebGL2) {
+        // Convert GLSL 100 -> 300 es
+        testVert = '#version 300 es\n' +
+            testVert.replace(/varying /g, 'out ').replace(/attribute /g, 'in ');
+        testFrag = '#version 300 es\n' +
+            testFrag.replace(/varying /g, 'in ').replace(/gl_FragColor/g, 'outColor') +
+            '';
+        // Need to add output declaration
+        testFrag = testFrag.replace('in vec2 vUv;', 'in vec2 vUv;\nout vec4 outColor;');
+        // texture2D -> texture
+        testFrag = testFrag.replace(/texture2D/g, 'texture');
+    }
+
+    // Compile vertex shader
+    out('\nCompiling vertex shader...');
+    const vs = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vs, testVert);
+    gl.compileShader(vs);
+    if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
+        out('VERTEX SHADER ERROR:\n' + gl.getShaderInfoLog(vs));
+        out('\n--- Vertex source (first 20 lines) ---');
+        out(testVert.split('\n').slice(0, 20).join('\n'));
+        return;
+    }
+    out('Vertex: OK');
+
+    // Compile fragment shader
+    out('\nCompiling fragment shader...');
+    const fs = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fs, testFrag);
+    gl.compileShader(fs);
+    if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
+        out('FRAGMENT SHADER ERROR:\n' + gl.getShaderInfoLog(fs));
+        out('\n--- Fragment source around error ---');
+        const lines = testFrag.split('\n');
+        const errMatch = gl.getShaderInfoLog(fs).match(/(\d+):(\d+)/);
+        if (errMatch) {
+            const lineNum = parseInt(errMatch[2]);
+            const start = Math.max(0, lineNum - 5);
+            const end = Math.min(lines.length, lineNum + 5);
+            for (let i = start; i < end; i++) {
+                out((i === lineNum - 1 ? '>>> ' : '    ') + (i+1) + ': ' + lines[i]);
+            }
+        }
+        return;
+    }
+    out('Fragment: OK');
+
+    // Link program
+    out('\nLinking program...');
+    const prog = gl.createProgram();
+    gl.attachShader(prog, vs);
+    gl.attachShader(prog, fs);
+
+    // Three.js provides these attributes for PlaneGeometry
+    gl.bindAttribLocation(prog, 0, 'position');
+    gl.bindAttribLocation(prog, 1, 'uv');
+
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+        out('LINK ERROR:\n' + gl.getProgramInfoLog(prog));
+        return;
+    }
+    out('Link: OK');
+
+    // Validate
+    gl.validateProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.VALIDATE_STATUS)) {
+        out('VALIDATE ERROR:\n' + gl.getProgramInfoLog(prog));
+        return;
+    }
+    out('Validate: OK');
+
+    out('\n=== ALL PASSED ===');
+
+    // List active uniforms
+    const numUniforms = gl.getProgramParameter(prog, gl.ACTIVE_UNIFORMS);
+    out('\nActive uniforms: ' + numUniforms);
+    for (let i = 0; i < numUniforms; i++) {
+        const info = gl.getActiveUniform(prog, i);
+        out('  ' + info.name + ' (type: ' + info.type + ', size: ' + info.size + ')');
+    }
+}
+
+test().catch(e => out('EXCEPTION: ' + e.message + '\n' + e.stack));
+</script>
+</body>
+</html>
