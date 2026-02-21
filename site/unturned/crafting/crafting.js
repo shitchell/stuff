@@ -1301,9 +1301,15 @@ function onNodeMouseOver(e) {
     const incoming = activeET[origId] || [];
     const outgoing = activeES[origId] || [];
 
-    // Group incoming by blueprintId
+    // Apply blueprint type and crafting category filters to tooltip edges
+    const bpTypes = getActiveBlueprintTypes();
+    const craftCats = getActiveCraftingCategories();
+
+    // Group incoming by blueprintId (filtered)
     const craftRecipes = {};
     for (const e of incoming) {
+        if (!bpTypes.includes(e.type)) continue;
+        if (craftCats !== null && e.craftingCategory && !craftCats.includes(e.craftingCategory)) continue;
         if (!craftRecipes[e.blueprintId]) craftRecipes[e.blueprintId] = { type: e.type, ingredients: [], workstations: e.workstations || [], craftingCategory: e.craftingCategory || '' };
         const src = activeNM[e.source];
         craftRecipes[e.blueprintId].ingredients.push(
@@ -1311,9 +1317,11 @@ function onNodeMouseOver(e) {
         );
     }
 
-    // Group outgoing (salvage products etc) by blueprintId
+    // Group outgoing (salvage products etc) by blueprintId (filtered)
     const outRecipes = {};
     for (const e of outgoing) {
+        if (!bpTypes.includes(e.type)) continue;
+        if (craftCats !== null && e.craftingCategory && !craftCats.includes(e.craftingCategory)) continue;
         if (!outRecipes[e.blueprintId]) outRecipes[e.blueprintId] = { type: e.type, products: [], workstations: e.workstations || [], craftingCategory: e.craftingCategory || '' };
         const tgt = activeNM[e.target];
         outRecipes[e.blueprintId].products.push(
