@@ -1430,41 +1430,91 @@ async function computeMapBlacklist(activeMaps) {
         return;
     }
 
-    // Start with the full base graph
-    let currentGraph = {
+    const baseGraph = {
         nodes: rawData.nodes,
         edges: rawData.edges,
         blueprintGroups,
         craftingCategories: craftingCategoryList,
     };
-    console.log('[MAP-FILTER] Starting with base graph:', currentGraph.nodes.length, 'nodes,', currentGraph.edges.length, 'edges');
+    console.log('[MAP-FILTER] Base graph:', baseGraph.nodes.length, 'nodes,', baseGraph.edges.length, 'edges');
 
-    // Apply each selected map's blacklists
+    // Filter each map independently from the base graph, then union the results
+    const perMapEdges = [];
+    const perMapNodes = [];
+
     for (const mapName of activeMaps) {
         const mapData = await dataLoader.getMapData(mapName);
         console.log('[MAP-FILTER] Loaded map data for', mapName, ':', mapData ? 'OK' : 'FAILED');
         if (!mapData) continue;
 
-        console.log('[MAP-FILTER] Map crafting_blacklists:', mapData.map?.crafting_blacklists);
+        // Maps with no blacklists pass the full base graph through unchanged
         if (!mapData.map?.crafting_blacklists || mapData.map.crafting_blacklists.length === 0) {
-            console.log('[MAP-FILTER] No crafting_blacklists for', mapName, ', skipping');
+            console.log('[MAP-FILTER] No crafting_blacklists for', mapName, ', including full base graph');
+            perMapEdges.push(baseGraph.edges);
+            perMapNodes.push(baseGraph.nodes);
             continue;
         }
 
-        // If the map has its own entries with blueprints, build a graph from them
+        // Build map-specific graph if the map has custom entries
         let mapGraph = null;
         if (mapData.entries && mapData.entries.length > 0) {
             const guidIndex = await dataLoader.getGuidIndex();
             mapGraph = buildCraftingGraph(mapData.entries, guidIndex, mapData.assets || {}, `map-${mapName}-bp`);
             console.log('[MAP-FILTER] Built map graph for', mapName, ':', mapGraph.nodes.length, 'nodes,', mapGraph.edges.length, 'edges');
-        } else {
-            console.log('[MAP-FILTER] No entries for', mapName, ', no map graph built');
         }
 
-        const beforeEdges = currentGraph.edges.length;
-        currentGraph = applyCraftingBlacklists(currentGraph, mapData, mapGraph);
-        console.log('[MAP-FILTER] After applyCraftingBlacklists for', mapName, ':', currentGraph.nodes.length, 'nodes,', currentGraph.edges.length, 'edges (was', beforeEdges, 'edges)');
+        // Apply this map's blacklist independently against the base graph
+        const filtered = applyCraftingBlacklists(baseGraph, mapData, mapGraph);
+        console.log('[MAP-FILTER] After applyCraftingBlacklists for', mapName, ':', filtered.nodes.length, 'nodes,', filtered.edges.length, 'edges');
+        perMapEdges.push(filtered.edges);
+        perMapNodes.push(filtered.nodes);
     }
+
+    // Union merge: deduplicate edges by ID, collect all referenced nodes
+    const seenEdgeIds = new Set();
+    const mergedEdges = [];
+    for (const edges of perMapEdges) {
+        for (const e of edges) {
+            const edgeId = e.id || `${e.source}-${e.blueprintId}-${e.target}`;
+            if (!seenEdgeIds.has(edgeId)) {
+                seenEdgeIds.add(edgeId);
+                mergedEdges.push(e);
+            }
+        }
+    }
+
+    // Build combined node pool, then keep only referenced nodes
+    const nodeById = {};
+    for (const nodes of perMapNodes) {
+        for (const n of nodes) {
+            if (!nodeById[n.id]) nodeById[n.id] = n;
+        }
+    }
+    const referencedIds = new Set();
+    for (const e of mergedEdges) {
+        referencedIds.add(e.source);
+        referencedIds.add(e.target);
+    }
+    const mergedNodes = [];
+    for (const id of referencedIds) {
+        if (nodeById[id]) mergedNodes.push(nodeById[id]);
+    }
+
+    // Rebuild blueprint groups and crafting categories
+    const mergedBlueprintGroups = {};
+    const mergedCategories = new Set();
+    for (const e of mergedEdges) {
+        if (!mergedBlueprintGroups[e.blueprintId]) mergedBlueprintGroups[e.blueprintId] = [];
+        mergedBlueprintGroups[e.blueprintId].push(e);
+        if (e.craftingCategory) mergedCategories.add(e.craftingCategory);
+    }
+
+    const currentGraph = {
+        nodes: mergedNodes,
+        edges: mergedEdges,
+        blueprintGroups: mergedBlueprintGroups,
+        craftingCategories: [...mergedCategories].sort(),
+    };
 
     // Store the filtered result
     mapFilteredGraph = currentGraph;
@@ -1480,7 +1530,7 @@ async function computeMapBlacklist(activeMaps) {
         if (!mapFilteredEdgesBySource[e.source]) mapFilteredEdgesBySource[e.source] = [];
         mapFilteredEdgesBySource[e.source].push(e);
     }
-    console.log('[MAP-FILTER] Final filtered graph stored:', currentGraph.nodes.length, 'nodes,', currentGraph.edges.length, 'edges');
+    console.log('[MAP-FILTER] Final union graph stored:', currentGraph.nodes.length, 'nodes,', currentGraph.edges.length, 'edges');
 
     // Ensure map-specific nodes are included in selectedItems so they appear in the graph
     if (selectedItems) {
