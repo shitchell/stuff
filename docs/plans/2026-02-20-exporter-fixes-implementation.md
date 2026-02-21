@@ -2,9 +2,9 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Fix blueprint output parsing, blueprint type classification, tag asset indexing, and legacy blueprint skill/build extraction in the Python exporter.
+**Goal:** Fix blueprint output parsing, blueprint type classification, tag asset indexing, add `kind` field to guid index entries, and extract legacy blueprint skill/build fields.
 
-**Architecture:** Four focused fixes in the `unturned-data` exporter: (1) fix the `Output_` vs `Product_` key mismatch in legacy blueprint parsing, (2) reclassify `Type Tool` blueprints as Salvage, (3) index tag assets (CraftingTag, BlueprintCategoryTag) into guid_index.json by handling top-level GUID in `_collect_assets`, (4) extract `Skill` and `Build` fields from legacy blueprints.
+**Architecture:** Five focused fixes in the `unturned-data` exporter: (1) fix the `Output_` vs `Product_` key mismatch in legacy blueprint parsing, (2) reclassify `Type Tool` blueprints as Salvage, (3) add a `kind` field to `GuidIndexEntry` to distinguish items/assets/tags, (4) index tag assets into guid_index.json with `kind: "tag"`, (5) extract `Skill` and `Build` fields from legacy blueprints.
 
 **Tech Stack:** Python 3.10+ / Pydantic 2.0+ (exporter)
 
@@ -180,13 +180,138 @@ git commit -m "fix: classify Type Tool blueprints as Salvage"
 
 ---
 
-### Task 3: Index tag assets into guid_index
+### Task 3: Add `kind` field to GuidIndexEntry
+
+**Files:**
+- Modify: `/home/guy/code/git/github.com/shitchell/unturned-data/unturned_data/schema.py:87-94`
+- Modify: `/home/guy/code/git/github.com/shitchell/unturned-data/unturned_data/exporter.py` (`_build_guid_index`)
+- Test: `/home/guy/code/git/github.com/shitchell/unturned-data/unturned_data/tests/test_schema.py`
+- Test: `/home/guy/code/git/github.com/shitchell/unturned-data/unturned_data/tests/test_exporter.py`
+
+**Context:** Currently `GuidIndexEntry` has `file`, `index`, `id`, `type`, `name`. Adding a `kind` field (e.g., `"item"`, `"asset"`, `"tag"`) lets the JS distinguish what a GUID represents — useful for display (e.g., wrench icon for workstation tags) and prevents confusion between items and tags that happen to share similar names.
+
+**Step 1: Write the failing test**
+
+In `test_schema.py`, add:
+
+```python
+class TestGuidIndexEntryKind:
+    def test_kind_defaults_to_empty(self):
+        entry = GuidIndexEntry(file="base/entries.json", index=0)
+        assert entry.kind == ""
+
+    def test_kind_set_to_item(self):
+        entry = GuidIndexEntry(file="base/entries.json", index=0, kind="item")
+        assert entry.kind == "item"
+
+    def test_kind_set_to_tag(self):
+        entry = GuidIndexEntry(file="base/assets.json", index=0, kind="tag")
+        assert entry.kind == "tag"
+```
+
+**Step 2: Run test to verify it fails**
+
+Run: `cd /home/guy/code/git/github.com/shitchell/unturned-data && python -m pytest unturned_data/tests/test_schema.py::TestGuidIndexEntryKind -v`
+
+Expected: FAIL — `kind` field doesn't exist on `GuidIndexEntry`
+
+**Step 3: Write implementation**
+
+In `schema.py`, add `kind` to `GuidIndexEntry`:
+
+```python
+class GuidIndexEntry(BaseModel):
+    """Entry in guid_index.json."""
+
+    file: str
+    index: int
+    id: int = 0
+    type: str = ""
+    name: str = ""
+    kind: str = ""
+```
+
+Then in `exporter.py`, update `_build_guid_index` to set `kind` when creating entries:
+
+In `_index_bundle_entries`, set `kind="item"`:
+```python
+                entries_index[entry.guid] = GuidIndexEntry(
+                    file=file_path,
+                    index=idx,
+                    id=entry.id,
+                    type=entry.type,
+                    name=entry.name,
+                    kind="item",
+                )
+```
+
+In `_index_assets`, set `kind="asset"`:
+```python
+                entries_index[asset.guid] = GuidIndexEntry(
+                    file=file_path,
+                    index=idx,
+                    id=0,
+                    type=asset.csharp_type,
+                    name=asset.name,
+                    kind="asset",
+                )
+```
+
+**Step 4: Run test to verify it passes**
+
+Run: `cd /home/guy/code/git/github.com/shitchell/unturned-data && python -m pytest unturned_data/tests/test_schema.py::TestGuidIndexEntryKind -v`
+
+Expected: PASS
+
+**Step 5: Write an exporter test to verify kind is set**
+
+In `test_exporter.py`, add:
+
+```python
+class TestGuidIndexEntryKinds:
+    def test_bundle_entries_have_kind_item(self):
+        from unturned_data.exporter import _build_guid_index
+        from unturned_data.models import BundleEntry
+
+        entries = [BundleEntry(guid="aaa", type="Gun", id=1, name="X",
+                               source_path="Items/Guns/X")]
+        gi = _build_guid_index(entries, [], {}, "2026-01-01")
+        assert gi.entries["aaa"].kind == "item"
+
+    def test_assets_have_kind_asset(self):
+        from unturned_data.exporter import _build_guid_index
+        from unturned_data.schema import AssetEntry
+
+        assets = [AssetEntry(guid="bbb", name="Test Asset",
+                             csharp_type="CraftingBlacklistAsset",
+                             source_path="Assets/Test.asset")]
+        gi = _build_guid_index([], assets, {}, "2026-01-01")
+        assert gi.entries["bbb"].kind == "asset"
+```
+
+Run: `cd /home/guy/code/git/github.com/shitchell/unturned-data && python -m pytest unturned_data/tests/test_exporter.py::TestGuidIndexEntryKinds -v`
+
+**Step 6: Run full test suite**
+
+Run: `cd /home/guy/code/git/github.com/shitchell/unturned-data && python -m pytest unturned_data/tests/ -v`
+
+**Step 7: Commit**
+
+```bash
+cd /home/guy/code/git/github.com/shitchell/unturned-data
+git add unturned_data/schema.py unturned_data/exporter.py unturned_data/tests/test_schema.py unturned_data/tests/test_exporter.py
+git commit -m "feat: add kind field to GuidIndexEntry (item/asset/tag)"
+```
+
+---
+
+### Task 4: Index tag assets into guid_index
 
 **Files:**
 - Modify: `/home/guy/code/git/github.com/shitchell/unturned-data/unturned_data/exporter.py:265-291`
 - Test: `/home/guy/code/git/github.com/shitchell/unturned-data/unturned_data/tests/test_exporter.py`
 
-**Context:** Tag `.asset` files (CraftingTag, BlueprintCategoryTag) have `GUID` and `Type` at the top level, not nested under a `Metadata` key. The current `_collect_assets` function only looks for `parsed.get("Metadata", {}).get("GUID")`, so tags are silently skipped.
+**Context:** Tag `.asset` files (CraftingTag, BlueprintCategoryTag) have `GUID` and `Type` at the top level, not nested under a `Metadata` key. The current `_collect_assets` function only looks for `parsed.get("Metadata", {}).get("GUID")`, so tags are silently skipped. Additionally, `_index_assets` in `_build_guid_index` should set `kind="tag"` for tag assets (those with `csharp_type` of `"Tag"`) to distinguish them from regular assets (which get `kind="asset"` from Task 3).
 
 **Step 1: Write the failing test**
 
@@ -284,21 +409,70 @@ Run: `cd /home/guy/code/git/github.com/shitchell/unturned-data && python -m pyte
 
 Expected: PASS
 
-**Step 5: Run full test suite**
+**Step 5: Update `_index_assets` to set `kind="tag"` for tags**
+
+In `_build_guid_index`'s `_index_assets` inner function, update the `kind` assignment to check the asset's `csharp_type`:
+
+```python
+    def _index_assets(
+        items: list[AssetEntry],
+        file_path: str,
+    ) -> None:
+        for idx, asset in enumerate(items):
+            if asset.guid and asset.guid not in entries_index:
+                kind = "tag" if asset.csharp_type == "Tag" else "asset"
+                entries_index[asset.guid] = GuidIndexEntry(
+                    file=file_path,
+                    index=idx,
+                    id=0,
+                    type=asset.csharp_type,
+                    name=asset.name,
+                    kind=kind,
+                )
+```
+
+**Step 6: Add a test for tag kind**
+
+```python
+class TestGuidIndexTagKind:
+    def test_tag_assets_have_kind_tag(self):
+        from unturned_data.exporter import _build_guid_index
+        from unturned_data.schema import AssetEntry
+
+        assets = [AssetEntry(guid="aaa", name="Sewing Capabilities",
+                             csharp_type="Tag",
+                             source_path="Assets/Tags/Crafting/Sewing/CraftingTag_Sewing.asset")]
+        gi = _build_guid_index([], assets, {}, "2026-01-01")
+        assert gi.entries["aaa"].kind == "tag"
+
+    def test_non_tag_assets_have_kind_asset(self):
+        from unturned_data.exporter import _build_guid_index
+        from unturned_data.schema import AssetEntry
+
+        assets = [AssetEntry(guid="bbb", name="Test Blacklist",
+                             csharp_type="CraftingBlacklistAsset",
+                             source_path="Assets/Blacklists/Test.asset")]
+        gi = _build_guid_index([], assets, {}, "2026-01-01")
+        assert gi.entries["bbb"].kind == "asset"
+```
+
+Run: `cd /home/guy/code/git/github.com/shitchell/unturned-data && python -m pytest unturned_data/tests/test_exporter.py::TestGuidIndexTagKind -v`
+
+**Step 7: Run full test suite**
 
 Run: `cd /home/guy/code/git/github.com/shitchell/unturned-data && python -m pytest unturned_data/tests/ -v`
 
-**Step 6: Commit**
+**Step 8: Commit**
 
 ```bash
 cd /home/guy/code/git/github.com/shitchell/unturned-data
 git add unturned_data/exporter.py unturned_data/tests/test_exporter.py
-git commit -m "fix: index tag assets with top-level GUID into guid_index"
+git commit -m "fix: index tag assets with top-level GUID and kind=tag"
 ```
 
 ---
 
-### Task 4: Extract `Skill` and `Build` from legacy blueprints
+### Task 5: Extract `Skill` and `Build` from legacy blueprints
 
 **Files:**
 - Modify: `/home/guy/code/git/github.com/shitchell/unturned-data/unturned_data/models.py:210-261`
@@ -408,7 +582,7 @@ git commit -m "feat: extract Skill, Level, and Build from legacy blueprints"
 
 ---
 
-### Task 5: Re-export and verify fixes
+### Task 6: Re-export and verify fixes
 
 **Step 1: Run the exporter**
 
@@ -463,4 +637,6 @@ Expected: Jackhammer blueprints should show `name: "Salvage"` with actual output
 - Task 5 bridges to `stuff` repo for re-export verification
 - Work on branch `feat/blueprint-id-resolution` or a new branch as appropriate
 - Tasks 1 and 2 both modify `models.py` but different sections — run sequentially
-- Task 3 modifies `exporter.py` — independent of Tasks 1-2
+- Task 3 modifies `schema.py` and `exporter.py` — independent of Tasks 1-2
+- Task 4 modifies `exporter.py` — depends on Task 3 (uses `kind` field)
+- Task 5 modifies `models.py` — independent of Tasks 3-4
