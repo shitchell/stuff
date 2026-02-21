@@ -599,6 +599,9 @@ function buildCyStyle() {
             }
         },
         // Diagram mode: edge labels (larger for readability)
+        // In diagram mode, edges are source=product target=ingredient (for dagre
+        // top-down layout), so we flip the arrow to point at the source (product)
+        // instead of the default target-arrow used by the graph view.
         {
             selector: 'edge.diagram-edge',
             style: {
@@ -608,6 +611,9 @@ function buildCyStyle() {
                 'text-outline-width': 2,
                 'text-wrap': 'wrap',
                 'text-max-width': '120px',
+                'target-arrow-shape': 'none',
+                'source-arrow-shape': settings.arrowStyle === 'none' ? 'none' : settings.arrowStyle,
+                'source-arrow-color': settings.edgeColors ? 'data(edgeColor)' : '#666',
             }
         },
         // Diagram mode: cycle marker
@@ -644,7 +650,7 @@ function buildCyStyle() {
                 'line-style': 'dashed',
                 'line-dash-pattern': [4, 4],
                 'line-color': '#555',
-                'target-arrow-color': '#555',
+                'source-arrow-color': '#555',
                 'opacity': 0.5,
                 'width': 1,
             }
