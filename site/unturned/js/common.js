@@ -954,7 +954,7 @@ function buildCraftingGraph(entries, guidIndex, assets, blueprintPrefix) {
       name: gi.name,
       type: gi.type || '',
       rarity: entry?.rarity || '',
-      useable: entry?.raw?.Useable || '',
+      useable: entry?.useable || '',
       category: [],
       maps: [],
     });
@@ -1048,7 +1048,7 @@ function buildCraftingGraph(entries, guidIndex, assets, blueprintPrefix) {
     const entry = entryByGuid[node.id];
     if (entry) {
       node.rarity = entry.rarity || '';
-      node.useable = entry.raw?.Useable || '';
+      node.useable = entry?.useable || '';
       node.category = entry.category || [];
       node.name = entry.name;
       node.type = entry.type;
