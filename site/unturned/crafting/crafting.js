@@ -1300,7 +1300,10 @@ function onNodeMouseOver(e) {
     const $recipes = $tooltip.querySelector('.tt-recipes');
 
     $name.textContent = n.name;
-    $meta.textContent = [n.type, n.rarity].filter(Boolean).join(' \u2022 ') || 'Unknown';
+    const metaParts = [n.type];
+    if (n.useable && n.useable.toLowerCase() !== n.type.toLowerCase()) metaParts.push(n.useable);
+    if (n.rarity) metaParts.push(n.rarity);
+    $meta.textContent = metaParts.join(' \u2022 ') || 'Unknown';
 
     // Build recipe descriptions (use filtered edges if map filter is active)
     const activeET = getActiveEdgesByTarget();
