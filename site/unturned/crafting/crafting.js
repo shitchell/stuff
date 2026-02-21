@@ -1395,10 +1395,13 @@ function onNodeMouseOver(e) {
             line += `<div class="tt-skill">Skill: ${esc(skillText)}</div>`;
         }
         if (bp.conditions && bp.conditions.length) {
-            const condText = bp.conditions
-                .map(c => c.type === 'Holiday' ? c.value : `${c.type}: ${c.value}`)
-                .join(', ');
-            line += `<div class="tt-condition">Requires: ${esc(condText)}</div>`;
+            // TODO: Flag_Short conditions are NPC quest gates (opaque numeric IDs).
+            // Investigate parsing quest/NPC data to resolve to human-readable names.
+            const displayable = bp.conditions.filter(c => c.type === 'Holiday');
+            if (displayable.length) {
+                const condText = displayable.map(c => c.value).join(', ');
+                line += `<div class="tt-condition">Requires: ${esc(condText)}</div>`;
+            }
         }
         line += `</div>`;
         // Deduplicate by visible text content
@@ -1425,10 +1428,13 @@ function onNodeMouseOver(e) {
             line += `<div class="tt-skill">Skill: ${esc(skillText)}</div>`;
         }
         if (bp.conditions && bp.conditions.length) {
-            const condText = bp.conditions
-                .map(c => c.type === 'Holiday' ? c.value : `${c.type}: ${c.value}`)
-                .join(', ');
-            line += `<div class="tt-condition">Requires: ${esc(condText)}</div>`;
+            // TODO: Flag_Short conditions are NPC quest gates (opaque numeric IDs).
+            // Investigate parsing quest/NPC data to resolve to human-readable names.
+            const displayable = bp.conditions.filter(c => c.type === 'Holiday');
+            if (displayable.length) {
+                const condText = displayable.map(c => c.value).join(', ');
+                line += `<div class="tt-condition">Requires: ${esc(condText)}</div>`;
+            }
         }
         line += `</div>`;
         const textKey = `${bp.type}:${n.name}→${bp.products.join('+')}`;
