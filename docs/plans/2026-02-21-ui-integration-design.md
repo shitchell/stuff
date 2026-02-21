@@ -175,8 +175,12 @@ useable: entry?.useable || '',
 - Item 4 modifies catalog code (independent of items 1-3)
 - Item 5 is a trivial migration that can happen anytime after Plan C
 
+## Known Bugs (investigate during Plan D)
+
+- **Arrow direction is inverted** — graph edges point the opposite direction from what's intuitive (e.g., ingredient → product should be the arrow direction, but it's reversed). Needs investigation into how Cytoscape edge direction is set in `buildCraftingGraph`.
+- **Salvage recipes mislabeled as "Craft"** — many Salvage-type blueprints show up as "Craft" in the graph/tooltip. Likely a bug in the blueprint type mapping or edge type assignment in `buildCraftingGraph`. May be related to Plan A's Tool→Salvage reclassification — investigate whether the fix landed correctly in the JS side.
+
 ## Future Work (deferred)
 
 - **Node badges** on crafting graph (skin variant badge, item type icons) — user wants this but needs more UX thought
 - **Properties in crafting tooltips** — show damage, range, etc. in hover cards — deferred until user has more usage-driven UX intuition
-- **Salvaging arrows** — TBD, user has thoughts to discuss
