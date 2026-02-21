@@ -879,6 +879,7 @@ async function applyMapFilter() {
     }
 
     mapFilterIds = ids;
+    if (mapEntries.length > 0) discoverPropertiesColumns(mapEntries);
     const baseMatches = allEntries.filter(e => ids.has(e.id));
     filteredEntries = baseMatches.concat(mapEntries);
   }
@@ -942,6 +943,7 @@ async function init() {
   try {
     manifest = await dataLoader.getManifest();
     allEntries = await dataLoader.getBaseEntries();
+    discoverPropertiesColumns(allEntries);
     filteredEntries = allEntries;
     renderMapFilters();
     parseHash();

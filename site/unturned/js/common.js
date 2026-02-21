@@ -213,7 +213,9 @@ const TYPE_FIELD_DEFS = {
   ],
 };
 
-// Union of all available columns across all types (for autocomplete)
+// Union of all available columns across all types (for autocomplete).
+// Starts with static definitions and is extended by discoverPropertiesColumns()
+// once entry data is loaded.
 const ALL_AVAILABLE_COLUMNS = (() => {
   const seen = new Set();
   const result = [];
@@ -240,6 +242,34 @@ const ALL_AVAILABLE_COLUMNS = (() => {
   }
   return result;
 })();
+
+// Track which column keys are already registered (for dedup when discovering properties)
+const _registeredColumnKeys = new Set(ALL_AVAILABLE_COLUMNS.map(c => c.key));
+
+function snakeToTitle(s) {
+  return s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+/**
+ * Scan entries for `properties` keys and register them as available columns.
+ * Call once after loading entry data.
+ */
+function discoverPropertiesColumns(entries) {
+  for (const entry of entries) {
+    for (const [key, val] of Object.entries(entry.properties || {})) {
+      const colKey = `properties.${key}`;
+      if (_registeredColumnKeys.has(colKey)) continue;
+      if (val === '' || val === null || val === undefined) continue;
+      // Skip array/object values — they don't display well in table cells
+      if (Array.isArray(val) || (typeof val === 'object' && val !== null)) continue;
+      _registeredColumnKeys.add(colKey);
+      ALL_AVAILABLE_COLUMNS.push({
+        key: colKey,
+        label: snakeToTitle(key),
+      });
+    }
+  }
+}
 
 // ── Default Category Columns ────────────────────────────────────────────────
 
@@ -692,6 +722,26 @@ function detectColumnsForEntries(entries) {
     });
     if (hasValue) result.push(col);
   }
+
+  // Also detect properties.* columns that are common in this entry set.
+  // Only include properties present in at least 20% of entries (avoids noise).
+  const propCounts = {};
+  for (const entry of entries) {
+    for (const [key, val] of Object.entries(entry.properties || {})) {
+      if (val === '' || val === null || val === undefined) continue;
+      if (Array.isArray(val) || (typeof val === 'object' && val !== null)) continue;
+      propCounts[key] = (propCounts[key] || 0) + 1;
+    }
+  }
+  const threshold = Math.max(1, entries.length * 0.2);
+  const existingKeys = new Set(result.map(c => c.key));
+  for (const [key, count] of Object.entries(propCounts)) {
+    const colKey = `properties.${key}`;
+    if (count >= threshold && !existingKeys.has(colKey)) {
+      result.push({ key: colKey, label: snakeToTitle(key) });
+    }
+  }
+
   return result.length > 0 ? result : IMPORTANT_COLUMNS.slice(0, 4);
 }
 
