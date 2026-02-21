@@ -807,6 +807,18 @@
             font-style: italic;
         }
 
+        /* --- Attribution --- */
+        .attribution {
+            font-size: 0.65rem;
+            color: #666;
+            text-align: center;
+            margin-top: 8px;
+            padding: 4px 12px 8px;
+        }
+
+        .attribution a { color: #888; }
+        .attribution a:hover { color: #6db3f2; }
+
         /* --- Responsive --- */
         @media (max-width: 800px) {
             #sidebar { display: none; }
@@ -848,6 +860,7 @@
                     <div class="section-body">
                         <div class="filter-list">
                             <label><input type="checkbox" id="opt-legend"> Show legend</label>
+                            <label><input type="checkbox" id="show-icons" checked> Show item icons</label>
                         </div>
                         <label style="font-size: 0.75rem; color: #888; margin-top: 6px; display: block;">Multi-Recipe:</label>
                         <select id="opt-multi-recipe">
@@ -1013,6 +1026,11 @@
                         </div>
                     </div>
                 </details>
+            </div>
+
+            <div class="attribution">
+                Icons by <a href="https://game-icons.net" target="_blank">game-icons.net</a>
+                under <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC BY 3.0</a>
             </div>
 
             <!-- Item List -->

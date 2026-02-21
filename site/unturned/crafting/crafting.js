@@ -183,6 +183,7 @@ function getSettings() {
         primSalvageable: lsGet('prim-salvageable', true),
         primNature: lsGet('prim-nature', true),
         primCommon: lsGet('prim-common', false),
+        showIcons: lsGet('show-icons', true),
     };
 }
 
@@ -549,7 +550,7 @@ function buildCyStyle() {
                 'width': settings.nodeSize === 'fixed' ? 28 : 'data(size)',
                 'height': settings.nodeSize === 'fixed' ? 28 : 'data(size)',
                 'shape': 'data(shape)',
-                'background-image': 'data(iconUrl)',
+                'background-image': settings.showIcons ? 'data(iconUrl)' : 'none',
                 'background-width': '60%',
                 'background-height': '60%',
                 'background-opacity': 0.55,
@@ -1787,6 +1788,12 @@ function wireSettings() {
     wireCheckbox('opt-prim-salvageable', 'prim-salvageable', refreshPrimitives);
     wireCheckbox('opt-prim-nature', 'prim-nature', refreshPrimitives);
     wireCheckbox('opt-prim-common', 'prim-common', refreshPrimitives);
+
+    // Show icons toggle
+    wireCheckbox('show-icons', 'show-icons', () => {
+        if (viewMode === 'graph') refreshGraphStyle();
+        else if (viewMode === 'diagram' && currentDiagramId) renderDiagram(currentDiagramId);
+    });
 
     // Legend toggle
     wireCheckbox('opt-legend', 'legend', () => {
