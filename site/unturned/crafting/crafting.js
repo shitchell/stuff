@@ -14,6 +14,38 @@ const TYPE_SHAPES = {
     Magazine: 'tag',
 };
 
+const TYPE_ICONS = {
+    Gun: 'pistol-gun',
+    Melee: 'broadsword',
+    Throwable: 'grenade',
+    Food: 'meal',
+    Water: 'water-bottle',
+    Medical: 'medical-pack',
+    Shirt: 'shirt',
+    Pants: 'trousers',
+    Hat: 'billed-cap',
+    Vest: 'kevlar-vest',
+    Backpack: 'knapsack',
+    Mask: 'gas-mask',
+    Glasses: 'sunglasses',
+    Barricade: 'brick-wall',
+    Structure: 'house',
+    Vehicle: 'jeep',
+    Magazine: 'bullet-impacts',
+    Sight: 'crosshair',
+    Optic: 'crosshair',
+    Barrel: 'crosshair',
+    Grip: 'hand-grip',
+    Tactical: 'flashlight',
+    Fuel: 'jerrycan',
+    Refill: 'jerrycan',
+    Tool: 'swiss-army-knife',
+    Fisher: 'fishing-hook',
+    Farm: 'plant-seed',
+};
+const DEFAULT_ICON = 'perspective-dice-six-faces-six';
+const ICON_BASE = 'icons/';
+
 const RARITY_COLORS = {
     Common: '#b0b0b0',
     Uncommon: '#4caf50',
@@ -517,6 +549,11 @@ function buildCyStyle() {
                 'width': settings.nodeSize === 'fixed' ? 28 : 'data(size)',
                 'height': settings.nodeSize === 'fixed' ? 28 : 'data(size)',
                 'shape': 'data(shape)',
+                'background-image': 'data(iconUrl)',
+                'background-width': '60%',
+                'background-height': '60%',
+                'background-opacity': 0.55,
+                'background-clip': 'node',
                 'text-max-width': '80px',
                 'text-wrap': 'ellipsis',
             }
@@ -662,6 +699,7 @@ function buildCyStyle() {
                 'width': 16,
                 'height': 16,
                 'background-color': '#1a1a2e',
+                'background-image': 'none',
                 'border-width': 1,
                 'border-color': '#666',
                 'border-style': 'dashed',
@@ -734,6 +772,7 @@ function buildGraphElements() {
                 size: size,
                 nodeType: n.type || '',
                 rarity: n.rarity || '',
+                iconUrl: ICON_BASE + (TYPE_ICONS[n.type] || DEFAULT_ICON) + '.svg',
             },
             classes: isDeselected ? 'deselected' : '',
         });
@@ -900,6 +939,7 @@ function buildDiagramTree(rootId) {
                 size: 28,
                 nodeType: srcNode.type || '',
                 rarity: srcNode.rarity || '',
+                iconUrl: ICON_BASE + (TYPE_ICONS[srcNode.type] || DEFAULT_ICON) + '.svg',
             },
             classes: 'diagram-node' + (isCycle ? ' diagram-cycle' : (isLeaf ? ' diagram-leaf' : '')),
         });
@@ -981,6 +1021,7 @@ function buildDiagramTree(rootId) {
                         size: 16,
                         nodeType: 'recipe',
                         rarity: '',
+                        iconUrl: '',
                     },
                     classes: 'diagram-node diagram-recipe',
                 });
@@ -1046,6 +1087,7 @@ function buildDiagramTree(rootId) {
             size: 45,
             nodeType: rootNode.type || '',
             rarity: rootNode.rarity || '',
+            iconUrl: ICON_BASE + (TYPE_ICONS[rootNode.type] || DEFAULT_ICON) + '.svg',
         },
         classes: 'diagram-node diagram-target',
     });
