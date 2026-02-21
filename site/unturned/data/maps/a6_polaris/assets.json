@@ -3319,7 +3319,7 @@
   },
   {
     "guid": "061e140a3af14ed4baaeb99d1a8461c4",
-    "name": "A6",
+    "name": "The Man Who Is Ghost",
     "csharp_type": "StereoSongAsset",
     "source_path": "Music/A6/A6.asset",
     "raw": {
@@ -3343,7 +3343,7 @@
   },
   {
     "guid": "e9ba140a3c1c4ce6a58f46cd1a50b971",
-    "name": "Cryo",
+    "name": "Cryophobia",
     "csharp_type": "StereoSongAsset",
     "source_path": "Music/Cryo/Cryo.asset",
     "raw": {
@@ -3367,7 +3367,7 @@
   },
   {
     "guid": "5010d59e48da4c2182b0b711540bc52c",
-    "name": "Cryo-Remix",
+    "name": "Cryophobia - Remix",
     "csharp_type": "StereoSongAsset",
     "source_path": "Music/Cryo-Remix/Cryo-Remix.asset",
     "raw": {

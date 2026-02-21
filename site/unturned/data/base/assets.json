@@ -6402,6 +6402,25 @@
     }
   },
   {
+    "guid": "9b519d2df5af46f08830562aeb2f43d7",
+    "name": "RussiaResearchDoorVolume",
+    "csharp_type": "RewardsList",
+    "source_path": "Assets/Levels/RussiaResearchDoorVolume.asset",
+    "raw": {
+      "Type": "RewardsList",
+      "GUID": "9b519d2df5af46f08830562aeb2f43d7",
+      "Conditions": 1,
+      "Condition_0_Type": "Flag_Bool",
+      "Condition_0_ID": 201,
+      "Condition_0_Value": true,
+      "Condition_0_Logic": "Equal",
+      "Rewards": 1,
+      "Reward_0_Type": "Flag_Bool",
+      "Reward_0_ID": 202,
+      "Reward_0_Value": true
+    }
+  },
+  {
     "guid": "9334e9cd34334029800e655f57a08f54",
     "name": "Washington",
     "csharp_type": "LevelAsset",
@@ -7434,8 +7453,256 @@
     }
   },
   {
+    "guid": "4dc8d743e8b34862a7e50328d52b73f5",
+    "name": "Asphalt (16 m)",
+    "csharp_type": "Road",
+    "source_path": "Assets/Roads/Asphalt_16m/Asphalt_16m.asset",
+    "raw": {
+      "GUID": "4dc8d743e8b34862a7e50328d52b73f5",
+      "Type": "Road",
+      "Width": 16,
+      "Depth": 0.8,
+      "OffsetAlongNormal": -0.2,
+      "TexturePath": "Roads/Asphalt.png",
+      "VanillaPhysicsMaterial": "Concrete_Static"
+    }
+  },
+  {
+    "guid": "6bd22834c209428fb816d47b75f2c024",
+    "name": "Asphalt (32 m)",
+    "csharp_type": "Road",
+    "source_path": "Assets/Roads/Asphalt_32m/Asphalt_32m.asset",
+    "raw": {
+      "GUID": "6bd22834c209428fb816d47b75f2c024",
+      "Type": "Road",
+      "Width": 32,
+      "Depth": 0.8,
+      "OffsetAlongNormal": -0.2,
+      "TexturePath": "Roads/Asphalt.png",
+      "VanillaPhysicsMaterial": "Concrete_Static"
+    }
+  },
+  {
+    "guid": "8bb7a6d6e5194e2e973e51527e1f7e10",
+    "name": "4-Lane 1-Way",
+    "csharp_type": "Road",
+    "source_path": "Assets/Roads/FourLane_OneWay/FourLane_OneWay.asset",
+    "raw": {
+      "GUID": "8bb7a6d6e5194e2e973e51527e1f7e10",
+      "Type": "Road",
+      "Width": 16,
+      "Depth": 0.8,
+      "OffsetAlongNormal": -0.2,
+      "RepeatDistanceScale": 4,
+      "TexturePath": "Roads/FourLane_OneWay.png",
+      "VanillaPhysicsMaterial": "Concrete_Static"
+    }
+  },
+  {
+    "guid": "f4bedc4355364ec095903f9a64c41de7",
+    "name": "4-Lane 2-Way",
+    "csharp_type": "Road",
+    "source_path": "Assets/Roads/FourLane_TwoWay/FourLane_TwoWay.asset",
+    "raw": {
+      "GUID": "f4bedc4355364ec095903f9a64c41de7",
+      "Type": "Road",
+      "Width": 16,
+      "Depth": 0.8,
+      "OffsetAlongNormal": -0.2,
+      "RepeatDistanceScale": 4,
+      "TexturePath": "Roads/FourLane_TwoWay.png",
+      "VanillaPhysicsMaterial": "Concrete_Static"
+    }
+  },
+  {
+    "guid": "1524cf9f0cf94390881a3e342edfe791",
+    "name": "Trail (PEI)",
+    "csharp_type": "Road",
+    "source_path": "Assets/Roads/PEI_Trail/PEI_Trail.asset",
+    "raw": {
+      "GUID": "1524cf9f0cf94390881a3e342edfe791",
+      "Type": "Road",
+      "Width": 8,
+      "Depth": 0.8,
+      "OffsetAlongNormal": -0.1,
+      "TexturePath": "Roads/PEI_Trail.png",
+      "VanillaPhysicsMaterial": "Gravel_Static"
+    }
+  },
+  {
+    "guid": "e2ac93f806304746af210b2d7e9b96d4",
+    "name": "4-Lane 2-Way (Germany)",
+    "csharp_type": "Road",
+    "source_path": "Assets/Roads/Peaks_FourLane_TwoWay/Peaks_FourLane_TwoWay.asset",
+    "raw": {
+      "GUID": "e2ac93f806304746af210b2d7e9b96d4",
+      "Type": "Road",
+      "Width": 16,
+      "Depth": 2.4,
+      "OffsetAlongNormal": -1,
+      "RepeatDistanceScale": 4,
+      "TexturePath": "Roads/Peaks_FourLane_TwoWay.png",
+      "VanillaPhysicsMaterial": "Concrete_Static"
+    }
+  },
+  {
+    "guid": "5a49751686854d61ba0e6140b838409f",
+    "name": "Trail (Germany)",
+    "csharp_type": "Road",
+    "source_path": "Assets/Roads/Peaks_Trail/Peaks_Trail.asset",
+    "raw": {
+      "GUID": "5a49751686854d61ba0e6140b838409f",
+      "Type": "Road",
+      "Width": 8,
+      "Depth": 0.8,
+      "OffsetAlongNormal": -0.1,
+      "TexturePath": "Roads/Peaks_Trail.png",
+      "VanillaPhysicsMaterial": "Gravel_Static"
+    }
+  },
+  {
+    "guid": "fa8e8d97388845429ca75da242152d4b",
+    "name": "Racetrack",
+    "csharp_type": "Road",
+    "source_path": "Assets/Roads/Racetrack/Racetrack.asset",
+    "raw": {
+      "GUID": "fa8e8d97388845429ca75da242152d4b",
+      "Type": "Road",
+      "Width": 24,
+      "Depth": 0.8,
+      "OffsetAlongNormal": -0.2,
+      "RepeatDistanceScale": 1.3333,
+      "TexturePath": "Roads/Racetrack.png",
+      "VanillaPhysicsMaterial": "Concrete_Static"
+    }
+  },
+  {
+    "guid": "096ed8871afe454993ec686745aeadb2",
+    "name": "Trail (Russia)",
+    "csharp_type": "Road",
+    "source_path": "Assets/Roads/Russia_Trail/Russia_Trail.asset",
+    "raw": {
+      "GUID": "096ed8871afe454993ec686745aeadb2",
+      "Type": "Road",
+      "Width": 8,
+      "Depth": 0.8,
+      "OffsetAlongNormal": -0.1,
+      "TexturePath": "Roads/Russia_Trail.png",
+      "VanillaPhysicsMaterial": "Gravel_Static"
+    }
+  },
+  {
+    "guid": "5c2f635bf9c64d8f9f9fcd610b0c6e35",
+    "name": "Train Tracks (Russia)",
+    "csharp_type": "Road",
+    "source_path": "Assets/Roads/Russia_TrainTracks/Russia_TrainTracks.asset",
+    "raw": {
+      "GUID": "5c2f635bf9c64d8f9f9fcd610b0c6e35",
+      "Type": "Road",
+      "Width": 4,
+      "Depth": 0.6,
+      "RepeatDistanceScale": 2,
+      "TexturePath": "Roads/Russia_TrainTracks.png",
+      "VanillaPhysicsMaterial": "Gravel_Static"
+    }
+  },
+  {
+    "guid": "2010b9ceb86f468b89912defe7fd392f",
+    "name": "Trail",
+    "csharp_type": "Road",
+    "source_path": "Assets/Roads/Trail/Trail.asset",
+    "raw": {
+      "GUID": "2010b9ceb86f468b89912defe7fd392f",
+      "Type": "Road",
+      "Width": 8,
+      "Depth": 0.8,
+      "OffsetAlongNormal": -0.1,
+      "TexturePath": "Roads/Trail.png",
+      "VanillaPhysicsMaterial": "Gravel_Static"
+    }
+  },
+  {
+    "guid": "33e6695817ca4687b418143e050b8ca6",
+    "name": "Train Tracks",
+    "csharp_type": "Road",
+    "source_path": "Assets/Roads/TrainTracks/TrainTracks.asset",
+    "raw": {
+      "GUID": "33e6695817ca4687b418143e050b8ca6",
+      "Type": "Road",
+      "Width": 4.5,
+      "Depth": 0.8,
+      "RepeatDistanceScale": 1.7778,
+      "TexturePath": "Roads/TrainTracks.png",
+      "VanillaPhysicsMaterial": "Gravel_Static"
+    }
+  },
+  {
+    "guid": "17890fa09ff44cf7a29215bd08d53c5a",
+    "name": "2-Lane 1-Way No Passing",
+    "csharp_type": "Road",
+    "source_path": "Assets/Roads/TwoLane_OneWay_NoPassing/TwoLane_OneWay_NoPassing.asset",
+    "raw": {
+      "GUID": "17890fa09ff44cf7a29215bd08d53c5a",
+      "Type": "Road",
+      "Width": 8,
+      "Depth": 0.8,
+      "OffsetAlongNormal": -0.2,
+      "RepeatDistanceScale": 4,
+      "TexturePath": "Roads/TwoLane_OneWay_NoPassing.png",
+      "VanillaPhysicsMaterial": "Concrete_Static"
+    }
+  },
+  {
+    "guid": "372972c216b14d14ae0d26acb4f0a326",
+    "name": "2-Lane 1-Way Passing",
+    "csharp_type": "Road",
+    "source_path": "Assets/Roads/TwoLane_OneWay_Passing/TwoLane_OneWay_Passing.asset",
+    "raw": {
+      "GUID": "372972c216b14d14ae0d26acb4f0a326",
+      "Type": "Road",
+      "Width": 8,
+      "Depth": 0.8,
+      "OffsetAlongNormal": -0.2,
+      "RepeatDistanceScale": 4,
+      "TexturePath": "Roads/TwoLane_OneWay_Passing.png",
+      "VanillaPhysicsMaterial": "Concrete_Static"
+    }
+  },
+  {
+    "guid": "941730faa9454a23931c8f2801d964c5",
+    "name": "2-Lane 2-Way No Passing",
+    "csharp_type": "Road",
+    "source_path": "Assets/Roads/TwoLane_TwoWay_NoPassing/TwoLane_TwoWay_NoPassing.asset",
+    "raw": {
+      "GUID": "941730faa9454a23931c8f2801d964c5",
+      "Type": "Road",
+      "Width": 8,
+      "Depth": 0.8,
+      "OffsetAlongNormal": -0.2,
+      "RepeatDistanceScale": 4,
+      "TexturePath": "Roads/TwoLane_TwoWay_NoPassing.png",
+      "VanillaPhysicsMaterial": "Concrete_Static"
+    }
+  },
+  {
+    "guid": "318ed502f80d4798a96c324a43593315",
+    "name": "2-Lane 2-Way Passing",
+    "csharp_type": "Road",
+    "source_path": "Assets/Roads/TwoLane_TwoWay_Passing/TwoLane_TwoWay_Passing.asset",
+    "raw": {
+      "GUID": "318ed502f80d4798a96c324a43593315",
+      "Type": "Road",
+      "Width": 8,
+      "Depth": 0.8,
+      "OffsetAlongNormal": -0.2,
+      "RepeatDistanceScale": 4,
+      "TexturePath": "Roads/TwoLane_TwoWay_Passing.png",
+      "VanillaPhysicsMaterial": "Concrete_Static"
+    }
+  },
+  {
     "guid": "d7dbfca63ee246ddbd23b0525b904001",
-    "name": "PEI",
+    "name": "PEI Loading Screen Theme",
     "csharp_type": "StereoSongAsset",
     "source_path": "Assets/Songs/PEI/PEI.asset",
     "raw": {
@@ -7477,7 +7744,7 @@
   },
   {
     "guid": "0308984e8257465187dde707cac0fbe1",
-    "name": "Washington",
+    "name": "Washington Loading Screen Theme",
     "csharp_type": "StereoSongAsset",
     "source_path": "Assets/Songs/Washington/Washington.asset",
     "raw": {
@@ -7492,6 +7759,255 @@
         },
         "Is_Loop": true
       }
+    }
+  },
+  {
+    "guid": "d739926736374e5ba34b4ac6ffbb5c8f",
+    "name": "Ammunition",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/BlueprintCategory/Ammo/BlueprintCategoryTag_Ammo.asset",
+    "raw": {
+      "GUID": "d739926736374e5ba34b4ac6ffbb5c8f",
+      "Type": "Tag",
+      "HasIcon": true,
+      "IconPath": "UI/BlueprintCategoryTagIcons/Ammo.png"
+    }
+  },
+  {
+    "guid": "ebe755533bdd42d1871c3ac66b89530f",
+    "name": "Apparel",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/BlueprintCategory/Apparel/BlueprintCategoryTag_Apparel.asset",
+    "raw": {
+      "GUID": "ebe755533bdd42d1871c3ac66b89530f",
+      "Type": "Tag",
+      "HasIcon": true,
+      "IconPath": "UI/BlueprintCategoryTagIcons/Apparel.png"
+    }
+  },
+  {
+    "guid": "31a59b5fec3f4ec5b2887b1ce4acb029",
+    "name": "Barricades",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/BlueprintCategory/Barricade/BlueprintCategoryTag_Barricade.asset",
+    "raw": {
+      "GUID": "31a59b5fec3f4ec5b2887b1ce4acb029",
+      "Type": "Tag",
+      "HasIcon": true,
+      "IconPath": "UI/BlueprintCategoryTagIcons/Barricade.png"
+    }
+  },
+  {
+    "guid": "b0c6cc0a8b4346be89aef697ecdb8e46",
+    "name": "Furniture",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/BlueprintCategory/Furniture/BlueprintCategoryTag_Furniture.asset",
+    "raw": {
+      "GUID": "b0c6cc0a8b4346be89aef697ecdb8e46",
+      "Type": "Tag",
+      "HasIcon": true,
+      "IconPath": "UI/BlueprintCategoryTagIcons/Furniture.png"
+    }
+  },
+  {
+    "guid": "cdb2df24b76d4c6e9d8411c940d8337f",
+    "name": "Gear",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/BlueprintCategory/Gear/BlueprintCategoryTag_Gear.asset",
+    "raw": {
+      "GUID": "cdb2df24b76d4c6e9d8411c940d8337f",
+      "Type": "Tag",
+      "HasIcon": true,
+      "IconPath": "UI/BlueprintCategoryTagIcons/Gear.png"
+    }
+  },
+  {
+    "guid": "732ee6ffeb18418985cf4f9fde33dd11",
+    "name": "Repair",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/BlueprintCategory/Repair/BlueprintCategoryTag_Repair.asset",
+    "raw": {
+      "GUID": "732ee6ffeb18418985cf4f9fde33dd11",
+      "Type": "Tag",
+      "HasIcon": true,
+      "IconPath": "UI/BlueprintCategoryTagIcons/Repair.png"
+    }
+  },
+  {
+    "guid": "7ed29f9101ae4523a3b2e389414b7bd9",
+    "name": "Salvage",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/BlueprintCategory/Salvage/BlueprintCategoryTag_Salvage.asset",
+    "raw": {
+      "GUID": "7ed29f9101ae4523a3b2e389414b7bd9",
+      "Type": "Tag",
+      "HasIcon": true,
+      "IconPath": "UI/BlueprintCategoryTagIcons/Salvage.png"
+    }
+  },
+  {
+    "guid": "71d9e182c18b4aad8e87778e4f621995",
+    "name": "Structures",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/BlueprintCategory/Structure/BlueprintCategoryTag_Structure.asset",
+    "raw": {
+      "GUID": "71d9e182c18b4aad8e87778e4f621995",
+      "Type": "Tag",
+      "HasIcon": true,
+      "IconPath": "UI/BlueprintCategoryTagIcons/Structure.png"
+    }
+  },
+  {
+    "guid": "d089feb7e43f40c5a7dfcefc36998cfb",
+    "name": "Supplies",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/BlueprintCategory/Supply/BlueprintCategoryTag_Supply.asset",
+    "raw": {
+      "GUID": "d089feb7e43f40c5a7dfcefc36998cfb",
+      "Type": "Tag",
+      "HasIcon": true,
+      "IconPath": "UI/BlueprintCategoryTagIcons/Supply.png"
+    }
+  },
+  {
+    "guid": "ad1804b6945145f3b308738b0b8ea447",
+    "name": "Tools",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/BlueprintCategory/Tool/BlueprintCategoryTag_Tool.asset",
+    "raw": {
+      "GUID": "ad1804b6945145f3b308738b0b8ea447",
+      "Type": "Tag",
+      "HasIcon": true,
+      "IconPath": "UI/BlueprintCategoryTagIcons/Tool.png"
+    }
+  },
+  {
+    "guid": "bfac6026305f4737a95fd275ebff65a6",
+    "name": "Utilities",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/BlueprintCategory/Utilities/BlueprintCategoryTag_Utilities.asset",
+    "raw": {
+      "GUID": "bfac6026305f4737a95fd275ebff65a6",
+      "Type": "Tag",
+      "HasIcon": true,
+      "IconPath": "UI/BlueprintCategoryTagIcons/Utilities.png"
+    }
+  },
+  {
+    "guid": "99896da563a748148460c67b9962874f",
+    "name": "Chemical Mixing Capabilities",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/Crafting/ChemicalMixing/CraftingTag_ChemicalMixing.asset",
+    "raw": {
+      "GUID": "99896da563a748148460c67b9962874f",
+      "Type": "Tag",
+      "HasIcon": true,
+      "IconPath": "UI/CraftingTagIcons/Chemistry.png"
+    }
+  },
+  {
+    "guid": "8e86b740dafc46f7bf98c5040c9b223e",
+    "name": "Color Dyeing Capabilities",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/Crafting/Dyeing/CraftingTag_Dyeing.asset",
+    "raw": {
+      "GUID": "8e86b740dafc46f7bf98c5040c9b223e",
+      "Type": "Tag",
+      "HasIcon": true,
+      "IconPath": "UI/CraftingTagIcons/RGBWithArrows.png"
+    }
+  },
+  {
+    "guid": "d2cc65b749e5477f95103601df89cdbc",
+    "name": "Enclosed Heat Source",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/Crafting/EnclosedHeat/CraftingTag_EnclosedHeat.asset",
+    "raw": {
+      "GUID": "d2cc65b749e5477f95103601df89cdbc",
+      "Type": "Tag",
+      "HasIcon": true,
+      "IconPath": "UI/CraftingTagIcons/Oven.png"
+    }
+  },
+  {
+    "guid": "20f30322bbcc4b01a4f116d22b24c21a",
+    "name": "Heat Source",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/Crafting/Heat/CraftingTag_Heat.asset",
+    "raw": {
+      "GUID": "20f30322bbcc4b01a4f116d22b24c21a",
+      "Type": "Tag",
+      "HasIcon": true,
+      "IconPath": "UI/CraftingTagIcons/HeatSource.png"
+    }
+  },
+  {
+    "guid": "68816064e2ce44839c3f35da55033cba",
+    "name": "Kitchen Capabilities",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/Crafting/Kitchen/CraftingTag_Kitchen.asset",
+    "raw": {
+      "GUID": "68816064e2ce44839c3f35da55033cba",
+      "Type": "Tag",
+      "HasIcon": true,
+      "IconPath": "UI/CraftingTagIcons/Kitchen.png"
+    }
+  },
+  {
+    "guid": "2ac5ddc545a848008c0308d21f5d2e6b",
+    "name": "Sewing Capabilities",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/Crafting/Sewing/CraftingTag_Sewing.asset",
+    "raw": {
+      "GUID": "2ac5ddc545a848008c0308d21f5d2e6b",
+      "Type": "Tag",
+      "HasIcon": true,
+      "IconPath": "UI/CraftingTagIcons/Sewing.png"
+    }
+  },
+  {
+    "guid": "7b82c125a5a54984b8bb26576b59e977",
+    "name": "Workbench Capabilities",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/Crafting/Workbench/CraftingTag_Workbench.asset",
+    "raw": {
+      "GUID": "7b82c125a5a54984b8bb26576b59e977",
+      "Type": "Tag",
+      "HasIcon": true,
+      "IconPath": "UI/CraftingTagIcons/Workbench.png"
+    }
+  },
+  {
+    "guid": "73eb818d1aa044c7bb4e61b8f9b37a3c",
+    "name": "BuildingInSafezonesAllowedTag",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/Misc/BuildingInSafezonesAllowedTag.asset",
+    "raw": {
+      "GUID": "73eb818d1aa044c7bb4e61b8f9b37a3c",
+      "Type": "Tag",
+      "HasIcon": false
+    }
+  },
+  {
+    "guid": "f663677b88de40ec80ff36b0c1cae544",
+    "name": "NotSingleplayerTag",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/Misc/NotSingleplayerTag.asset",
+    "raw": {
+      "GUID": "f663677b88de40ec80ff36b0c1cae544",
+      "Type": "Tag",
+      "HasIcon": false
+    }
+  },
+  {
+    "guid": "d7bd989414644b19b3299be0c6fab5f0",
+    "name": "SingleplayerTag",
+    "csharp_type": "Tag",
+    "source_path": "Assets/Tags/Misc/SingleplayerTag.asset",
+    "raw": {
+      "GUID": "d7bd989414644b19b3299be0c6fab5f0",
+      "Type": "Tag",
+      "HasIcon": false
     }
   },
   {
@@ -8093,6 +8609,811 @@
         "Boss_Wind_Chance": 0,
         "Boss_Fire_Chance": 0
       }
+    }
+  },
+  {
+    "guid": "61edeaee95b742a3a0b589f769261cdb",
+    "name": "DyeVatCraftingEffect",
+    "csharp_type": "Effect",
+    "source_path": "Effects/General/DyeVatCraftingEffect.asset",
+    "raw": {
+      "GUID": "61edeaee95b742a3a0b589f769261cdb",
+      "Type": "Effect",
+      "OneShotAudio": "Sounds/DyeVat/DyeVat.asset"
+    }
+  },
+  {
+    "guid": "3d1fd4b7846d44c4b6e24b846bf1372e",
+    "name": "LS Athlete Bottoms",
+    "csharp_type": "Pants",
+    "source_path": "Items/Limestone/Bundles/LS_Athlete/LS_Athlete_Bottoms.asset",
+    "raw": {
+      "GUID": "3d1fd4b7846d44c4b6e24b846bf1372e",
+      "Type": "Pants",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "c8fde17f16844c678b275e9ff2649855",
+    "name": "LS Athlete Outfit",
+    "csharp_type": "OutfitAsset",
+    "source_path": "Items/Limestone/Bundles/LS_Athlete/LS_Athlete_Outfit.asset",
+    "raw": {
+      "GUID": "c8fde17f16844c678b275e9ff2649855",
+      "Type": "SDG.Unturned.OutfitAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "Items": [
+        "3d1fd4b7846d44c4b6e24b846bf1372e",
+        "94810df626434182b15bcd643c0805bb",
+        "ec406d974d32403a8001b65a8c44cac3",
+        "3000b47bc72e4c80919eb8d461376a45"
+      ]
+    }
+  },
+  {
+    "guid": "94810df626434182b15bcd643c0805bb",
+    "name": "LS Athlete ShoulderBag",
+    "csharp_type": "Vest",
+    "source_path": "Items/Limestone/Bundles/LS_Athlete/LS_Athlete_ShoulderBag.asset",
+    "raw": {
+      "GUID": "94810df626434182b15bcd643c0805bb",
+      "Type": "Vest",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "ec406d974d32403a8001b65a8c44cac3",
+    "name": "LS Athlete Top",
+    "csharp_type": "Shirt",
+    "source_path": "Items/Limestone/Bundles/LS_Athlete/LS_Athlete_Top.asset",
+    "raw": {
+      "GUID": "ec406d974d32403a8001b65a8c44cac3",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "3000b47bc72e4c80919eb8d461376a45",
+    "name": "LS Athlete VisorCap",
+    "csharp_type": "Hat",
+    "source_path": "Items/Limestone/Bundles/LS_Athlete/LS_Athlete_VisorCap.asset",
+    "raw": {
+      "GUID": "3000b47bc72e4c80919eb8d461376a45",
+      "Type": "Hat",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair_Override": "Model_1",
+      "Beard": true
+    }
+  },
+  {
+    "guid": "ec81a76598504200a1e08ebc288bc9b7",
+    "name": "LS Warden Glasses",
+    "csharp_type": "Glasses",
+    "source_path": "Items/Limestone/Bundles/LS_Warden/LS_Warden_Glasses.asset",
+    "raw": {
+      "GUID": "ec81a76598504200a1e08ebc288bc9b7",
+      "Type": "Glasses",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair": true,
+      "Beard": true
+    }
+  },
+  {
+    "guid": "cfd1de5ef3ac4a348dca114a562392fa",
+    "name": "LS Warden Helm",
+    "csharp_type": "Hat",
+    "source_path": "Items/Limestone/Bundles/LS_Warden/LS_Warden_Helm.asset",
+    "raw": {
+      "GUID": "cfd1de5ef3ac4a348dca114a562392fa",
+      "Type": "Hat",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Beard": true
+    }
+  },
+  {
+    "guid": "006ac9fc3e5d47b6b58a17707abf9d05",
+    "name": "LS Warden Mask",
+    "csharp_type": "Mask",
+    "source_path": "Items/Limestone/Bundles/LS_Warden/LS_Warden_Mask.asset",
+    "raw": {
+      "GUID": "006ac9fc3e5d47b6b58a17707abf9d05",
+      "Type": "Mask",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair": true
+    }
+  },
+  {
+    "guid": "696e69a0ac144db7afcb3774b651f877",
+    "name": "LS Warden Outfit",
+    "csharp_type": "OutfitAsset",
+    "source_path": "Items/Limestone/Bundles/LS_Warden/LS_Warden_Outfit.asset",
+    "raw": {
+      "GUID": "696e69a0ac144db7afcb3774b651f877",
+      "Type": "SDG.Unturned.OutfitAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "Items": [
+        "ec81a76598504200a1e08ebc288bc9b7",
+        "cfd1de5ef3ac4a348dca114a562392fa",
+        "006ac9fc3e5d47b6b58a17707abf9d05",
+        "734c01e0ccbf4ea4aab69de55e315f76",
+        "ef43a100e1c440e78bba458fe4338fb6",
+        "0daf0eb19c7c4f9b98e1faeddaba5fbe"
+      ]
+    }
+  },
+  {
+    "guid": "734c01e0ccbf4ea4aab69de55e315f76",
+    "name": "LS Warden Pants",
+    "csharp_type": "Pants",
+    "source_path": "Items/Limestone/Bundles/LS_Warden/LS_Warden_Pants.asset",
+    "raw": {
+      "GUID": "734c01e0ccbf4ea4aab69de55e315f76",
+      "Type": "Pants",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "ef43a100e1c440e78bba458fe4338fb6",
+    "name": "LS Warden Shirt",
+    "csharp_type": "Shirt",
+    "source_path": "Items/Limestone/Bundles/LS_Warden/LS_Warden_Shirt.asset",
+    "raw": {
+      "GUID": "ef43a100e1c440e78bba458fe4338fb6",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "0daf0eb19c7c4f9b98e1faeddaba5fbe",
+    "name": "LS Warden Vest",
+    "csharp_type": "Vest",
+    "source_path": "Items/Limestone/Bundles/LS_Warden/LS_Warden_Vest.asset",
+    "raw": {
+      "GUID": "0daf0eb19c7c4f9b98e1faeddaba5fbe",
+      "Type": "Vest",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "2960e6f6b609488396c864008edc78c7",
+    "name": "LS BrigadierVest",
+    "csharp_type": "Vest",
+    "source_path": "Items/Limestone/Extras/LS_BrigadierVest.asset",
+    "raw": {
+      "GUID": "2960e6f6b609488396c864008edc78c7",
+      "Type": "Vest",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "04cf0dc1ee1c4330b7c4b5a9d6b51cf2",
+    "name": "LS FragGoggles 0",
+    "csharp_type": "Glasses",
+    "source_path": "Items/Limestone/Extras/LS_FragGoggles_0.asset",
+    "raw": {
+      "GUID": "04cf0dc1ee1c4330b7c4b5a9d6b51cf2",
+      "Type": "Glasses",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair": true,
+      "Beard": true
+    }
+  },
+  {
+    "guid": "82158501dc6f4bc5a3070551bb3c792f",
+    "name": "LS FragGoggles 1",
+    "csharp_type": "Glasses",
+    "source_path": "Items/Limestone/Extras/LS_FragGoggles_1.asset",
+    "raw": {
+      "GUID": "82158501dc6f4bc5a3070551bb3c792f",
+      "Type": "Glasses",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair": true,
+      "Beard": true
+    }
+  },
+  {
+    "guid": "2329224453c24526a2509924ded95c4a",
+    "name": "LS FragGoggles 2",
+    "csharp_type": "Glasses",
+    "source_path": "Items/Limestone/Extras/LS_FragGoggles_2.asset",
+    "raw": {
+      "GUID": "2329224453c24526a2509924ded95c4a",
+      "Type": "Glasses",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair": true,
+      "Beard": true
+    }
+  },
+  {
+    "guid": "bca4b1336d9d497bb672bed7d663407c",
+    "name": "LS FragGoggles 3",
+    "csharp_type": "Glasses",
+    "source_path": "Items/Limestone/Extras/LS_FragGoggles_3.asset",
+    "raw": {
+      "GUID": "bca4b1336d9d497bb672bed7d663407c",
+      "Type": "Glasses",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair": true,
+      "Beard": true
+    }
+  },
+  {
+    "guid": "86b1acb891484e888f1c82d63a36da9c",
+    "name": "LS FragGoggles 4",
+    "csharp_type": "Glasses",
+    "source_path": "Items/Limestone/Extras/LS_FragGoggles_4.asset",
+    "raw": {
+      "GUID": "86b1acb891484e888f1c82d63a36da9c",
+      "Type": "Glasses",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair": true,
+      "Beard": true
+    }
+  },
+  {
+    "guid": "57d50fe196104f089db39f7537ebc5f6",
+    "name": "LS FragGoggles 5",
+    "csharp_type": "Glasses",
+    "source_path": "Items/Limestone/Extras/LS_FragGoggles_5.asset",
+    "raw": {
+      "GUID": "57d50fe196104f089db39f7537ebc5f6",
+      "Type": "Glasses",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair": true,
+      "Beard": true
+    }
+  },
+  {
+    "guid": "5ea5132eb46f4ef585f01b4a664d8938",
+    "name": "LS Gasmask",
+    "csharp_type": "Mask",
+    "source_path": "Items/Limestone/Extras/LS_Gasmask.asset",
+    "raw": {
+      "GUID": "5ea5132eb46f4ef585f01b4a664d8938",
+      "Type": "Mask",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair": true
+    }
+  },
+  {
+    "guid": "002a62917db14201b8b094550ec7094f",
+    "name": "LS HiVisJacket",
+    "csharp_type": "Shirt",
+    "source_path": "Items/Limestone/Extras/LS_HiVisJacket.asset",
+    "raw": {
+      "GUID": "002a62917db14201b8b094550ec7094f",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "9b23c45b21a44c028a9103e9d4d8c827",
+    "name": "LS Hood Beige",
+    "csharp_type": "Hat",
+    "source_path": "Items/Limestone/Extras/LS_Hood_Beige.asset",
+    "raw": {
+      "GUID": "9b23c45b21a44c028a9103e9d4d8c827",
+      "Type": "Hat",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair_Override": "Model_1",
+      "Beard": true
+    }
+  },
+  {
+    "guid": "a76a731533054e238043d5cc4eaff802",
+    "name": "LS Hood Black",
+    "csharp_type": "Hat",
+    "source_path": "Items/Limestone/Extras/LS_Hood_Black.asset",
+    "raw": {
+      "GUID": "a76a731533054e238043d5cc4eaff802",
+      "Type": "Hat",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair_Override": "Model_1",
+      "Beard": true
+    }
+  },
+  {
+    "guid": "39ab8a9e7eb84f7d803a06ca65a589a3",
+    "name": "LS Hood Green",
+    "csharp_type": "Hat",
+    "source_path": "Items/Limestone/Extras/LS_Hood_Green.asset",
+    "raw": {
+      "GUID": "39ab8a9e7eb84f7d803a06ca65a589a3",
+      "Type": "Hat",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair_Override": "Model_1",
+      "Beard": true
+    }
+  },
+  {
+    "guid": "b0acdeb454414561aaffe92adf7f55f2",
+    "name": "LS Hood Navy",
+    "csharp_type": "Hat",
+    "source_path": "Items/Limestone/Extras/LS_Hood_Navy.asset",
+    "raw": {
+      "GUID": "b0acdeb454414561aaffe92adf7f55f2",
+      "Type": "Hat",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair_Override": "Model_1",
+      "Beard": true
+    }
+  },
+  {
+    "guid": "e55e92dbaa2e4169a6021fb9be884bb1",
+    "name": "LS Hood Red",
+    "csharp_type": "Hat",
+    "source_path": "Items/Limestone/Extras/LS_Hood_Red.asset",
+    "raw": {
+      "GUID": "e55e92dbaa2e4169a6021fb9be884bb1",
+      "Type": "Hat",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair_Override": "Model_1",
+      "Beard": true
+    }
+  },
+  {
+    "guid": "c3d9d8085d964dbab004b9162869b838",
+    "name": "LS Hood Yellow",
+    "csharp_type": "Hat",
+    "source_path": "Items/Limestone/Extras/LS_Hood_Yellow.asset",
+    "raw": {
+      "GUID": "c3d9d8085d964dbab004b9162869b838",
+      "Type": "Hat",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair_Override": "Model_1",
+      "Beard": true
+    }
+  },
+  {
+    "guid": "2ca374f80f5b4415b205fef88b1f6149",
+    "name": "LS PatriotJacket",
+    "csharp_type": "Shirt",
+    "source_path": "Items/Limestone/Extras/LS_PatriotJacket.asset",
+    "raw": {
+      "GUID": "2ca374f80f5b4415b205fef88b1f6149",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "4286ca8e885c4a48a634b44f82afd710",
+    "name": "LS SkiMask 0",
+    "csharp_type": "Mask",
+    "source_path": "Items/Limestone/Extras/LS_SkiMask_0.asset",
+    "raw": {
+      "GUID": "4286ca8e885c4a48a634b44f82afd710",
+      "Type": "Mask",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "5eb81e39926b4b87a0a9454ca5f8aaf0",
+    "name": "LS SkiMask 1",
+    "csharp_type": "Mask",
+    "source_path": "Items/Limestone/Extras/LS_SkiMask_1.asset",
+    "raw": {
+      "GUID": "5eb81e39926b4b87a0a9454ca5f8aaf0",
+      "Type": "Mask",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "e4669463ff7b4adaa56547d1ca8c7296",
+    "name": "LS SkiMask 2",
+    "csharp_type": "Mask",
+    "source_path": "Items/Limestone/Extras/LS_SkiMask_2.asset",
+    "raw": {
+      "GUID": "e4669463ff7b4adaa56547d1ca8c7296",
+      "Type": "Mask",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "b8537df305874d79ad2899d2bdbcde36",
+    "name": "LS SkiMask 3",
+    "csharp_type": "Mask",
+    "source_path": "Items/Limestone/Extras/LS_SkiMask_3.asset",
+    "raw": {
+      "GUID": "b8537df305874d79ad2899d2bdbcde36",
+      "Type": "Mask",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "2d69be34426d42c5bfcf743f68c32ac6",
+    "name": "LS Softshell 0",
+    "csharp_type": "Shirt",
+    "source_path": "Items/Limestone/Extras/LS_Softshell_0.asset",
+    "raw": {
+      "GUID": "2d69be34426d42c5bfcf743f68c32ac6",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "b118c58d76dc4560ba2cc2f4027be990",
+    "name": "LS Softshell 1",
+    "csharp_type": "Shirt",
+    "source_path": "Items/Limestone/Extras/LS_Softshell_1.asset",
+    "raw": {
+      "GUID": "b118c58d76dc4560ba2cc2f4027be990",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "7219a6384b4044ddaacbab89f6f4a937",
+    "name": "LS Softshell 2",
+    "csharp_type": "Shirt",
+    "source_path": "Items/Limestone/Extras/LS_Softshell_2.asset",
+    "raw": {
+      "GUID": "7219a6384b4044ddaacbab89f6f4a937",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "86b5eed02cbf46319dd83a7b80eb94dd",
+    "name": "LS AcidBurnShirt",
+    "csharp_type": "Shirt",
+    "source_path": "Items/Limestone/Premium/LS_AcidBurnShirt.asset",
+    "raw": {
+      "GUID": "86b5eed02cbf46319dd83a7b80eb94dd",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "58d9ee0980d2445baed742a5c3ee562f",
+    "name": "LS BeachShorts",
+    "csharp_type": "Pants",
+    "source_path": "Items/Limestone/Premium/LS_BeachShorts.asset",
+    "raw": {
+      "GUID": "58d9ee0980d2445baed742a5c3ee562f",
+      "Type": "Pants",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "f13759cb5bad47edb5bdf037dd7177b7",
+    "name": "LS CrewmanBackpack",
+    "csharp_type": "Backpack",
+    "source_path": "Items/Limestone/Premium/LS_CrewmanBackpack.asset",
+    "raw": {
+      "GUID": "f13759cb5bad47edb5bdf037dd7177b7",
+      "Type": "Backpack",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "bd635869477243d7bf3a53d4bd0fbe56",
+    "name": "LS CrewmanHelmet",
+    "csharp_type": "Hat",
+    "source_path": "Items/Limestone/Premium/LS_CrewmanHelmet.asset",
+    "raw": {
+      "GUID": "bd635869477243d7bf3a53d4bd0fbe56",
+      "Type": "Hat",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair_Override": "Model_2",
+      "Beard": true
+    }
+  },
+  {
+    "guid": "0778f8258fc042bab67743021577f2ea",
+    "name": "LS FlakVest",
+    "csharp_type": "Vest",
+    "source_path": "Items/Limestone/Premium/LS_FlakVest.asset",
+    "raw": {
+      "GUID": "0778f8258fc042bab67743021577f2ea",
+      "Type": "Vest",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "6449d049e74e41d69816b8f781f5cd4c",
+    "name": "LS ForemansToolbag",
+    "csharp_type": "Backpack",
+    "source_path": "Items/Limestone/Premium/LS_ForemansToolbag.asset",
+    "raw": {
+      "GUID": "6449d049e74e41d69816b8f781f5cd4c",
+      "Type": "Backpack",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "2663c331865d43e1b4fd838b65c05356",
+    "name": "LS ImpHair",
+    "csharp_type": "Hat",
+    "source_path": "Items/Limestone/Premium/LS_ImpHair.asset",
+    "raw": {
+      "GUID": "2663c331865d43e1b4fd838b65c05356",
+      "Type": "Hat",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Skin_Override": "Model_0",
+      "Hair_Override": "Model_1",
+      "Beard": true
+    }
+  },
+  {
+    "guid": "cc5d35085fce485899d40178573c97ff",
+    "name": "LS ImpTail",
+    "csharp_type": "Backpack",
+    "source_path": "Items/Limestone/Premium/LS_ImpTail.asset",
+    "raw": {
+      "GUID": "cc5d35085fce485899d40178573c97ff",
+      "Type": "Backpack",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Skin_Override": "Cube"
+    }
+  },
+  {
+    "guid": "3b2abf7b95004adcaf9b0bdede46772a",
+    "name": "LS LifeguardVest",
+    "csharp_type": "Vest",
+    "source_path": "Items/Limestone/Premium/LS_LifeguardVest.asset",
+    "raw": {
+      "GUID": "3b2abf7b95004adcaf9b0bdede46772a",
+      "Type": "Vest",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "4ab8d527f4034f1ab3df486872482ad8",
+    "name": "LS Oversize",
+    "csharp_type": "Vest",
+    "source_path": "Items/Limestone/Premium/LS_Oversize.asset",
+    "raw": {
+      "GUID": "4ab8d527f4034f1ab3df486872482ad8",
+      "Type": "Vest",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Skin_Override": "Model_0",
+      "Has_Fallback_Shirt": true,
+      "Fallback_Shirt": "f058b6c06f644b1fad860aa9a5318bd0"
+    }
+  },
+  {
+    "guid": "f058b6c06f644b1fad860aa9a5318bd0",
+    "name": "LS Oversize FallbackShirt",
+    "csharp_type": "Shirt",
+    "source_path": "Items/Limestone/Premium/LS_Oversize_FallbackShirt.asset",
+    "raw": {
+      "GUID": "f058b6c06f644b1fad860aa9a5318bd0",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "e684b1b021b24a1698edfa645b74f73b",
+    "name": "LS PatrolRig",
+    "csharp_type": "Vest",
+    "source_path": "Items/Limestone/Premium/LS_PatrolRig.asset",
+    "raw": {
+      "GUID": "e684b1b021b24a1698edfa645b74f73b",
+      "Type": "Vest",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "858c77df07e44ea2bc4d2b85c0f17a6a",
+    "name": "LS PerchedGlasses",
+    "csharp_type": "Glasses",
+    "source_path": "Items/Limestone/Premium/LS_PerchedGlasses.asset",
+    "raw": {
+      "GUID": "858c77df07e44ea2bc4d2b85c0f17a6a",
+      "Type": "Glasses",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair": true,
+      "Beard": true
+    }
+  },
+  {
+    "guid": "c1d5fcc3ebe8421c961833aa7a3c9bd5",
+    "name": "LS ReconCap",
+    "csharp_type": "Hat",
+    "source_path": "Items/Limestone/Premium/LS_ReconCap.asset",
+    "raw": {
+      "GUID": "c1d5fcc3ebe8421c961833aa7a3c9bd5",
+      "Type": "Hat",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair_Override": "Model_2"
+    }
+  },
+  {
+    "guid": "3aa9ccf28b774e8ea452bdb98cc4cfb7",
+    "name": "LS Shark",
+    "csharp_type": "Backpack",
+    "source_path": "Items/Limestone/Premium/LS_Shark.asset",
+    "raw": {
+      "GUID": "3aa9ccf28b774e8ea452bdb98cc4cfb7",
+      "Type": "Backpack",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "7980da7d84594b99a7bb4acb865f97da",
+    "name": "LS TimberlineShirt",
+    "csharp_type": "Shirt",
+    "source_path": "Items/Limestone/Premium/LS_TimberlineShirt.asset",
+    "raw": {
+      "GUID": "7980da7d84594b99a7bb4acb865f97da",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "d618a416a39a48d691e0b06953a6b6aa",
+    "name": "LS TowerBag",
+    "csharp_type": "Backpack",
+    "source_path": "Items/Limestone/Premium/LS_TowerBag.asset",
+    "raw": {
+      "GUID": "d618a416a39a48d691e0b06953a6b6aa",
+      "Type": "Backpack",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "5c9d3674871f47ffae879cfba4df333f",
+    "name": "LS VRHeadset",
+    "csharp_type": "Glasses",
+    "source_path": "Items/Limestone/Premium/LS_VRHeadset.asset",
+    "raw": {
+      "GUID": "5c9d3674871f47ffae879cfba4df333f",
+      "Type": "Glasses",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair": true,
+      "Beard": true
+    }
+  },
+  {
+    "guid": "83a40584b85c48a885eca4d101f7ddd9",
+    "name": "LS VanguardVest",
+    "csharp_type": "Vest",
+    "source_path": "Items/Limestone/Premium/LS_VanguardVest.asset",
+    "raw": {
+      "GUID": "83a40584b85c48a885eca4d101f7ddd9",
+      "Type": "Vest",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "056c4c77b8504b1a97150c76526386bd",
+    "name": "LS WendigoShirt",
+    "csharp_type": "Shirt",
+    "source_path": "Items/Limestone/Premium/LS_WendigoShirt.asset",
+    "raw": {
+      "GUID": "056c4c77b8504b1a97150c76526386bd",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "015d0b38376a4d07ae7ec0c381981ed8",
+    "name": "LS Whiskers",
+    "csharp_type": "Glasses",
+    "source_path": "Items/Limestone/Premium/LS_Whiskers.asset",
+    "raw": {
+      "GUID": "015d0b38376a4d07ae7ec0c381981ed8",
+      "Type": "Glasses",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair": true,
+      "Beard": true
+    }
+  },
+  {
+    "guid": "cd4654b176e34cf28ede4b8ae238dfbf",
+    "name": "LS WindproofJacket",
+    "csharp_type": "Shirt",
+    "source_path": "Items/Limestone/Premium/LS_WindproofJacket.asset",
+    "raw": {
+      "GUID": "cd4654b176e34cf28ede4b8ae238dfbf",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "d4eb9d0d8a304a71b3285127b027882c",
+    "name": "LS WirelesEarbuds",
+    "csharp_type": "Glasses",
+    "source_path": "Items/Limestone/Premium/LS_WirelesEarbuds.asset",
+    "raw": {
+      "GUID": "d4eb9d0d8a304a71b3285127b027882c",
+      "Type": "Glasses",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Hair": true,
+      "Beard": true
+    }
+  },
+  {
+    "guid": "ab745198ae2f4000b83d78d4eae29c52",
+    "name": "LS WolfMask",
+    "csharp_type": "Mask",
+    "source_path": "Items/Limestone/Premium/LS_WolfMask.asset",
+    "raw": {
+      "GUID": "ab745198ae2f4000b83d78d4eae29c52",
+      "Type": "Mask",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "49a2ea1c538c498580ebb745e9ee3ddc",
+    "name": "LS Zip",
+    "csharp_type": "Vest",
+    "source_path": "Items/Limestone/Premium/LS_Zip.asset",
+    "raw": {
+      "GUID": "49a2ea1c538c498580ebb745e9ee3ddc",
+      "Type": "Vest",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true,
+      "Skin_Override": "Model_0",
+      "Has_Fallback_Shirt": true,
+      "Fallback_Shirt": "546aed298a6449e2859ff613e8b5c07f"
+    }
+  },
+  {
+    "guid": "546aed298a6449e2859ff613e8b5c07f",
+    "name": "LS Zip FallbackShirt",
+    "csharp_type": "Shirt",
+    "source_path": "Items/Limestone/Premium/LS_Zip_FallbackShirt.asset",
+    "raw": {
+      "GUID": "546aed298a6449e2859ff613e8b5c07f",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
     }
   },
   {
@@ -9538,6 +10859,1132 @@
     }
   },
   {
+    "guid": "aa7ea4df84804efeb16c10d557ee850b",
+    "name": "Rio Crop Black",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Crop_Top/Rio_Crop_Black.asset",
+    "raw": {
+      "GUID": "aa7ea4df84804efeb16c10d557ee850b",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "2b20b15bf2354a5c9ba860266cfb5bdc",
+    "name": "Rio Crop Blue",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Crop_Top/Rio_Crop_Blue.asset",
+    "raw": {
+      "GUID": "2b20b15bf2354a5c9ba860266cfb5bdc",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "5564e815dcd947d7b2c6951d724d9df6",
+    "name": "Rio Crop Green",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Crop_Top/Rio_Crop_Green.asset",
+    "raw": {
+      "GUID": "5564e815dcd947d7b2c6951d724d9df6",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "5d4ea9bcab034a9f92c2f8315e4a55f0",
+    "name": "Rio Crop Orange",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Crop_Top/Rio_Crop_Orange.asset",
+    "raw": {
+      "GUID": "5d4ea9bcab034a9f92c2f8315e4a55f0",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "3e320cc71cdf4147a8ab852345df5a93",
+    "name": "Rio Crop Purple",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Crop_Top/Rio_Crop_Purple.asset",
+    "raw": {
+      "GUID": "3e320cc71cdf4147a8ab852345df5a93",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "4848401b6119420cbba1ecd85744d136",
+    "name": "Rio Crop Red",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Crop_Top/Rio_Crop_Red.asset",
+    "raw": {
+      "GUID": "4848401b6119420cbba1ecd85744d136",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "8c82b795b9e5432cbdbb805a0dd349da",
+    "name": "Rio Crop White",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Crop_Top/Rio_Crop_White.asset",
+    "raw": {
+      "GUID": "8c82b795b9e5432cbdbb805a0dd349da",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "5abacfe2b2884370a0c9899ab68aed11",
+    "name": "Rio Crop Yellow",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Crop_Top/Rio_Crop_Yellow.asset",
+    "raw": {
+      "GUID": "5abacfe2b2884370a0c9899ab68aed11",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "ae3fa2d24b1f40899c437d4f40ff21b2",
+    "name": "Rio Brazil Scarf",
+    "csharp_type": "Vest",
+    "source_path": "Items/RioRemastered/Free/Rio_Brazil_Scarf.asset",
+    "raw": {
+      "GUID": "ae3fa2d24b1f40899c437d4f40ff21b2",
+      "Type": "Vest",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "d6980583f6c241acbbc1c57f652f1430",
+    "name": "Rio Brazilian Panama",
+    "csharp_type": "Hat",
+    "source_path": "Items/RioRemastered/Free/Rio_Brazilian_Panama.asset",
+    "raw": {
+      "GUID": "d6980583f6c241acbbc1c57f652f1430",
+      "Type": "Hat",
+      "Beard": true,
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "9b104ae712394554bd0d3b491d4fc9f8",
+    "name": "Rio Chaos Pendant",
+    "csharp_type": "Vest",
+    "source_path": "Items/RioRemastered/Free/Rio_Chaos_Pendant.asset",
+    "raw": {
+      "GUID": "9b104ae712394554bd0d3b491d4fc9f8",
+      "Type": "Vest",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "5cdaf43a559d49468d65e137ffaea30b",
+    "name": "Rio Chewing Gum",
+    "csharp_type": "Mask",
+    "source_path": "Items/RioRemastered/Free/Rio_Chewing_Gum.asset",
+    "raw": {
+      "GUID": "5cdaf43a559d49468d65e137ffaea30b",
+      "Type": "Mask",
+      "Hair": true,
+      "Beard": true,
+      "Mirror_Left_Handed_Model": false,
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "7da565bcfa524b0c8d62794c92c315c6",
+    "name": "Rio Horde Control",
+    "csharp_type": "Backpack",
+    "source_path": "Items/RioRemastered/Free/Rio_Horde_Control.asset",
+    "raw": {
+      "GUID": "7da565bcfa524b0c8d62794c92c315c6",
+      "Type": "Backpack",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "5ff39cd3605a464d9b9784f80ee8c141",
+    "name": "Rio Mirrored Blue",
+    "csharp_type": "Glasses",
+    "source_path": "Items/RioRemastered/Free/Rio_Mirrored_Blue.asset",
+    "raw": {
+      "GUID": "5ff39cd3605a464d9b9784f80ee8c141",
+      "Type": "Glasses",
+      "Hair": true,
+      "Beard": true,
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "0d29fbc3c0ca465e826ee6bf44749997",
+    "name": "Rio Mirrored Green",
+    "csharp_type": "Glasses",
+    "source_path": "Items/RioRemastered/Free/Rio_Mirrored_Green.asset",
+    "raw": {
+      "GUID": "0d29fbc3c0ca465e826ee6bf44749997",
+      "Type": "Glasses",
+      "Hair": true,
+      "Beard": true,
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "322665af37b44088981dc5b41615b7ad",
+    "name": "Rio Mirrored Orange",
+    "csharp_type": "Glasses",
+    "source_path": "Items/RioRemastered/Free/Rio_Mirrored_Orange.asset",
+    "raw": {
+      "GUID": "322665af37b44088981dc5b41615b7ad",
+      "Type": "Glasses",
+      "Hair": true,
+      "Beard": true,
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "eb4a4bcf45884c38ae7d7d80ef0dc65b",
+    "name": "Rio Mirrored Purple",
+    "csharp_type": "Glasses",
+    "source_path": "Items/RioRemastered/Free/Rio_Mirrored_Purple.asset",
+    "raw": {
+      "GUID": "eb4a4bcf45884c38ae7d7d80ef0dc65b",
+      "Type": "Glasses",
+      "Hair": true,
+      "Beard": true,
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "8396fd41690d4e76acd21cecee6dfcb6",
+    "name": "Rio Paper Plane",
+    "csharp_type": "Hat",
+    "source_path": "Items/RioRemastered/Free/Rio_Paper_Plane.asset",
+    "raw": {
+      "GUID": "8396fd41690d4e76acd21cecee6dfcb6",
+      "Type": "Hat",
+      "Hair": true,
+      "Beard": true,
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "8901f9406f8d4617b964ca993bcbd431",
+    "name": "Rio Soccer Bottom Black",
+    "csharp_type": "Pants",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Bottom_Black.asset",
+    "raw": {
+      "GUID": "8901f9406f8d4617b964ca993bcbd431",
+      "Type": "Pants",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "327042dba2884567be0129f2e65ec42d",
+    "name": "Rio Soccer Bottom Blue",
+    "csharp_type": "Pants",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Bottom_Blue.asset",
+    "raw": {
+      "GUID": "327042dba2884567be0129f2e65ec42d",
+      "Type": "Pants",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "accea1f6929345d0881853dfbb8cd4bd",
+    "name": "Rio Soccer Bottom Green",
+    "csharp_type": "Pants",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Bottom_Green.asset",
+    "raw": {
+      "GUID": "accea1f6929345d0881853dfbb8cd4bd",
+      "Type": "Pants",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "c81bb643e1cd4bccbb82cb8fc0c4ca4a",
+    "name": "Rio Soccer Bottom Red",
+    "csharp_type": "Pants",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Bottom_Red.asset",
+    "raw": {
+      "GUID": "c81bb643e1cd4bccbb82cb8fc0c4ca4a",
+      "Type": "Pants",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "308ca4c2f3b24cd18db76edfb783e457",
+    "name": "Rio Soccer Bottom White",
+    "csharp_type": "Pants",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Bottom_White.asset",
+    "raw": {
+      "GUID": "308ca4c2f3b24cd18db76edfb783e457",
+      "Type": "Pants",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "283100fd9fa8447ebc56556d8d2453ad",
+    "name": "Rio Soccer Bottom Yellow",
+    "csharp_type": "Pants",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Bottom_Yellow.asset",
+    "raw": {
+      "GUID": "283100fd9fa8447ebc56556d8d2453ad",
+      "Type": "Pants",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "d24258d869fa4962b8e6864af9e32992",
+    "name": "Rio Soccer Top Argentina",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Argentina.asset",
+    "raw": {
+      "GUID": "d24258d869fa4962b8e6864af9e32992",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "8fa822bbc3444b99932a402cf4e24cd3",
+    "name": "Rio Soccer Top Australia",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Australia.asset",
+    "raw": {
+      "GUID": "8fa822bbc3444b99932a402cf4e24cd3",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "c240b4e3ecfb41a4aa0bfc07ba714820",
+    "name": "Rio Soccer Top Belgium",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Belgium.asset",
+    "raw": {
+      "GUID": "c240b4e3ecfb41a4aa0bfc07ba714820",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "4e8869424d524742ae4c4f85e81415b3",
+    "name": "Rio Soccer Top Bolivia",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Bolivia.asset",
+    "raw": {
+      "GUID": "4e8869424d524742ae4c4f85e81415b3",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "07674f73121949beb63239d476f99959",
+    "name": "Rio Soccer Top Brazil",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Brazil.asset",
+    "raw": {
+      "GUID": "07674f73121949beb63239d476f99959",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "1b483c6697eb4bddb079da2a7ae382d8",
+    "name": "Rio Soccer Top Canada",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Canada.asset",
+    "raw": {
+      "GUID": "1b483c6697eb4bddb079da2a7ae382d8",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "349ebbf62e53406b97e9f103cfaaa751",
+    "name": "Rio Soccer Top Chile",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Chile.asset",
+    "raw": {
+      "GUID": "349ebbf62e53406b97e9f103cfaaa751",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "7a138fdc4ba543d5870730c79cc397af",
+    "name": "Rio Soccer Top China",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_China.asset",
+    "raw": {
+      "GUID": "7a138fdc4ba543d5870730c79cc397af",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "7547c731a2bd4ae781ffd78e4d3578df",
+    "name": "Rio Soccer Top Colombia",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Colombia.asset",
+    "raw": {
+      "GUID": "7547c731a2bd4ae781ffd78e4d3578df",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "a89a377ec8db4a99861692e169907310",
+    "name": "Rio Soccer Top Croatia",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Croatia.asset",
+    "raw": {
+      "GUID": "a89a377ec8db4a99861692e169907310",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "ee7305bf9edb4b13a736951629e5bbe5",
+    "name": "Rio Soccer Top Denmark",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Denmark.asset",
+    "raw": {
+      "GUID": "ee7305bf9edb4b13a736951629e5bbe5",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "386111591ca4429c9eae78395d2beea7",
+    "name": "Rio Soccer Top England",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_England.asset",
+    "raw": {
+      "GUID": "386111591ca4429c9eae78395d2beea7",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "984d82666f964494a9ccd519912348db",
+    "name": "Rio Soccer Top Finland",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Finland.asset",
+    "raw": {
+      "GUID": "984d82666f964494a9ccd519912348db",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "eb88b70204ab41ac88ebbff8101a89da",
+    "name": "Rio Soccer Top France",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_France.asset",
+    "raw": {
+      "GUID": "eb88b70204ab41ac88ebbff8101a89da",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "a648d1ef38f5469aba2bae0b15e3e349",
+    "name": "Rio Soccer Top Germany",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Germany.asset",
+    "raw": {
+      "GUID": "a648d1ef38f5469aba2bae0b15e3e349",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "9e30f608f3af4b6eb6c3ff6f8f719499",
+    "name": "Rio Soccer Top Greece",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Greece.asset",
+    "raw": {
+      "GUID": "9e30f608f3af4b6eb6c3ff6f8f719499",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "0876fabc52ff478583e3407dded11261",
+    "name": "Rio Soccer Top Hungary",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Hungary.asset",
+    "raw": {
+      "GUID": "0876fabc52ff478583e3407dded11261",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "dba032a4c72c4844ac9c24ddb70a4a27",
+    "name": "Rio Soccer Top Iceland",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Iceland.asset",
+    "raw": {
+      "GUID": "dba032a4c72c4844ac9c24ddb70a4a27",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "0b895bb678c4412aae97060aad8228f8",
+    "name": "Rio Soccer Top Italy",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Italy.asset",
+    "raw": {
+      "GUID": "0b895bb678c4412aae97060aad8228f8",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "29f9544f2a6648558f8baaaf04be63d4",
+    "name": "Rio Soccer Top Japan",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Japan.asset",
+    "raw": {
+      "GUID": "29f9544f2a6648558f8baaaf04be63d4",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "81ba94ee185d4c5d93c20831e155e0d2",
+    "name": "Rio Soccer Top Korea",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Korea.asset",
+    "raw": {
+      "GUID": "81ba94ee185d4c5d93c20831e155e0d2",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "c1f0e40681f246a48c42afd4654ff12a",
+    "name": "Rio Soccer Top Mexico",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Mexico.asset",
+    "raw": {
+      "GUID": "c1f0e40681f246a48c42afd4654ff12a",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "7270e7d68632485fb1716ae4c1a5d79e",
+    "name": "Rio Soccer Top Morocco",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Morocco.asset",
+    "raw": {
+      "GUID": "7270e7d68632485fb1716ae4c1a5d79e",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "ec931f5917ab4bd1905c1755c6986aae",
+    "name": "Rio Soccer Top Netherlands",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Netherlands.asset",
+    "raw": {
+      "GUID": "ec931f5917ab4bd1905c1755c6986aae",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "8a10721009ce460791362297813518a7",
+    "name": "Rio Soccer Top Norway",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Norway.asset",
+    "raw": {
+      "GUID": "8a10721009ce460791362297813518a7",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "07c5e6371032433ab6ac76707c831bea",
+    "name": "Rio Soccer Top Philippines",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Philippines.asset",
+    "raw": {
+      "GUID": "07c5e6371032433ab6ac76707c831bea",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "3f97c04cdee04076a1a6b10f41f648a7",
+    "name": "Rio Soccer Top Poland",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Poland.asset",
+    "raw": {
+      "GUID": "3f97c04cdee04076a1a6b10f41f648a7",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "f81ba74f116e4eb794890ed76bd63397",
+    "name": "Rio Soccer Top Portugal",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Portugal.asset",
+    "raw": {
+      "GUID": "f81ba74f116e4eb794890ed76bd63397",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "7ad83ee29e084d78b877fdaba13a3fb5",
+    "name": "Rio Soccer Top Romania",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Romania.asset",
+    "raw": {
+      "GUID": "7ad83ee29e084d78b877fdaba13a3fb5",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "0a4750eb5c6b4e3aa1446312441dfb96",
+    "name": "Rio Soccer Top Russia",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Russia.asset",
+    "raw": {
+      "GUID": "0a4750eb5c6b4e3aa1446312441dfb96",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "1cfad838f793494489e9ca94c230a263",
+    "name": "Rio Soccer Top Serbia",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Serbia.asset",
+    "raw": {
+      "GUID": "1cfad838f793494489e9ca94c230a263",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "59bc3111100143e29bc1d9de4bea83bf",
+    "name": "Rio Soccer Top SouthAfrica",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_SouthAfrica.asset",
+    "raw": {
+      "GUID": "59bc3111100143e29bc1d9de4bea83bf",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "77b367ff0e5541e78e5839a36a2af659",
+    "name": "Rio Soccer Top Spain",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Spain.asset",
+    "raw": {
+      "GUID": "77b367ff0e5541e78e5839a36a2af659",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "2ed969789f71434fbd60ee3d33cb0794",
+    "name": "Rio Soccer Top Sweden",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Sweden.asset",
+    "raw": {
+      "GUID": "2ed969789f71434fbd60ee3d33cb0794",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "cd3e1671d66d4af4a14b6766845bcf97",
+    "name": "Rio Soccer Top Turkey",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Turkey.asset",
+    "raw": {
+      "GUID": "cd3e1671d66d4af4a14b6766845bcf97",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "d8b8aa42a6f54d0d8179df879454c94b",
+    "name": "Rio Soccer Top USA",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_USA.asset",
+    "raw": {
+      "GUID": "d8b8aa42a6f54d0d8179df879454c94b",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "a44db08b4f074b08a24f9a45ff2c9abb",
+    "name": "Rio Soccer Top Ukraine",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Ukraine.asset",
+    "raw": {
+      "GUID": "a44db08b4f074b08a24f9a45ff2c9abb",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "9bece894f52e448eb798f6b62b16af34",
+    "name": "Rio Soccer Top Uruguay",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Rio_Soccer_Top_Uruguay.asset",
+    "raw": {
+      "GUID": "9bece894f52e448eb798f6b62b16af34",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "140e054badd948d39f84d4b9580cd6bb",
+    "name": "Rio Sproutheads",
+    "csharp_type": "Vest",
+    "source_path": "Items/RioRemastered/Free/Rio_Sproutheads.asset",
+    "raw": {
+      "GUID": "140e054badd948d39f84d4b9580cd6bb",
+      "Type": "Vest",
+      "Skin_Override": "Model_0",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "fe0d0b93525d4f559c3d47ac26f16a72",
+    "name": "Rio Tank Top Black",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Tank_Top/Rio_Tank_Top_Black.asset",
+    "raw": {
+      "GUID": "fe0d0b93525d4f559c3d47ac26f16a72",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "6929c83a4b45475e858943ac463084e0",
+    "name": "Rio Tank Top Blue",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Tank_Top/Rio_Tank_Top_Blue.asset",
+    "raw": {
+      "GUID": "6929c83a4b45475e858943ac463084e0",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "fb8294dfbebc4cef94e700f1cb9e9377",
+    "name": "Rio Tank Top Green",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Tank_Top/Rio_Tank_Top_Green.asset",
+    "raw": {
+      "GUID": "fb8294dfbebc4cef94e700f1cb9e9377",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "20f6f683bcb64d218c779c8e48c0b202",
+    "name": "Rio Tank Top Orange",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Tank_Top/Rio_Tank_Top_Orange.asset",
+    "raw": {
+      "GUID": "20f6f683bcb64d218c779c8e48c0b202",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "85fb28449a8349eeb095ebda2ba3af10",
+    "name": "Rio Tank Top Purple",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Tank_Top/Rio_Tank_Top_Purple.asset",
+    "raw": {
+      "GUID": "85fb28449a8349eeb095ebda2ba3af10",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "4c6b565ca81747338556270bee05e4cd",
+    "name": "Rio Tank Top Red",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Tank_Top/Rio_Tank_Top_Red.asset",
+    "raw": {
+      "GUID": "4c6b565ca81747338556270bee05e4cd",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "1e99699abee249cc8a860b11c0f3907e",
+    "name": "Rio Tank Top White",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Tank_Top/Rio_Tank_Top_White.asset",
+    "raw": {
+      "GUID": "1e99699abee249cc8a860b11c0f3907e",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "0115361a857c416e93bec4b1b1d62cf3",
+    "name": "Rio Tank Top Yellow",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Free/Tank_Top/Rio_Tank_Top_Yellow.asset",
+    "raw": {
+      "GUID": "0115361a857c416e93bec4b1b1d62cf3",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "a7673061626d49e6a484708e52c0f9fd",
+    "name": "Rio Catphones",
+    "csharp_type": "Hat",
+    "source_path": "Items/RioRemastered/Premium/Rio_Catphones.asset",
+    "raw": {
+      "GUID": "a7673061626d49e6a484708e52c0f9fd",
+      "Type": "Hat",
+      "Hair": true,
+      "Beard": true,
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "812ed152e04844389eece16686f2df35",
+    "name": "Rio Froggy Hat",
+    "csharp_type": "Hat",
+    "source_path": "Items/RioRemastered/Premium/Rio_Froggy_Hat.asset",
+    "raw": {
+      "GUID": "812ed152e04844389eece16686f2df35",
+      "Type": "Hat",
+      "Hair_Override": "Model_2",
+      "Beard": true,
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "aad8d1aaad84408790c0f9d40b150ec7",
+    "name": "Rio Heart Glasses",
+    "csharp_type": "Glasses",
+    "source_path": "Items/RioRemastered/Premium/Rio_Heart_Glasses.asset",
+    "raw": {
+      "GUID": "aad8d1aaad84408790c0f9d40b150ec7",
+      "Type": "Glasses",
+      "Hair": true,
+      "Beard": true,
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "5956e0e0f59d43208f7ce99394acd571",
+    "name": "Rio Jaguar Mask",
+    "csharp_type": "Mask",
+    "source_path": "Items/RioRemastered/Premium/Rio_Jaguar_Mask.asset",
+    "raw": {
+      "GUID": "5956e0e0f59d43208f7ce99394acd571",
+      "Type": "Mask",
+      "Hair": true,
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "f8bcb98e6f2e4f209735fd8b4a48dcfa",
+    "name": "Rio Keyhead",
+    "csharp_type": "Glasses",
+    "source_path": "Items/RioRemastered/Premium/Rio_Keyhead.asset",
+    "raw": {
+      "GUID": "f8bcb98e6f2e4f209735fd8b4a48dcfa",
+      "Type": "Glasses",
+      "Hair": true,
+      "Beard": true,
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "47b8e69d5de644b4bb36d8b8af75981c",
+    "name": "Rio Pearl Necklace",
+    "csharp_type": "Vest",
+    "source_path": "Items/RioRemastered/Premium/Rio_Pearl_Necklace.asset",
+    "raw": {
+      "GUID": "47b8e69d5de644b4bb36d8b8af75981c",
+      "Type": "Vest",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "13336deadc8542e78f988fa15e8b2821",
+    "name": "Rio Silly Pan",
+    "csharp_type": "Hat",
+    "source_path": "Items/RioRemastered/Premium/Rio_Silly_Pan.asset",
+    "raw": {
+      "GUID": "13336deadc8542e78f988fa15e8b2821",
+      "Type": "Hat",
+      "Beard": true,
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "c6e67f4ee2de40a482b3e608d4c5a7db",
+    "name": "Rio Soda Bandolier",
+    "csharp_type": "Vest",
+    "source_path": "Items/RioRemastered/Premium/Rio_Soda_Bandolier.asset",
+    "raw": {
+      "GUID": "c6e67f4ee2de40a482b3e608d4c5a7db",
+      "Type": "Vest",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "78401364e9ed46f481d91bd17394c17d",
+    "name": "Rio Sporty Hoodie",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Premium/Rio_Sporty_Hoodie.asset",
+    "raw": {
+      "GUID": "78401364e9ed46f481d91bd17394c17d",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "35c01ed20133476286c0daa84e006f82",
+    "name": "Rio Sporty Shoes",
+    "csharp_type": "Pants",
+    "source_path": "Items/RioRemastered/Premium/Rio_Sporty_Shoes.asset",
+    "raw": {
+      "GUID": "35c01ed20133476286c0daa84e006f82",
+      "Type": "Pants",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "59b22474f1184ac6b770f5ea85809353",
+    "name": "Rio Starry Glasses",
+    "csharp_type": "Glasses",
+    "source_path": "Items/RioRemastered/Premium/Rio_Starry_Glasses.asset",
+    "raw": {
+      "GUID": "59b22474f1184ac6b770f5ea85809353",
+      "Type": "Glasses",
+      "Hair": true,
+      "Beard": true,
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "184f07ad04154718a427000fff1de4d4",
+    "name": "Rio Street Jacket",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Premium/Rio_Street_Jacket.asset",
+    "raw": {
+      "GUID": "184f07ad04154718a427000fff1de4d4",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "27c869b1a08545dfb35c54608df0bf23",
+    "name": "Rio Vaulted",
+    "csharp_type": "Backpack",
+    "source_path": "Items/RioRemastered/Premium/Rio_Vaulted.asset",
+    "raw": {
+      "GUID": "27c869b1a08545dfb35c54608df0bf23",
+      "Type": "Backpack",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "6cdde03c40834c8fb1753f232a167705",
+    "name": "Rio Warhead Billy",
+    "csharp_type": "Mask",
+    "source_path": "Items/RioRemastered/Premium/Rio_Warhead_Billy.asset",
+    "raw": {
+      "GUID": "6cdde03c40834c8fb1753f232a167705",
+      "Type": "Mask",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "a566cde016624e5fa4c5714de30fefb3",
+    "name": "Rio Winged Headband",
+    "csharp_type": "Hat",
+    "source_path": "Items/RioRemastered/Premium/Rio_Winged_Headband.asset",
+    "raw": {
+      "GUID": "a566cde016624e5fa4c5714de30fefb3",
+      "Type": "Hat",
+      "Hair": true,
+      "Beard": true,
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "20477760f2a34f8dbcc8f434b47d09a7",
+    "name": "Rio SergeantSkull Beret",
+    "csharp_type": "Hat",
+    "source_path": "Items/RioRemastered/Rio_SergeantSkull/Rio_SergeantSkull_Beret.asset",
+    "raw": {
+      "GUID": "20477760f2a34f8dbcc8f434b47d09a7",
+      "Type": "Hat",
+      "Beard": true,
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "b51acc861c0d4cfda4243f5fbd7c4fcc",
+    "name": "Rio SergeantSkull Outfit",
+    "csharp_type": "OutfitAsset",
+    "source_path": "Items/RioRemastered/Rio_SergeantSkull/Rio_SergeantSkull_Outfit.asset",
+    "raw": {
+      "GUID": "b51acc861c0d4cfda4243f5fbd7c4fcc",
+      "Type": "SDG.Unturned.OutfitAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "Items": [
+        "20477760f2a34f8dbcc8f434b47d09a7",
+        "d84ca8e97c8a48e5ab6b6bf0306be0ec",
+        "e4e9c1c53b5841728eb65e8da3686ed5",
+        "e4247ff8c3b54d6ab03db784dda524ae"
+      ]
+    }
+  },
+  {
+    "guid": "d84ca8e97c8a48e5ab6b6bf0306be0ec",
+    "name": "Rio SergeantSkull Pants",
+    "csharp_type": "Pants",
+    "source_path": "Items/RioRemastered/Rio_SergeantSkull/Rio_SergeantSkull_Pants.asset",
+    "raw": {
+      "GUID": "d84ca8e97c8a48e5ab6b6bf0306be0ec",
+      "Type": "Pants",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "e4e9c1c53b5841728eb65e8da3686ed5",
+    "name": "Rio SergeantSkull Top",
+    "csharp_type": "Shirt",
+    "source_path": "Items/RioRemastered/Rio_SergeantSkull/Rio_SergeantSkull_Top.asset",
+    "raw": {
+      "GUID": "e4e9c1c53b5841728eb65e8da3686ed5",
+      "Type": "Shirt",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
+    "guid": "e4247ff8c3b54d6ab03db784dda524ae",
+    "name": "Rio SergeantSkull Vest",
+    "csharp_type": "Vest",
+    "source_path": "Items/RioRemastered/Rio_SergeantSkull/Rio_SergeantSkull_Vest.asset",
+    "raw": {
+      "GUID": "e4247ff8c3b54d6ab03db784dda524ae",
+      "Type": "Vest",
+      "Bundle_Path_Include_Filename": true,
+      "Pro": true
+    }
+  },
+  {
     "guid": "5150ca8f765d4a68bfe54912146da410",
     "name": "CanadianCurrency",
     "csharp_type": "ItemCurrencyAsset",
@@ -9596,6 +12043,1972 @@
           }
         ]
       }
+    }
+  },
+  {
+    "guid": "a2f98d9b28ec40df9268d7d6c822cc14",
+    "name": "APC Desert",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/APC/APC_Desert.asset",
+    "raw": {
+      "GUID": "a2f98d9b28ec40df9268d7d6c822cc14",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 57,
+      "TargetVehicle": "6f56dc58382349b79793f9ba8839774e",
+      "LoadPaintColor": "#a69884",
+      "SpawnPaintColor": "#a69884"
+    }
+  },
+  {
+    "guid": "637f80cc18844d1db30f5f43080b2334",
+    "name": "APC Forest",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/APC/APC_Forest.asset",
+    "raw": {
+      "GUID": "637f80cc18844d1db30f5f43080b2334",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 53,
+      "TargetVehicle": "6f56dc58382349b79793f9ba8839774e",
+      "LoadPaintColor": "#437c44",
+      "SpawnPaintColor": "#437c44"
+    }
+  },
+  {
+    "guid": "4b0f7567f172492ab4b270449d3957c8",
+    "name": "APC France",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/APC/APC_France.asset",
+    "raw": {
+      "GUID": "4b0f7567f172492ab4b270449d3957c8",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 172,
+      "TargetVehicle": "6f56dc58382349b79793f9ba8839774e",
+      "LoadPaintColor": "#848fa1",
+      "SpawnPaintColor": "#848fa1"
+    }
+  },
+  {
+    "guid": "dbd9dc902520493383ff3662ecc0007f",
+    "name": "APC Russia",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/APC/APC_Russia.asset",
+    "raw": {
+      "GUID": "dbd9dc902520493383ff3662ecc0007f",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 148,
+      "TargetVehicle": "6f56dc58382349b79793f9ba8839774e",
+      "LoadPaintColor": "#495631",
+      "SpawnPaintColor": "#495631"
+    }
+  },
+  {
+    "guid": "68dd9f129b2e4378a64ed27a63d503f7",
+    "name": "Dirtbike Black",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Dirtbike/Dirtbike_Black.asset",
+    "raw": {
+      "GUID": "68dd9f129b2e4378a64ed27a63d503f7",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 176,
+      "TargetVehicle": "b6dc4ac9a9984ebb9894fa05a6fe68ed",
+      "LoadPaintColor": "#353535"
+    }
+  },
+  {
+    "guid": "49e4de0b2b9546aca6d29b23a957dbe1",
+    "name": "Dirtbike Blue",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Dirtbike/Dirtbike_Blue.asset",
+    "raw": {
+      "GUID": "49e4de0b2b9546aca6d29b23a957dbe1",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 177,
+      "TargetVehicle": "b6dc4ac9a9984ebb9894fa05a6fe68ed",
+      "LoadPaintColor": "#37658c"
+    }
+  },
+  {
+    "guid": "248706fe49d844389b966275f3ddf941",
+    "name": "Dirtbike Green",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Dirtbike/Dirtbike_Green.asset",
+    "raw": {
+      "GUID": "248706fe49d844389b966275f3ddf941",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 178,
+      "TargetVehicle": "b6dc4ac9a9984ebb9894fa05a6fe68ed",
+      "LoadPaintColor": "#2e642e"
+    }
+  },
+  {
+    "guid": "d28b888a209f49479d0081966a1dd7c9",
+    "name": "Dirtbike Orange",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Dirtbike/Dirtbike_Orange.asset",
+    "raw": {
+      "GUID": "d28b888a209f49479d0081966a1dd7c9",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 179,
+      "TargetVehicle": "b6dc4ac9a9984ebb9894fa05a6fe68ed",
+      "LoadPaintColor": "#bd6e27"
+    }
+  },
+  {
+    "guid": "754e9e7c6ba54f76be1371421b7fdd62",
+    "name": "Dirtbike Purple",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Dirtbike/Dirtbike_Purple.asset",
+    "raw": {
+      "GUID": "754e9e7c6ba54f76be1371421b7fdd62",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 180,
+      "TargetVehicle": "b6dc4ac9a9984ebb9894fa05a6fe68ed",
+      "LoadPaintColor": "#6a466d"
+    }
+  },
+  {
+    "guid": "6eb95cca4e3d4aa48bc4300c310b11fb",
+    "name": "Dirtbike Red",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Dirtbike/Dirtbike_Red.asset",
+    "raw": {
+      "GUID": "6eb95cca4e3d4aa48bc4300c310b11fb",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 181,
+      "TargetVehicle": "b6dc4ac9a9984ebb9894fa05a6fe68ed",
+      "LoadPaintColor": "#9a2525"
+    }
+  },
+  {
+    "guid": "85ea6805c68f47b0bef475c671b30e67",
+    "name": "Dirtbike White",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Dirtbike/Dirtbike_White.asset",
+    "raw": {
+      "GUID": "85ea6805c68f47b0bef475c671b30e67",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 182,
+      "TargetVehicle": "b6dc4ac9a9984ebb9894fa05a6fe68ed",
+      "LoadPaintColor": "#d4d4d4"
+    }
+  },
+  {
+    "guid": "f1a3dcc7c19a4964821a480fa7c334ed",
+    "name": "Dirtbike Yellow",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Dirtbike/Dirtbike_Yellow.asset",
+    "raw": {
+      "GUID": "f1a3dcc7c19a4964821a480fa7c334ed",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 183,
+      "TargetVehicle": "b6dc4ac9a9984ebb9894fa05a6fe68ed",
+      "LoadPaintColor": "#cdaa1e"
+    }
+  },
+  {
+    "guid": "8c22727667fe4b43b5137b3b616f9080",
+    "name": "Hatchback Black",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Hatchback/Hatchback_Black.asset",
+    "raw": {
+      "GUID": "8c22727667fe4b43b5137b3b616f9080",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 9,
+      "TargetVehicle": "96a348cc310b4e5982f8d2cfcd9e9180",
+      "LoadPaintColor": "#353535"
+    }
+  },
+  {
+    "guid": "b65339a6dd8d4aae856f0302567a1ce6",
+    "name": "Hatchback Blue",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Hatchback/Hatchback_Blue.asset",
+    "raw": {
+      "GUID": "b65339a6dd8d4aae856f0302567a1ce6",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 10,
+      "TargetVehicle": "96a348cc310b4e5982f8d2cfcd9e9180",
+      "LoadPaintColor": "#37658c"
+    }
+  },
+  {
+    "guid": "d6cf408007e848ffa7af31e0b9851c12",
+    "name": "Hatchback Green",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Hatchback/Hatchback_Green.asset",
+    "raw": {
+      "GUID": "d6cf408007e848ffa7af31e0b9851c12",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 11,
+      "TargetVehicle": "96a348cc310b4e5982f8d2cfcd9e9180",
+      "LoadPaintColor": "#2e642e"
+    }
+  },
+  {
+    "guid": "84135613546d4f37be4c6391ac7b4c4b",
+    "name": "Hatchback Orange",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Hatchback/Hatchback_Orange.asset",
+    "raw": {
+      "GUID": "84135613546d4f37be4c6391ac7b4c4b",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 12,
+      "TargetVehicle": "96a348cc310b4e5982f8d2cfcd9e9180",
+      "LoadPaintColor": "#bd6e27"
+    }
+  },
+  {
+    "guid": "f97f5c416b5340638f68f48cd9b56adc",
+    "name": "Hatchback Purple",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Hatchback/Hatchback_Purple.asset",
+    "raw": {
+      "GUID": "f97f5c416b5340638f68f48cd9b56adc",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 13,
+      "TargetVehicle": "96a348cc310b4e5982f8d2cfcd9e9180",
+      "LoadPaintColor": "#6a466d"
+    }
+  },
+  {
+    "guid": "fa315216a6884d4fa3b09ab187df5931",
+    "name": "Hatchback Red",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Hatchback/Hatchback_Red.asset",
+    "raw": {
+      "GUID": "fa315216a6884d4fa3b09ab187df5931",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 14,
+      "TargetVehicle": "96a348cc310b4e5982f8d2cfcd9e9180",
+      "LoadPaintColor": "#9a2525"
+    }
+  },
+  {
+    "guid": "51ef7fbf6f2b4a14993c37f40e4f51ee",
+    "name": "Hatchback White",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Hatchback/Hatchback_White.asset",
+    "raw": {
+      "GUID": "51ef7fbf6f2b4a14993c37f40e4f51ee",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 15,
+      "TargetVehicle": "96a348cc310b4e5982f8d2cfcd9e9180",
+      "LoadPaintColor": "#d4d4d4"
+    }
+  },
+  {
+    "guid": "2a080a35a14840ff93afb8ede8bc9e5f",
+    "name": "Hatchback Yellow",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Hatchback/Hatchback_Yellow.asset",
+    "raw": {
+      "GUID": "2a080a35a14840ff93afb8ede8bc9e5f",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 16,
+      "TargetVehicle": "96a348cc310b4e5982f8d2cfcd9e9180",
+      "LoadPaintColor": "#cdaa1e"
+    }
+  },
+  {
+    "guid": "4cc9e7f90ce948a5b9a3ec39b8ad6fac",
+    "name": "Hind France",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Hind/Hind_France.asset",
+    "raw": {
+      "GUID": "4cc9e7f90ce948a5b9a3ec39b8ad6fac",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 174,
+      "TargetVehicle": "0999953ab4b846f0990b7a4ae3a51d9e",
+      "LoadPaintColor": "#848fa1",
+      "SpawnPaintColor": "#848fa1"
+    }
+  },
+  {
+    "guid": "db884e7ccdff4e5cb6e2e54324a27c1d",
+    "name": "Hind Russia",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Hind/Hind_Russia.asset",
+    "raw": {
+      "GUID": "db884e7ccdff4e5cb6e2e54324a27c1d",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 135,
+      "TargetVehicle": "0999953ab4b846f0990b7a4ae3a51d9e",
+      "LoadPaintColor": "#4e5c35",
+      "SpawnPaintColor": "#4e5c35"
+    }
+  },
+  {
+    "guid": "09bba390b7304167a3deae6716532cb0",
+    "name": "Huey Desert",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Huey/Huey_Desert.asset",
+    "raw": {
+      "GUID": "09bba390b7304167a3deae6716532cb0",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 94,
+      "TargetVehicle": "5f150e4d56194f5cb478317651b476b5",
+      "LoadPaintColor": "#a69884",
+      "SpawnPaintColor": "#a69884"
+    }
+  },
+  {
+    "guid": "be668a53f111448d82b149ee58292c07",
+    "name": "Huey Forest",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Huey/Huey_Forest.asset",
+    "raw": {
+      "GUID": "be668a53f111448d82b149ee58292c07",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 93,
+      "TargetVehicle": "5f150e4d56194f5cb478317651b476b5",
+      "LoadPaintColor": "#437c44",
+      "SpawnPaintColor": "#437c44"
+    }
+  },
+  {
+    "guid": "091e0cd7f2fa43c597ff6af07cd05069",
+    "name": "Huey France",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Huey/Huey_France.asset",
+    "raw": {
+      "GUID": "091e0cd7f2fa43c597ff6af07cd05069",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 175,
+      "TargetVehicle": "5f150e4d56194f5cb478317651b476b5",
+      "LoadPaintColor": "#848fa1",
+      "SpawnPaintColor": "#848fa1"
+    }
+  },
+  {
+    "guid": "48e0e18e37684bd9ba07d0c382b47b97",
+    "name": "Huey Russia",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Huey/Huey_Russia.asset",
+    "raw": {
+      "GUID": "48e0e18e37684bd9ba07d0c382b47b97",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 144,
+      "TargetVehicle": "5f150e4d56194f5cb478317651b476b5",
+      "LoadPaintColor": "#495631",
+      "SpawnPaintColor": "#495631"
+    }
+  },
+  {
+    "guid": "8eb84cb29a8044abb91959bdb0d1e5dd",
+    "name": "Humvee Desert",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Humvee/Humvee_Desert.asset",
+    "raw": {
+      "GUID": "8eb84cb29a8044abb91959bdb0d1e5dd",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 56,
+      "TargetVehicle": "48087f6ed2084186a92347962eb72f4b",
+      "LoadPaintColor": "#a69884",
+      "SpawnPaintColor": "#a69884"
+    }
+  },
+  {
+    "guid": "e42d894a5eda461a986ac8193ba9669a",
+    "name": "Humvee Forest",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Humvee/Humvee_Forest.asset",
+    "raw": {
+      "GUID": "e42d894a5eda461a986ac8193ba9669a",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 52,
+      "TargetVehicle": "48087f6ed2084186a92347962eb72f4b",
+      "LoadPaintColor": "#437c44",
+      "SpawnPaintColor": "#437c44"
+    }
+  },
+  {
+    "guid": "234bc520f1554cff86666446fc37fc91",
+    "name": "Humvee Russia",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Humvee/Humvee_Russia.asset",
+    "raw": {
+      "GUID": "234bc520f1554cff86666446fc37fc91",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 143,
+      "TargetVehicle": "48087f6ed2084186a92347962eb72f4b",
+      "LoadPaintColor": "#495631",
+      "SpawnPaintColor": "#495631"
+    }
+  },
+  {
+    "guid": "92dd16a80b334cb2a2dd0a1b96d40346",
+    "name": "Jeep Coalition",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Jeep/Jeep_Coalition.asset",
+    "raw": {
+      "GUID": "92dd16a80b334cb2a2dd0a1b96d40346",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 146,
+      "TargetVehicle": "82e07667f07e42279dce024116b322d4",
+      "LoadPaintColor": "#475e83",
+      "SpawnPaintColor": "#475e83"
+    }
+  },
+  {
+    "guid": "3107f05351044a3ca3df5ba839f59e2e",
+    "name": "Jeep Desert",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Jeep/Jeep_Desert.asset",
+    "raw": {
+      "GUID": "3107f05351044a3ca3df5ba839f59e2e",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 88,
+      "TargetVehicle": "82e07667f07e42279dce024116b322d4",
+      "LoadPaintColor": "#a69884",
+      "SpawnPaintColor": "#a69884"
+    }
+  },
+  {
+    "guid": "8cb29409dd54426c82e27749fd7d8544",
+    "name": "Jeep Forest",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Jeep/Jeep_Forest.asset",
+    "raw": {
+      "GUID": "8cb29409dd54426c82e27749fd7d8544",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 87,
+      "TargetVehicle": "82e07667f07e42279dce024116b322d4",
+      "LoadPaintColor": "#437c44",
+      "SpawnPaintColor": "#437c44"
+    }
+  },
+  {
+    "guid": "a9d43f23dc354ce984982c6b3801fb0e",
+    "name": "Jeep France",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Jeep/Jeep_France.asset",
+    "raw": {
+      "GUID": "a9d43f23dc354ce984982c6b3801fb0e",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 170,
+      "TargetVehicle": "82e07667f07e42279dce024116b322d4",
+      "LoadPaintColor": "#848fa1",
+      "SpawnPaintColor": "#848fa1"
+    }
+  },
+  {
+    "guid": "0f970256f1c147efa269d15b0eff4457",
+    "name": "Jeep Russia",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Jeep/Jeep_Russia.asset",
+    "raw": {
+      "GUID": "0f970256f1c147efa269d15b0eff4457",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 145,
+      "TargetVehicle": "82e07667f07e42279dce024116b322d4",
+      "LoadPaintColor": "#495631",
+      "SpawnPaintColor": "#495631"
+    }
+  },
+  {
+    "guid": "ecab4bc8633f4505a9ec51e5148c878d",
+    "name": "Jetski Black",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Jetski/Jetski_Black.asset",
+    "raw": {
+      "GUID": "ecab4bc8633f4505a9ec51e5148c878d",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 98,
+      "TargetVehicle": "66261510c9b04cbab68fd28789122632",
+      "LoadPaintColor": "#353535"
+    }
+  },
+  {
+    "guid": "f90140113d314fb58d1cd85fe14c9500",
+    "name": "Jetski Blue",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Jetski/Jetski_Blue.asset",
+    "raw": {
+      "GUID": "f90140113d314fb58d1cd85fe14c9500",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 99,
+      "TargetVehicle": "66261510c9b04cbab68fd28789122632",
+      "LoadPaintColor": "#37658c"
+    }
+  },
+  {
+    "guid": "24f769994c6d4efc9679c9f2288c6f21",
+    "name": "Jetski Green",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Jetski/Jetski_Green.asset",
+    "raw": {
+      "GUID": "24f769994c6d4efc9679c9f2288c6f21",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 100,
+      "TargetVehicle": "66261510c9b04cbab68fd28789122632",
+      "LoadPaintColor": "#2e642e"
+    }
+  },
+  {
+    "guid": "87d9325588ea4753ab69df5c0c0f031f",
+    "name": "Jetski Orange",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Jetski/Jetski_Orange.asset",
+    "raw": {
+      "GUID": "87d9325588ea4753ab69df5c0c0f031f",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 101,
+      "TargetVehicle": "66261510c9b04cbab68fd28789122632",
+      "LoadPaintColor": "#bd6e27"
+    }
+  },
+  {
+    "guid": "61dc012cb8704e96ba3e4f9f08488617",
+    "name": "Jetski Purple",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Jetski/Jetski_Purple.asset",
+    "raw": {
+      "GUID": "61dc012cb8704e96ba3e4f9f08488617",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 102,
+      "TargetVehicle": "66261510c9b04cbab68fd28789122632",
+      "LoadPaintColor": "#6a466d"
+    }
+  },
+  {
+    "guid": "bed804f24cd14ca78f381e6dc4dfcfb9",
+    "name": "Jetski Red",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Jetski/Jetski_Red.asset",
+    "raw": {
+      "GUID": "bed804f24cd14ca78f381e6dc4dfcfb9",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 103,
+      "TargetVehicle": "66261510c9b04cbab68fd28789122632",
+      "LoadPaintColor": "#9a2525"
+    }
+  },
+  {
+    "guid": "d0deb83de0324004a350d448d2daf358",
+    "name": "Jetski White",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Jetski/Jetski_White.asset",
+    "raw": {
+      "GUID": "d0deb83de0324004a350d448d2daf358",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 104,
+      "TargetVehicle": "66261510c9b04cbab68fd28789122632",
+      "LoadPaintColor": "#d4d4d4"
+    }
+  },
+  {
+    "guid": "d6954a30abb44f2dbc3d61230426860e",
+    "name": "Jetski Yellow",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Jetski/Jetski_Yellow.asset",
+    "raw": {
+      "GUID": "d6954a30abb44f2dbc3d61230426860e",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 105,
+      "TargetVehicle": "66261510c9b04cbab68fd28789122632",
+      "LoadPaintColor": "#cdaa1e"
+    }
+  },
+  {
+    "guid": "ca4537f4e0ce4d35a69d5957b46ae1aa",
+    "name": "Off Roader Black",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Off_Roader/Off_Roader_Black.asset",
+    "raw": {
+      "GUID": "ca4537f4e0ce4d35a69d5957b46ae1aa",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 1,
+      "TargetVehicle": "e0f8b4b23249483a9cd5c1402e2170fb",
+      "LoadPaintColor": "#353535"
+    }
+  },
+  {
+    "guid": "ac2ec89cdc2a44989ea655f0eaeff1db",
+    "name": "Off Roader Blue",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Off_Roader/Off_Roader_Blue.asset",
+    "raw": {
+      "GUID": "ac2ec89cdc2a44989ea655f0eaeff1db",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 2,
+      "TargetVehicle": "e0f8b4b23249483a9cd5c1402e2170fb",
+      "LoadPaintColor": "#37658c"
+    }
+  },
+  {
+    "guid": "9a8ec9461dfa43c288f3f28ead7c1b8b",
+    "name": "Off Roader Green",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Off_Roader/Off_Roader_Green.asset",
+    "raw": {
+      "GUID": "9a8ec9461dfa43c288f3f28ead7c1b8b",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 3,
+      "TargetVehicle": "e0f8b4b23249483a9cd5c1402e2170fb",
+      "LoadPaintColor": "#2e642e"
+    }
+  },
+  {
+    "guid": "185c3ff5d8cd4dc79601ba9cdd823140",
+    "name": "Off Roader Orange",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Off_Roader/Off_Roader_Orange.asset",
+    "raw": {
+      "GUID": "185c3ff5d8cd4dc79601ba9cdd823140",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 4,
+      "TargetVehicle": "e0f8b4b23249483a9cd5c1402e2170fb",
+      "LoadPaintColor": "#bd6e27"
+    }
+  },
+  {
+    "guid": "c39b8434b990473485b118536263e490",
+    "name": "Off Roader Purple",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Off_Roader/Off_Roader_Purple.asset",
+    "raw": {
+      "GUID": "c39b8434b990473485b118536263e490",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 5,
+      "TargetVehicle": "e0f8b4b23249483a9cd5c1402e2170fb",
+      "LoadPaintColor": "#6a466d"
+    }
+  },
+  {
+    "guid": "c8bc9fcf173e4a4f908efe1f609d9df0",
+    "name": "Off Roader Red",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Off_Roader/Off_Roader_Red.asset",
+    "raw": {
+      "GUID": "c8bc9fcf173e4a4f908efe1f609d9df0",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 6,
+      "TargetVehicle": "e0f8b4b23249483a9cd5c1402e2170fb",
+      "LoadPaintColor": "#9a2525"
+    }
+  },
+  {
+    "guid": "cf9473016641462fa589daf538c450bb",
+    "name": "Off Roader White",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Off_Roader/Off_Roader_White.asset",
+    "raw": {
+      "GUID": "cf9473016641462fa589daf538c450bb",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 7,
+      "TargetVehicle": "e0f8b4b23249483a9cd5c1402e2170fb",
+      "LoadPaintColor": "#d4d4d4"
+    }
+  },
+  {
+    "guid": "83d28ba8dfcd43e094fe31423a085d30",
+    "name": "Off Roader Yellow",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Off_Roader/Off_Roader_Yellow.asset",
+    "raw": {
+      "GUID": "83d28ba8dfcd43e094fe31423a085d30",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 8,
+      "TargetVehicle": "e0f8b4b23249483a9cd5c1402e2170fb",
+      "LoadPaintColor": "#cdaa1e"
+    }
+  },
+  {
+    "guid": "a1f4bfb97ecb4bed87fc151cd35988d7",
+    "name": "Orca France",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Orca/Orca_France.asset",
+    "raw": {
+      "GUID": "a1f4bfb97ecb4bed87fc151cd35988d7",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 184,
+      "TargetVehicle": "d5efeb331b40409c9ef6df1f24174dc9",
+      "LoadPaintColor": "#848fa1",
+      "SpawnPaintColor": "#848fa1"
+    }
+  },
+  {
+    "guid": "5375fb69f7c94c1aa282688b83b04237",
+    "name": "Orca Russia",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Orca/Orca_Russia.asset",
+    "raw": {
+      "GUID": "5375fb69f7c94c1aa282688b83b04237",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 134,
+      "TargetVehicle": "d5efeb331b40409c9ef6df1f24174dc9",
+      "LoadPaintColor": "#4e5c35",
+      "SpawnPaintColor": "#4e5c35"
+    }
+  },
+  {
+    "guid": "e5304b903a214f189ed057e883c8f4e4",
+    "name": "Quad Black",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Quad/Quad_Black.asset",
+    "raw": {
+      "GUID": "e5304b903a214f189ed057e883c8f4e4",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 67,
+      "TargetVehicle": "f65dec9bc1484a1fae6dbd6c10c51124",
+      "LoadPaintColor": "#353535"
+    }
+  },
+  {
+    "guid": "bc608731b6d042f4b151b215362accfe",
+    "name": "Quad Blue",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Quad/Quad_Blue.asset",
+    "raw": {
+      "GUID": "bc608731b6d042f4b151b215362accfe",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 68,
+      "TargetVehicle": "f65dec9bc1484a1fae6dbd6c10c51124",
+      "LoadPaintColor": "#37658c"
+    }
+  },
+  {
+    "guid": "e30c293e71524428b644dfce69371930",
+    "name": "Quad Green",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Quad/Quad_Green.asset",
+    "raw": {
+      "GUID": "e30c293e71524428b644dfce69371930",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 69,
+      "TargetVehicle": "f65dec9bc1484a1fae6dbd6c10c51124",
+      "LoadPaintColor": "#2e642e"
+    }
+  },
+  {
+    "guid": "4c174377d4154d45aeac5979de5f57f5",
+    "name": "Quad Orange",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Quad/Quad_Orange.asset",
+    "raw": {
+      "GUID": "4c174377d4154d45aeac5979de5f57f5",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 70,
+      "TargetVehicle": "f65dec9bc1484a1fae6dbd6c10c51124",
+      "LoadPaintColor": "#bd6e27"
+    }
+  },
+  {
+    "guid": "2dfe5fbd410f41099f71cd86897c80b4",
+    "name": "Quad Purple",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Quad/Quad_Purple.asset",
+    "raw": {
+      "GUID": "2dfe5fbd410f41099f71cd86897c80b4",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 71,
+      "TargetVehicle": "f65dec9bc1484a1fae6dbd6c10c51124",
+      "LoadPaintColor": "#6a466d"
+    }
+  },
+  {
+    "guid": "916a07831dea415582040f7145e81e72",
+    "name": "Quad Red",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Quad/Quad_Red.asset",
+    "raw": {
+      "GUID": "916a07831dea415582040f7145e81e72",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 72,
+      "TargetVehicle": "f65dec9bc1484a1fae6dbd6c10c51124",
+      "LoadPaintColor": "#9a2525"
+    }
+  },
+  {
+    "guid": "8ca03589411242e397322c237301d14a",
+    "name": "Quad White",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Quad/Quad_White.asset",
+    "raw": {
+      "GUID": "8ca03589411242e397322c237301d14a",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 73,
+      "TargetVehicle": "f65dec9bc1484a1fae6dbd6c10c51124",
+      "LoadPaintColor": "#d4d4d4"
+    }
+  },
+  {
+    "guid": "e8f3014c657f4f26abcaccb29a1f4068",
+    "name": "Quad Yellow",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Quad/Quad_Yellow.asset",
+    "raw": {
+      "GUID": "e8f3014c657f4f26abcaccb29a1f4068",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 74,
+      "TargetVehicle": "f65dec9bc1484a1fae6dbd6c10c51124",
+      "LoadPaintColor": "#cdaa1e"
+    }
+  },
+  {
+    "guid": "5f1e264ec0074ab2bd66e2dcc9574200",
+    "name": "Racecar Black",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Racecar/Racecar_Black.asset",
+    "raw": {
+      "GUID": "5f1e264ec0074ab2bd66e2dcc9574200",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 77,
+      "TargetVehicle": "0e119557092d479e9f9b3b696cc3e78e",
+      "LoadPaintColor": "#353535"
+    }
+  },
+  {
+    "guid": "dbb046be5713486ba34505fae8be4765",
+    "name": "Racecar Blue",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Racecar/Racecar_Blue.asset",
+    "raw": {
+      "GUID": "dbb046be5713486ba34505fae8be4765",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 78,
+      "TargetVehicle": "0e119557092d479e9f9b3b696cc3e78e",
+      "LoadPaintColor": "#37658c"
+    }
+  },
+  {
+    "guid": "04118e51c0a04e4d81a6a152e24862e2",
+    "name": "Racecar Green",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Racecar/Racecar_Green.asset",
+    "raw": {
+      "GUID": "04118e51c0a04e4d81a6a152e24862e2",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 79,
+      "TargetVehicle": "0e119557092d479e9f9b3b696cc3e78e",
+      "LoadPaintColor": "#2e642e"
+    }
+  },
+  {
+    "guid": "cbca15dffe734a1095ad2438ad19a899",
+    "name": "Racecar Orange",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Racecar/Racecar_Orange.asset",
+    "raw": {
+      "GUID": "cbca15dffe734a1095ad2438ad19a899",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 80,
+      "TargetVehicle": "0e119557092d479e9f9b3b696cc3e78e",
+      "LoadPaintColor": "#bd6e27"
+    }
+  },
+  {
+    "guid": "43a32a2547624957ab1212b74bc5e3ad",
+    "name": "Racecar Purple",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Racecar/Racecar_Purple.asset",
+    "raw": {
+      "GUID": "43a32a2547624957ab1212b74bc5e3ad",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 81,
+      "TargetVehicle": "0e119557092d479e9f9b3b696cc3e78e",
+      "LoadPaintColor": "#6a466d"
+    }
+  },
+  {
+    "guid": "db446377e99c4a59bbe33334df5ac5d7",
+    "name": "Racecar Red",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Racecar/Racecar_Red.asset",
+    "raw": {
+      "GUID": "db446377e99c4a59bbe33334df5ac5d7",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 82,
+      "TargetVehicle": "0e119557092d479e9f9b3b696cc3e78e",
+      "LoadPaintColor": "#9a2525"
+    }
+  },
+  {
+    "guid": "7f45ff5aa9254c4ba0f7d29d01b0067f",
+    "name": "Racecar White",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Racecar/Racecar_White.asset",
+    "raw": {
+      "GUID": "7f45ff5aa9254c4ba0f7d29d01b0067f",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 83,
+      "TargetVehicle": "0e119557092d479e9f9b3b696cc3e78e",
+      "LoadPaintColor": "#d4d4d4"
+    }
+  },
+  {
+    "guid": "c3a3f95293484094816b8294c6805752",
+    "name": "Racecar Yellow",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Racecar/Racecar_Yellow.asset",
+    "raw": {
+      "GUID": "c3a3f95293484094816b8294c6805752",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 84,
+      "TargetVehicle": "0e119557092d479e9f9b3b696cc3e78e",
+      "LoadPaintColor": "#cdaa1e"
+    }
+  },
+  {
+    "guid": "3d2e1b69a9aa4a7cb44637d4a5b1c12d",
+    "name": "Roadster Black",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Roadster/Roadster_Black.asset",
+    "raw": {
+      "GUID": "3d2e1b69a9aa4a7cb44637d4a5b1c12d",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 43,
+      "TargetVehicle": "5b409fa741d64e228f36fa93124f61d4",
+      "LoadPaintColor": "#353535"
+    }
+  },
+  {
+    "guid": "8a2182536e3947e2bb8e1321988ae688",
+    "name": "Roadster Blue",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Roadster/Roadster_Blue.asset",
+    "raw": {
+      "GUID": "8a2182536e3947e2bb8e1321988ae688",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 44,
+      "TargetVehicle": "5b409fa741d64e228f36fa93124f61d4",
+      "LoadPaintColor": "#37658c"
+    }
+  },
+  {
+    "guid": "d780f22a322c4d9c824efed1a91edbcc",
+    "name": "Roadster Green",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Roadster/Roadster_Green.asset",
+    "raw": {
+      "GUID": "d780f22a322c4d9c824efed1a91edbcc",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 45,
+      "TargetVehicle": "5b409fa741d64e228f36fa93124f61d4",
+      "LoadPaintColor": "#2e642e"
+    }
+  },
+  {
+    "guid": "cfd95ee385c34fc09ff90d58b123ebf1",
+    "name": "Roadster Orange",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Roadster/Roadster_Orange.asset",
+    "raw": {
+      "GUID": "cfd95ee385c34fc09ff90d58b123ebf1",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 46,
+      "TargetVehicle": "5b409fa741d64e228f36fa93124f61d4",
+      "LoadPaintColor": "#bd6e27"
+    }
+  },
+  {
+    "guid": "fe1b03f3331143408b9f6edc4a4de054",
+    "name": "Roadster Purple",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Roadster/Roadster_Purple.asset",
+    "raw": {
+      "GUID": "fe1b03f3331143408b9f6edc4a4de054",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 47,
+      "TargetVehicle": "5b409fa741d64e228f36fa93124f61d4",
+      "LoadPaintColor": "#6a466d"
+    }
+  },
+  {
+    "guid": "73b1ba9ceccd4a50b3b8b7b9379803e9",
+    "name": "Roadster Red",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Roadster/Roadster_Red.asset",
+    "raw": {
+      "GUID": "73b1ba9ceccd4a50b3b8b7b9379803e9",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 48,
+      "TargetVehicle": "5b409fa741d64e228f36fa93124f61d4",
+      "LoadPaintColor": "#9a2525"
+    }
+  },
+  {
+    "guid": "4a0dd625e39e4302aa39b696730f6590",
+    "name": "Roadster White",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Roadster/Roadster_White.asset",
+    "raw": {
+      "GUID": "4a0dd625e39e4302aa39b696730f6590",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 49,
+      "TargetVehicle": "5b409fa741d64e228f36fa93124f61d4",
+      "LoadPaintColor": "#d4d4d4"
+    }
+  },
+  {
+    "guid": "3e50047256084e7abdc59be7fa3ce6e3",
+    "name": "Roadster Yellow",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Roadster/Roadster_Yellow.asset",
+    "raw": {
+      "GUID": "3e50047256084e7abdc59be7fa3ce6e3",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 50,
+      "TargetVehicle": "5b409fa741d64e228f36fa93124f61d4",
+      "LoadPaintColor": "#cdaa1e"
+    }
+  },
+  {
+    "guid": "d76e26e1fcc0404690c07247c3468908",
+    "name": "SUV Black",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/SUV/SUV_Black.asset",
+    "raw": {
+      "GUID": "d76e26e1fcc0404690c07247c3468908",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 125,
+      "TargetVehicle": "8ac49fc7efb440c4a5d2fe04f345f418",
+      "LoadPaintColor": "#353535"
+    }
+  },
+  {
+    "guid": "bf45c7f35f76474699c8396dfd83caf3",
+    "name": "SUV Blue",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/SUV/SUV_Blue.asset",
+    "raw": {
+      "GUID": "bf45c7f35f76474699c8396dfd83caf3",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 126,
+      "TargetVehicle": "8ac49fc7efb440c4a5d2fe04f345f418",
+      "LoadPaintColor": "#37658c"
+    }
+  },
+  {
+    "guid": "9384877053864d12b00d60e9cb2c4332",
+    "name": "SUV Green",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/SUV/SUV_Green.asset",
+    "raw": {
+      "GUID": "9384877053864d12b00d60e9cb2c4332",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 127,
+      "TargetVehicle": "8ac49fc7efb440c4a5d2fe04f345f418",
+      "LoadPaintColor": "#2e642e"
+    }
+  },
+  {
+    "guid": "744096e227f04d14b939596945fe4342",
+    "name": "SUV Orange",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/SUV/SUV_Orange.asset",
+    "raw": {
+      "GUID": "744096e227f04d14b939596945fe4342",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 128,
+      "TargetVehicle": "8ac49fc7efb440c4a5d2fe04f345f418",
+      "LoadPaintColor": "#bd6e27"
+    }
+  },
+  {
+    "guid": "f5ac8c1531d64e49b676371134fa6ef6",
+    "name": "SUV Purple",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/SUV/SUV_Purple.asset",
+    "raw": {
+      "GUID": "f5ac8c1531d64e49b676371134fa6ef6",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 129,
+      "TargetVehicle": "8ac49fc7efb440c4a5d2fe04f345f418",
+      "LoadPaintColor": "#6a466d"
+    }
+  },
+  {
+    "guid": "f5026f802edb4243a3958863eeb193c8",
+    "name": "SUV Red",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/SUV/SUV_Red.asset",
+    "raw": {
+      "GUID": "f5026f802edb4243a3958863eeb193c8",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 130,
+      "TargetVehicle": "8ac49fc7efb440c4a5d2fe04f345f418",
+      "LoadPaintColor": "#9a2525"
+    }
+  },
+  {
+    "guid": "9f3df4860bf84327afadc4274b19e733",
+    "name": "SUV White",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/SUV/SUV_White.asset",
+    "raw": {
+      "GUID": "9f3df4860bf84327afadc4274b19e733",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 131,
+      "TargetVehicle": "8ac49fc7efb440c4a5d2fe04f345f418",
+      "LoadPaintColor": "#d4d4d4"
+    }
+  },
+  {
+    "guid": "e11ebb872a344785a246d4ff5c83b398",
+    "name": "SUV Yellow",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/SUV/SUV_Yellow.asset",
+    "raw": {
+      "GUID": "e11ebb872a344785a246d4ff5c83b398",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 132,
+      "TargetVehicle": "8ac49fc7efb440c4a5d2fe04f345f418",
+      "LoadPaintColor": "#cdaa1e"
+    }
+  },
+  {
+    "guid": "3681f371c52644588e14e98a2a62abea",
+    "name": "Sedan Black",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Sedan/Sedan_Black.asset",
+    "raw": {
+      "GUID": "3681f371c52644588e14e98a2a62abea",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 25,
+      "TargetVehicle": "8c32debcf1974cd7a24a46779872c205",
+      "LoadPaintColor": "#353535"
+    }
+  },
+  {
+    "guid": "3a45c0df9c674fcf8d4b300c55332ae5",
+    "name": "Sedan Blue",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Sedan/Sedan_Blue.asset",
+    "raw": {
+      "GUID": "3a45c0df9c674fcf8d4b300c55332ae5",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 26,
+      "TargetVehicle": "8c32debcf1974cd7a24a46779872c205",
+      "LoadPaintColor": "#37658c"
+    }
+  },
+  {
+    "guid": "41350cd1068343438bde26bafac81907",
+    "name": "Sedan Green",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Sedan/Sedan_Green.asset",
+    "raw": {
+      "GUID": "41350cd1068343438bde26bafac81907",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 27,
+      "TargetVehicle": "8c32debcf1974cd7a24a46779872c205",
+      "LoadPaintColor": "#2e642e"
+    }
+  },
+  {
+    "guid": "566c261ff0b54367961ac1fe1ed4ae1d",
+    "name": "Sedan Orange",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Sedan/Sedan_Orange.asset",
+    "raw": {
+      "GUID": "566c261ff0b54367961ac1fe1ed4ae1d",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 28,
+      "TargetVehicle": "8c32debcf1974cd7a24a46779872c205",
+      "LoadPaintColor": "#bd6e27"
+    }
+  },
+  {
+    "guid": "e37d61391ac541bda713794a0d037610",
+    "name": "Sedan Purple",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Sedan/Sedan_Purple.asset",
+    "raw": {
+      "GUID": "e37d61391ac541bda713794a0d037610",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 29,
+      "TargetVehicle": "8c32debcf1974cd7a24a46779872c205",
+      "LoadPaintColor": "#6a466d"
+    }
+  },
+  {
+    "guid": "ac89f332c364461e82b1e94a16e868c4",
+    "name": "Sedan Red",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Sedan/Sedan_Red.asset",
+    "raw": {
+      "GUID": "ac89f332c364461e82b1e94a16e868c4",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 30,
+      "TargetVehicle": "8c32debcf1974cd7a24a46779872c205",
+      "LoadPaintColor": "#9a2525"
+    }
+  },
+  {
+    "guid": "fe69f57dee3a4e178848f4634fd1f25f",
+    "name": "Sedan White",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Sedan/Sedan_White.asset",
+    "raw": {
+      "GUID": "fe69f57dee3a4e178848f4634fd1f25f",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 31,
+      "TargetVehicle": "8c32debcf1974cd7a24a46779872c205",
+      "LoadPaintColor": "#d4d4d4"
+    }
+  },
+  {
+    "guid": "6252a7787c1641c0aae9bb82fee1bbb8",
+    "name": "Sedan Yellow",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Sedan/Sedan_Yellow.asset",
+    "raw": {
+      "GUID": "6252a7787c1641c0aae9bb82fee1bbb8",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 32,
+      "TargetVehicle": "8c32debcf1974cd7a24a46779872c205",
+      "LoadPaintColor": "#cdaa1e"
+    }
+  },
+  {
+    "guid": "01ccb16b40ec4b088295ceed1b375aff",
+    "name": "Snowmobile Black",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Snowmobile/Snowmobile_Black.asset",
+    "raw": {
+      "GUID": "01ccb16b40ec4b088295ceed1b375aff",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 59,
+      "TargetVehicle": "35b0b159124f405694a7a624e6707265",
+      "LoadPaintColor": "#353535"
+    }
+  },
+  {
+    "guid": "09d87a4645f3425d85aee1ddb22c8ea5",
+    "name": "Snowmobile Blue",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Snowmobile/Snowmobile_Blue.asset",
+    "raw": {
+      "GUID": "09d87a4645f3425d85aee1ddb22c8ea5",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 60,
+      "TargetVehicle": "35b0b159124f405694a7a624e6707265",
+      "LoadPaintColor": "#37658c"
+    }
+  },
+  {
+    "guid": "cf988d366d9e45afb0c7a7234aa6cb62",
+    "name": "Snowmobile Green",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Snowmobile/Snowmobile_Green.asset",
+    "raw": {
+      "GUID": "cf988d366d9e45afb0c7a7234aa6cb62",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 61,
+      "TargetVehicle": "35b0b159124f405694a7a624e6707265",
+      "LoadPaintColor": "#2e642e"
+    }
+  },
+  {
+    "guid": "f057abd5e4894c2e942f5943bb6328d0",
+    "name": "Snowmobile Orange",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Snowmobile/Snowmobile_Orange.asset",
+    "raw": {
+      "GUID": "f057abd5e4894c2e942f5943bb6328d0",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 62,
+      "TargetVehicle": "35b0b159124f405694a7a624e6707265",
+      "LoadPaintColor": "#bd6e27"
+    }
+  },
+  {
+    "guid": "2911175647b4453b9856b33bd48f5d09",
+    "name": "Snowmobile Purple",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Snowmobile/Snowmobile_Purple.asset",
+    "raw": {
+      "GUID": "2911175647b4453b9856b33bd48f5d09",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 63,
+      "TargetVehicle": "35b0b159124f405694a7a624e6707265",
+      "LoadPaintColor": "#6a466d"
+    }
+  },
+  {
+    "guid": "b2d1cebabebb47aab39653516dcafb07",
+    "name": "Snowmobile Red",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Snowmobile/Snowmobile_Red.asset",
+    "raw": {
+      "GUID": "b2d1cebabebb47aab39653516dcafb07",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 64,
+      "TargetVehicle": "35b0b159124f405694a7a624e6707265",
+      "LoadPaintColor": "#9a2525"
+    }
+  },
+  {
+    "guid": "c25add69ce1d49b585467a71dad7c68e",
+    "name": "Snowmobile White",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Snowmobile/Snowmobile_White.asset",
+    "raw": {
+      "GUID": "c25add69ce1d49b585467a71dad7c68e",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 65,
+      "TargetVehicle": "35b0b159124f405694a7a624e6707265",
+      "LoadPaintColor": "#d4d4d4"
+    }
+  },
+  {
+    "guid": "82f6ece24ccd4a009909017089eb5578",
+    "name": "Snowmobile Yellow",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Snowmobile/Snowmobile_Yellow.asset",
+    "raw": {
+      "GUID": "82f6ece24ccd4a009909017089eb5578",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 66,
+      "TargetVehicle": "35b0b159124f405694a7a624e6707265",
+      "LoadPaintColor": "#cdaa1e"
+    }
+  },
+  {
+    "guid": "136b691dc8434fea9465fa235461cb17",
+    "name": "Tank Desert",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Tank/Tank_Desert.asset",
+    "raw": {
+      "GUID": "136b691dc8434fea9465fa235461cb17",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 121,
+      "TargetVehicle": "20044da6daee4a12bba1b35eaa4c61e0",
+      "LoadPaintColor": "#a69884",
+      "SpawnPaintColor": "#a69884"
+    }
+  },
+  {
+    "guid": "49a24b873e9f430b97ec364bafa3fc6c",
+    "name": "Tank Forest",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Tank/Tank_Forest.asset",
+    "raw": {
+      "GUID": "49a24b873e9f430b97ec364bafa3fc6c",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 120,
+      "TargetVehicle": "20044da6daee4a12bba1b35eaa4c61e0",
+      "LoadPaintColor": "#437c44",
+      "SpawnPaintColor": "#437c44"
+    }
+  },
+  {
+    "guid": "a40eecb0e5bb490bb45708ca8e6314f8",
+    "name": "Tank France",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Tank/Tank_France.asset",
+    "raw": {
+      "GUID": "a40eecb0e5bb490bb45708ca8e6314f8",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 173,
+      "TargetVehicle": "20044da6daee4a12bba1b35eaa4c61e0",
+      "LoadPaintColor": "#848fa1",
+      "SpawnPaintColor": "#848fa1"
+    }
+  },
+  {
+    "guid": "eb0210e690c34e4397b5722714e71305",
+    "name": "Tank Russia",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Tank/Tank_Russia.asset",
+    "raw": {
+      "GUID": "eb0210e690c34e4397b5722714e71305",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 137,
+      "TargetVehicle": "20044da6daee4a12bba1b35eaa4c61e0",
+      "LoadPaintColor": "#495631",
+      "SpawnPaintColor": "#495631"
+    }
+  },
+  {
+    "guid": "3fac9e048c5f49a0a663357492e24d7a",
+    "name": "Truck Black",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Truck/Truck_Black.asset",
+    "raw": {
+      "GUID": "3fac9e048c5f49a0a663357492e24d7a",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 17,
+      "TargetVehicle": "e7105217d65f4c5e8d00b0989538f57f",
+      "LoadPaintColor": "#353535"
+    }
+  },
+  {
+    "guid": "5dc7d457cf9543fe93facd0a4f85d013",
+    "name": "Truck Blue",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Truck/Truck_Blue.asset",
+    "raw": {
+      "GUID": "5dc7d457cf9543fe93facd0a4f85d013",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 18,
+      "TargetVehicle": "e7105217d65f4c5e8d00b0989538f57f",
+      "LoadPaintColor": "#37658c"
+    }
+  },
+  {
+    "guid": "d354a9b7cc9941e681a79bd0468f1457",
+    "name": "Truck Green",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Truck/Truck_Green.asset",
+    "raw": {
+      "GUID": "d354a9b7cc9941e681a79bd0468f1457",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 19,
+      "TargetVehicle": "e7105217d65f4c5e8d00b0989538f57f",
+      "LoadPaintColor": "#2e642e"
+    }
+  },
+  {
+    "guid": "b8335a154a604cb6919e6e6e991409e2",
+    "name": "Truck Orange",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Truck/Truck_Orange.asset",
+    "raw": {
+      "GUID": "b8335a154a604cb6919e6e6e991409e2",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 20,
+      "TargetVehicle": "e7105217d65f4c5e8d00b0989538f57f",
+      "LoadPaintColor": "#bd6e27"
+    }
+  },
+  {
+    "guid": "1adf4e256bd5468887acd2961923c6c1",
+    "name": "Truck Purple",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Truck/Truck_Purple.asset",
+    "raw": {
+      "GUID": "1adf4e256bd5468887acd2961923c6c1",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 21,
+      "TargetVehicle": "e7105217d65f4c5e8d00b0989538f57f",
+      "LoadPaintColor": "#6a466d"
+    }
+  },
+  {
+    "guid": "55e3f951ba274b9d8e591f2ed057a7cb",
+    "name": "Truck Red",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Truck/Truck_Red.asset",
+    "raw": {
+      "GUID": "55e3f951ba274b9d8e591f2ed057a7cb",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 22,
+      "TargetVehicle": "e7105217d65f4c5e8d00b0989538f57f",
+      "LoadPaintColor": "#9a2525"
+    }
+  },
+  {
+    "guid": "a9a195d0ad1a49eabec2d9e8b5802631",
+    "name": "Truck White",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Truck/Truck_White.asset",
+    "raw": {
+      "GUID": "a9a195d0ad1a49eabec2d9e8b5802631",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 23,
+      "TargetVehicle": "e7105217d65f4c5e8d00b0989538f57f",
+      "LoadPaintColor": "#d4d4d4"
+    }
+  },
+  {
+    "guid": "40002ceccea74f4bb0590226b1accd7d",
+    "name": "Truck Yellow",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Truck/Truck_Yellow.asset",
+    "raw": {
+      "GUID": "40002ceccea74f4bb0590226b1accd7d",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 24,
+      "TargetVehicle": "e7105217d65f4c5e8d00b0989538f57f",
+      "LoadPaintColor": "#cdaa1e"
+    }
+  },
+  {
+    "guid": "2e9b5bffbec84a08a35ab8c1e0f403cb",
+    "name": "Ural Coalition",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Ural/Ural_Coalition.asset",
+    "raw": {
+      "GUID": "2e9b5bffbec84a08a35ab8c1e0f403cb",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 147,
+      "TargetVehicle": "c00faf98ea6b449f833f768f76f54805",
+      "LoadPaintColor": "#475e83",
+      "SpawnPaintColor": "#475e83"
+    }
+  },
+  {
+    "guid": "48d4ff099b0b4236a752df7cb629e601",
+    "name": "Ural Desert",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Ural/Ural_Desert.asset",
+    "raw": {
+      "GUID": "48d4ff099b0b4236a752df7cb629e601",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 55,
+      "TargetVehicle": "c00faf98ea6b449f833f768f76f54805",
+      "LoadPaintColor": "#a69884",
+      "SpawnPaintColor": "#a69884"
+    }
+  },
+  {
+    "guid": "ea56de7a4d264ad08da4411748a72644",
+    "name": "Ural Forest",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Ural/Ural_Forest.asset",
+    "raw": {
+      "GUID": "ea56de7a4d264ad08da4411748a72644",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 51,
+      "TargetVehicle": "c00faf98ea6b449f833f768f76f54805",
+      "LoadPaintColor": "#437c44",
+      "SpawnPaintColor": "#437c44"
+    }
+  },
+  {
+    "guid": "c16b23c1ea6344c09a43d554a99cc3f8",
+    "name": "Ural France",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Ural/Ural_France.asset",
+    "raw": {
+      "GUID": "c16b23c1ea6344c09a43d554a99cc3f8",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 171,
+      "TargetVehicle": "c00faf98ea6b449f833f768f76f54805",
+      "LoadPaintColor": "#848fa1",
+      "SpawnPaintColor": "#848fa1"
+    }
+  },
+  {
+    "guid": "49a10ef544d147bea665c2bf412d86d8",
+    "name": "Ural Russia",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Ural/Ural_Russia.asset",
+    "raw": {
+      "GUID": "49a10ef544d147bea665c2bf412d86d8",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 136,
+      "TargetVehicle": "c00faf98ea6b449f833f768f76f54805",
+      "LoadPaintColor": "#495631",
+      "SpawnPaintColor": "#495631"
+    }
+  },
+  {
+    "guid": "d8a6dfd7268547228f0c9e1ca89be9e4",
+    "name": "VW Golf Black",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/VW_Golf/VW_Golf_Black.asset",
+    "raw": {
+      "GUID": "d8a6dfd7268547228f0c9e1ca89be9e4",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 149,
+      "TargetVehicle": "c3617378ce484cdea50d6b3b6ee105aa",
+      "LoadPaintColor": "#353535"
+    }
+  },
+  {
+    "guid": "a810019c7eff491dad554b05902f928f",
+    "name": "VW Golf Blue",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/VW_Golf/VW_Golf_Blue.asset",
+    "raw": {
+      "GUID": "a810019c7eff491dad554b05902f928f",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 150,
+      "TargetVehicle": "c3617378ce484cdea50d6b3b6ee105aa",
+      "LoadPaintColor": "#37658c"
+    }
+  },
+  {
+    "guid": "6ca8b48c3bce41dda7de1568b69a3ce9",
+    "name": "VW Golf Green",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/VW_Golf/VW_Golf_Green.asset",
+    "raw": {
+      "GUID": "6ca8b48c3bce41dda7de1568b69a3ce9",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 151,
+      "TargetVehicle": "c3617378ce484cdea50d6b3b6ee105aa",
+      "LoadPaintColor": "#2e642e"
+    }
+  },
+  {
+    "guid": "2335b78d75ae46e9ba8183e7538a5832",
+    "name": "VW Golf Orange",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/VW_Golf/VW_Golf_Orange.asset",
+    "raw": {
+      "GUID": "2335b78d75ae46e9ba8183e7538a5832",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 152,
+      "TargetVehicle": "c3617378ce484cdea50d6b3b6ee105aa",
+      "LoadPaintColor": "#bd6e27"
+    }
+  },
+  {
+    "guid": "9101f3ac88cc4cc28dc6c8d9ab4e54d3",
+    "name": "VW Golf Purple",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/VW_Golf/VW_Golf_Purple.asset",
+    "raw": {
+      "GUID": "9101f3ac88cc4cc28dc6c8d9ab4e54d3",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 153,
+      "TargetVehicle": "c3617378ce484cdea50d6b3b6ee105aa",
+      "LoadPaintColor": "#6a466d"
+    }
+  },
+  {
+    "guid": "4846f20bb93146a98f6382ba726d69e9",
+    "name": "VW Golf Red",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/VW_Golf/VW_Golf_Red.asset",
+    "raw": {
+      "GUID": "4846f20bb93146a98f6382ba726d69e9",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 154,
+      "TargetVehicle": "c3617378ce484cdea50d6b3b6ee105aa",
+      "LoadPaintColor": "#9a2525"
+    }
+  },
+  {
+    "guid": "56982aef904c43cf945d4f660a3f56fa",
+    "name": "VW Golf White",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/VW_Golf/VW_Golf_White.asset",
+    "raw": {
+      "GUID": "56982aef904c43cf945d4f660a3f56fa",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 155,
+      "TargetVehicle": "c3617378ce484cdea50d6b3b6ee105aa",
+      "LoadPaintColor": "#d4d4d4"
+    }
+  },
+  {
+    "guid": "2e1df665a7e5474cad779a720b562d6e",
+    "name": "VW Golf Yellow",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/VW_Golf/VW_Golf_Yellow.asset",
+    "raw": {
+      "GUID": "2e1df665a7e5474cad779a720b562d6e",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 156,
+      "TargetVehicle": "c3617378ce484cdea50d6b3b6ee105aa",
+      "LoadPaintColor": "#cdaa1e"
+    }
+  },
+  {
+    "guid": "2434f54973e54db38fee95cf62cfe1d4",
+    "name": "VW Kafer Black",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/VW_Kafer/VW_Kafer_Black.asset",
+    "raw": {
+      "GUID": "2434f54973e54db38fee95cf62cfe1d4",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 158,
+      "TargetVehicle": "0e67fcb26f5c49b18ca29144ee0302cf",
+      "LoadPaintColor": "#353535"
+    }
+  },
+  {
+    "guid": "0df0922307744c0eb8638c28d9576564",
+    "name": "VW Kafer Blue",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/VW_Kafer/VW_Kafer_Blue.asset",
+    "raw": {
+      "GUID": "0df0922307744c0eb8638c28d9576564",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 159,
+      "TargetVehicle": "0e67fcb26f5c49b18ca29144ee0302cf",
+      "LoadPaintColor": "#37658c"
+    }
+  },
+  {
+    "guid": "863f21baaf964a2787e2e4b3ef9db5ea",
+    "name": "VW Kafer Green",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/VW_Kafer/VW_Kafer_Green.asset",
+    "raw": {
+      "GUID": "863f21baaf964a2787e2e4b3ef9db5ea",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 160,
+      "TargetVehicle": "0e67fcb26f5c49b18ca29144ee0302cf",
+      "LoadPaintColor": "#2e642e"
+    }
+  },
+  {
+    "guid": "d5dab0fa29074bb581f7bd26223ba878",
+    "name": "VW Kafer Orange",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/VW_Kafer/VW_Kafer_Orange.asset",
+    "raw": {
+      "GUID": "d5dab0fa29074bb581f7bd26223ba878",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 161,
+      "TargetVehicle": "0e67fcb26f5c49b18ca29144ee0302cf",
+      "LoadPaintColor": "#bd6e27"
+    }
+  },
+  {
+    "guid": "7f1f55bd056e4c05896b3866dc03954a",
+    "name": "VW Kafer Purple",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/VW_Kafer/VW_Kafer_Purple.asset",
+    "raw": {
+      "GUID": "7f1f55bd056e4c05896b3866dc03954a",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 162,
+      "TargetVehicle": "0e67fcb26f5c49b18ca29144ee0302cf",
+      "LoadPaintColor": "#6a466d"
+    }
+  },
+  {
+    "guid": "68010f21937c458895fcfdafb98b2abe",
+    "name": "VW Kafer Red",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/VW_Kafer/VW_Kafer_Red.asset",
+    "raw": {
+      "GUID": "68010f21937c458895fcfdafb98b2abe",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 163,
+      "TargetVehicle": "0e67fcb26f5c49b18ca29144ee0302cf",
+      "LoadPaintColor": "#9a2525"
+    }
+  },
+  {
+    "guid": "5bd498a0c60c4e1493bb341bd2ad5aab",
+    "name": "VW Kafer White",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/VW_Kafer/VW_Kafer_White.asset",
+    "raw": {
+      "GUID": "5bd498a0c60c4e1493bb341bd2ad5aab",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 164,
+      "TargetVehicle": "0e67fcb26f5c49b18ca29144ee0302cf",
+      "LoadPaintColor": "#d4d4d4"
+    }
+  },
+  {
+    "guid": "e629e3bcda1643a48ea572dad64b265a",
+    "name": "VW Kafer Yellow",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/VW_Kafer/VW_Kafer_Yellow.asset",
+    "raw": {
+      "GUID": "e629e3bcda1643a48ea572dad64b265a",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 165,
+      "TargetVehicle": "0e67fcb26f5c49b18ca29144ee0302cf",
+      "LoadPaintColor": "#cdaa1e"
+    }
+  },
+  {
+    "guid": "6c124e7f139d45b3a66062c97b5b45c2",
+    "name": "Van Black",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Van/Van_Black.asset",
+    "raw": {
+      "GUID": "6c124e7f139d45b3a66062c97b5b45c2",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 35,
+      "TargetVehicle": "26ca133af3024f95af078b1f609e7f4b",
+      "LoadPaintColor": "#353535"
+    }
+  },
+  {
+    "guid": "93e0c31b8d59491db806bfcf3c6e3d51",
+    "name": "Van Blue",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Van/Van_Blue.asset",
+    "raw": {
+      "GUID": "93e0c31b8d59491db806bfcf3c6e3d51",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 36,
+      "TargetVehicle": "26ca133af3024f95af078b1f609e7f4b",
+      "LoadPaintColor": "#37658c"
+    }
+  },
+  {
+    "guid": "8b8aa8eed6d0406b9ad0ed60487f72a7",
+    "name": "Van Green",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Van/Van_Green.asset",
+    "raw": {
+      "GUID": "8b8aa8eed6d0406b9ad0ed60487f72a7",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 37,
+      "TargetVehicle": "26ca133af3024f95af078b1f609e7f4b",
+      "LoadPaintColor": "#2e642e"
+    }
+  },
+  {
+    "guid": "de29aa447f484e938ec780cf85e0954f",
+    "name": "Van Orange",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Van/Van_Orange.asset",
+    "raw": {
+      "GUID": "de29aa447f484e938ec780cf85e0954f",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 38,
+      "TargetVehicle": "26ca133af3024f95af078b1f609e7f4b",
+      "LoadPaintColor": "#bd6e27"
+    }
+  },
+  {
+    "guid": "54ed41f2ce5448508de1cc28d5f2d119",
+    "name": "Van Purple",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Van/Van_Purple.asset",
+    "raw": {
+      "GUID": "54ed41f2ce5448508de1cc28d5f2d119",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 39,
+      "TargetVehicle": "26ca133af3024f95af078b1f609e7f4b",
+      "LoadPaintColor": "#6a466d"
+    }
+  },
+  {
+    "guid": "901fa38051054d8595d4ada0f4264599",
+    "name": "Van Red",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Van/Van_Red.asset",
+    "raw": {
+      "GUID": "901fa38051054d8595d4ada0f4264599",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 40,
+      "TargetVehicle": "26ca133af3024f95af078b1f609e7f4b",
+      "LoadPaintColor": "#9a2525"
+    }
+  },
+  {
+    "guid": "b83ad612278f40d1883744a5b680297f",
+    "name": "Van White",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Van/Van_White.asset",
+    "raw": {
+      "GUID": "b83ad612278f40d1883744a5b680297f",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 41,
+      "TargetVehicle": "26ca133af3024f95af078b1f609e7f4b",
+      "LoadPaintColor": "#d4d4d4"
+    }
+  },
+  {
+    "guid": "f928d90f097a4b74a37c46d538a7da97",
+    "name": "Van Yellow",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Van/Van_Yellow.asset",
+    "raw": {
+      "GUID": "f928d90f097a4b74a37c46d538a7da97",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 42,
+      "TargetVehicle": "26ca133af3024f95af078b1f609e7f4b",
+      "LoadPaintColor": "#cdaa1e"
+    }
+  },
+  {
+    "guid": "7bb58cf7cbd64bafb367de55b5e29bef",
+    "name": "Volga Black",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Volga/Volga_Black.asset",
+    "raw": {
+      "GUID": "7bb58cf7cbd64bafb367de55b5e29bef",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 110,
+      "TargetVehicle": "4c40df3f718c4c95ac1ad137473cb879",
+      "LoadPaintColor": "#353535"
+    }
+  },
+  {
+    "guid": "87442fbc8457464599fc0b278782fde1",
+    "name": "Volga Blue",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Volga/Volga_Blue.asset",
+    "raw": {
+      "GUID": "87442fbc8457464599fc0b278782fde1",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 111,
+      "TargetVehicle": "4c40df3f718c4c95ac1ad137473cb879",
+      "LoadPaintColor": "#37658c"
+    }
+  },
+  {
+    "guid": "52fd5b42a2b9491eaa95e961693aa20d",
+    "name": "Volga Green",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Volga/Volga_Green.asset",
+    "raw": {
+      "GUID": "52fd5b42a2b9491eaa95e961693aa20d",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 112,
+      "TargetVehicle": "4c40df3f718c4c95ac1ad137473cb879",
+      "LoadPaintColor": "#2e642e"
+    }
+  },
+  {
+    "guid": "f828ddeef4674a1bb13940586b4bc2d3",
+    "name": "Volga Orange",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Volga/Volga_Orange.asset",
+    "raw": {
+      "GUID": "f828ddeef4674a1bb13940586b4bc2d3",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 113,
+      "TargetVehicle": "4c40df3f718c4c95ac1ad137473cb879",
+      "LoadPaintColor": "#bd6e27"
+    }
+  },
+  {
+    "guid": "ddbee61e89ec4140a9bdcd0fffad28c1",
+    "name": "Volga Purple",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Volga/Volga_Purple.asset",
+    "raw": {
+      "GUID": "ddbee61e89ec4140a9bdcd0fffad28c1",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 114,
+      "TargetVehicle": "4c40df3f718c4c95ac1ad137473cb879",
+      "LoadPaintColor": "#6a466d"
+    }
+  },
+  {
+    "guid": "255e6960c2654017b9e1dd2b824ddca2",
+    "name": "Volga Red",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Volga/Volga_Red.asset",
+    "raw": {
+      "GUID": "255e6960c2654017b9e1dd2b824ddca2",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 115,
+      "TargetVehicle": "4c40df3f718c4c95ac1ad137473cb879",
+      "LoadPaintColor": "#9a2525"
+    }
+  },
+  {
+    "guid": "109eb0538dc1457885d81fed3fa31cde",
+    "name": "Volga White",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Volga/Volga_White.asset",
+    "raw": {
+      "GUID": "109eb0538dc1457885d81fed3fa31cde",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 116,
+      "TargetVehicle": "4c40df3f718c4c95ac1ad137473cb879",
+      "LoadPaintColor": "#d4d4d4"
+    }
+  },
+  {
+    "guid": "bef950af29f44f4897f2ac2f366ba057",
+    "name": "Volga Yellow",
+    "csharp_type": "VehicleRedirectorAsset",
+    "source_path": "Vehicles/Redirectors/Volga/Volga_Yellow.asset",
+    "raw": {
+      "GUID": "bef950af29f44f4897f2ac2f366ba057",
+      "Type": "SDG.Unturned.VehicleRedirectorAsset, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "ID": 117,
+      "TargetVehicle": "4c40df3f718c4c95ac1ad137473cb879",
+      "LoadPaintColor": "#cdaa1e"
     }
   }
 ]

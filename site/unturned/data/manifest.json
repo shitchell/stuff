@@ -1,11 +1,11 @@
 {
   "version": "1.0.0",
   "schema_name": "unturned-data-export",
-  "generated_at": "2026-02-21T01:58:44.392386+00:00",
+  "generated_at": "2026-02-21T04:29:12.545329+00:00",
   "generator": "unturned-data",
   "base_bundles_path": "/home/guy/unturned-server/Bundles",
   "base_entry_count": 4981,
-  "base_asset_count": 266,
+  "base_asset_count": 606,
   "maps": {
     "alpha_valley": {
       "map_file": "maps/alpha_valley/map.json",
