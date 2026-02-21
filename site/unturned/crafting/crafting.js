@@ -283,10 +283,17 @@ async function buildMapFilters() {
     $mapFilterSection.style.display = '';
     const savedMaps = lsGet('maps', null);
 
+    // Load display names from each map's map.json
+    const mapDisplayNames = {};
+    for (const map of maps) {
+        const mapData = await dataLoader.getMapData(map);
+        mapDisplayNames[map] = mapData?.map?.name || map;
+    }
+
     let html = '<label class="toggle-all-label"><input type="checkbox" id="map-all"> All</label>';
     for (const map of maps) {
         const checked = savedMaps === null ? false : savedMaps.includes(map);
-        html += `<label><input type="checkbox" data-map="${esc(map)}" ${checked ? 'checked' : ''}> ${esc(map)}</label>`;
+        html += `<label><input type="checkbox" data-map="${esc(map)}" ${checked ? 'checked' : ''}> ${esc(mapDisplayNames[map])}</label>`;
     }
     $mapFilters.innerHTML = html;
 
@@ -1293,7 +1300,11 @@ function onNodeMouseOver(e) {
     const $recipes = $tooltip.querySelector('.tt-recipes');
 
     $name.textContent = n.name;
-    $meta.textContent = [n.type, n.rarity].filter(Boolean).join(' \u2022 ') || 'Unknown';
+    const metaParts = [];
+    if (n.useable) metaParts.push(n.useable);
+    if (!n.useable || n.type.toLowerCase() !== n.useable.toLowerCase()) metaParts.push(n.type);
+    if (n.rarity) metaParts.push(n.rarity);
+    $meta.textContent = metaParts.join(' \u2022 ') || 'Unknown';
 
     // Build recipe descriptions (use filtered edges if map filter is active)
     const activeET = getActiveEdgesByTarget();
@@ -1301,9 +1312,15 @@ function onNodeMouseOver(e) {
     const incoming = activeET[origId] || [];
     const outgoing = activeES[origId] || [];
 
-    // Group incoming by blueprintId
+    // Apply blueprint type and crafting category filters to tooltip edges
+    const bpTypes = getActiveBlueprintTypes();
+    const craftCats = getActiveCraftingCategories();
+
+    // Group incoming by blueprintId (filtered)
     const craftRecipes = {};
     for (const e of incoming) {
+        if (!bpTypes.includes(e.type)) continue;
+        if (craftCats !== null && e.craftingCategory && !craftCats.includes(e.craftingCategory)) continue;
         if (!craftRecipes[e.blueprintId]) craftRecipes[e.blueprintId] = { type: e.type, ingredients: [], workstations: e.workstations || [], craftingCategory: e.craftingCategory || '' };
         const src = activeNM[e.source];
         craftRecipes[e.blueprintId].ingredients.push(
@@ -1311,9 +1328,11 @@ function onNodeMouseOver(e) {
         );
     }
 
-    // Group outgoing (salvage products etc) by blueprintId
+    // Group outgoing (salvage products etc) by blueprintId (filtered)
     const outRecipes = {};
     for (const e of outgoing) {
+        if (!bpTypes.includes(e.type)) continue;
+        if (craftCats !== null && e.craftingCategory && !craftCats.includes(e.craftingCategory)) continue;
         if (!outRecipes[e.blueprintId]) outRecipes[e.blueprintId] = { type: e.type, products: [], workstations: e.workstations || [], craftingCategory: e.craftingCategory || '' };
         const tgt = activeNM[e.target];
         outRecipes[e.blueprintId].products.push(
@@ -1322,31 +1341,43 @@ function onNodeMouseOver(e) {
     }
 
     let recipesHtml = '';
+    const seenRecipeText = new Set();
 
     for (const bp of Object.values(craftRecipes)) {
-        recipesHtml += `<div class="tt-recipe">`;
-        recipesHtml += `<span class="tt-recipe-type ${esc(bp.type)}">${esc(bp.type)}</span>`;
-        if (bp.craftingCategory) recipesHtml += ` <span style="color:#888;font-size:0.72rem">[${esc(bp.craftingCategory)}]</span>`;
-        recipesHtml += `: `;
-        recipesHtml += bp.ingredients.map(esc).join(' + ');
-        recipesHtml += ` &rarr; ${esc(n.name)}`;
+        let line = `<div class="tt-recipe">`;
+        line += `<span class="tt-recipe-type ${esc(bp.type)}">${esc(bp.type)}</span>`;
+        if (bp.craftingCategory) line += ` <span style="color:#888;font-size:0.72rem">[${esc(bp.craftingCategory)}]</span>`;
+        line += `: `;
+        line += bp.ingredients.map(esc).join(' + ');
+        line += ` &rarr; ${esc(n.name)}`;
         if (bp.workstations.length) {
-            recipesHtml += `<div class="tt-workstation">Requires: ${bp.workstations.map(esc).join(', ')}</div>`;
+            line += `<div class="tt-workstation">Requires: ${bp.workstations.map(esc).join(', ')}</div>`;
         }
-        recipesHtml += `</div>`;
+        line += `</div>`;
+        // Deduplicate by visible text content
+        const textKey = `${bp.type}:${bp.ingredients.join('+')}→${n.name}`;
+        if (!seenRecipeText.has(textKey)) {
+            seenRecipeText.add(textKey);
+            recipesHtml += line;
+        }
     }
 
     for (const bp of Object.values(outRecipes)) {
-        recipesHtml += `<div class="tt-recipe">`;
-        recipesHtml += `<span class="tt-recipe-type ${esc(bp.type)}">${esc(bp.type)}</span>`;
-        if (bp.craftingCategory) recipesHtml += ` <span style="color:#888;font-size:0.72rem">[${esc(bp.craftingCategory)}]</span>`;
-        recipesHtml += `: `;
-        recipesHtml += `${esc(n.name)} &rarr; `;
-        recipesHtml += bp.products.map(esc).join(' + ');
+        let line = `<div class="tt-recipe">`;
+        line += `<span class="tt-recipe-type ${esc(bp.type)}">${esc(bp.type)}</span>`;
+        if (bp.craftingCategory) line += ` <span style="color:#888;font-size:0.72rem">[${esc(bp.craftingCategory)}]</span>`;
+        line += `: `;
+        line += `${esc(n.name)} &rarr; `;
+        line += bp.products.map(esc).join(' + ');
         if (bp.workstations.length) {
-            recipesHtml += `<div class="tt-workstation">Requires: ${bp.workstations.map(esc).join(', ')}</div>`;
+            line += `<div class="tt-workstation">Requires: ${bp.workstations.map(esc).join(', ')}</div>`;
         }
-        recipesHtml += `</div>`;
+        line += `</div>`;
+        const textKey = `${bp.type}:${n.name}→${bp.products.join('+')}`;
+        if (!seenRecipeText.has(textKey)) {
+            seenRecipeText.add(textKey);
+            recipesHtml += line;
+        }
     }
 
     $recipes.innerHTML = recipesHtml || '<em style="color:#666">No recipes</em>';

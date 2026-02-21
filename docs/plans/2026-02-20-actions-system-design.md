@@ -96,11 +96,27 @@ In `buildCraftingGraph`, after processing direct blueprints, call `resolveAction
 3. **Plan A Tasks 3-4** — `kind` field + tag indexing: could annotate action sources in the UI
 4. **Plan B Tasks 1-2** — Tooltip filtering + dedup: the hover card rendering that Plan C extends
 
+## Additional Export: Blueprint-level flags (State_Transfer, etc.)
+
+Some blueprint fields beyond inputs/outputs affect how blueprints should be interpreted but aren't currently exported. Known case:
+
+**`State_Transfer`**: Gear-type blueprints with this flag are cosmetic skin-swap recipes (base ↔ skinned variant), not real crafting recipes. Without this flag in the export, the graph builder's implicit-output fallback (`if no outputs, output is self`) creates misleading edges like "REAPER Stock → REAPER Stock" between two different items that share a display name.
+
+**Investigation (2026-02-21):**
+- Item 36553 ("REAPER Stock", base) and 36608 ("REAPER Stock", skinned) both have Gear-type `State_Transfer` blueprints pointing at each other with no explicit outputs
+- `buildCraftingGraph` falls back to `outputs = [self]` for blueprints with empty outputs (unless type is "salvage"), creating cross-edges between same-named items
+- Root cause: `State_Transfer` flag is not exported, so JS can't distinguish skin swaps from real recipes
+
+**Fix**: Export `State_Transfer` (and any other blueprint-level boolean flags) as part of each blueprint object in the Python exporter. Then in `buildCraftingGraph`, skip or distinctly style `state_transfer` blueprints.
+
+This aligns with the broader goal of thorough .dat/.asset export — the exporter should capture all blueprint fields, not just inputs/outputs/type. Other blueprint fields to audit for completeness: `Build`, `Level`, `Skill`, `Map`, `Tool`, `Transfered_State` (sic), `State_Shift`.
+
 ## Gaps to resolve after Plans A & B
 
 - Edge styling specifics (colors, dashed lines) — depends on Plan B's visual changes
 - Hover card rendering format — depends on Plan B's tooltip rework
 - Whether `Action_N_Text`/`Action_N_Tooltip` should override default display text in the hover card
+- Which blueprint-level flags to export (see section above)
 
 ## Scope
 

@@ -937,26 +937,28 @@ function buildCraftingGraph(entries, guidIndex, assets, blueprintPrefix) {
   let bpCounter = 0;
   const bpPrefix = blueprintPrefix || 'bp';
 
+  // Build entry lookup by guid
+  const entryByGuid = {};
+  for (const e of entries) {
+    entryByGuid[e.guid] = e;
+  }
+
   function ensureNode(guid) {
     if (nodeSet.has(guid)) return true;
     const gi = guidIndex.entries[guid];
     if (!gi) return false;
     nodeSet.add(guid);
+    const entry = entryByGuid[guid];
     nodes.push({
       id: guid,
       name: gi.name,
       type: gi.type || '',
-      rarity: '',
+      rarity: entry?.rarity || '',
+      useable: entry?.raw?.Useable || '',
       category: [],
       maps: [],
     });
     return true;
-  }
-
-  // Build entry lookup by guid
-  const entryByGuid = {};
-  for (const e of entries) {
-    entryByGuid[e.guid] = e;
   }
 
   // Process blueprints
@@ -1046,6 +1048,7 @@ function buildCraftingGraph(entries, guidIndex, assets, blueprintPrefix) {
     const entry = entryByGuid[node.id];
     if (entry) {
       node.rarity = entry.rarity || '';
+      node.useable = entry.raw?.Useable || '';
       node.category = entry.category || [];
       node.name = entry.name;
       node.type = entry.type;
