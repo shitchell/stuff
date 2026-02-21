@@ -961,11 +961,16 @@ function buildCraftingGraph(entries, guidIndex, assets, blueprintPrefix) {
     return true;
   }
 
+  // Track processed {ownerGuid}-{bpIndex} pairs to avoid duplicates with actions
+  const processedBlueprintKeys = new Set();
+
   // Process blueprints
   for (const entry of entries) {
     if (!entry.blueprints || entry.blueprints.length === 0) continue;
 
-    for (const bp of entry.blueprints) {
+    for (let bpIdx = 0; bpIdx < entry.blueprints.length; bpIdx++) {
+      const bp = entry.blueprints[bpIdx];
+      processedBlueprintKeys.add(`${entry.guid}-${bpIdx}`);
       if (bp.operation === 'FillTargetItem' || bp.operation === 'RepairTargetItem') continue;
 
       const blueprintId = `${bpPrefix}-${bpCounter++}`;
@@ -1045,6 +1050,114 @@ function buildCraftingGraph(entries, guidIndex, assets, blueprintPrefix) {
               craftingCategory,
               conditions: bp.conditions || [],
             });
+          }
+        }
+      }
+    }
+  }
+
+  // Resolve Actions into edges
+  // Actions are cross-item recipe links: an entry's action points to a blueprint
+  // on another item (or itself). These become edges if not already covered by the
+  // direct blueprint processing above.
+  for (const entry of entries) {
+    if (!entry.actions || !entry.actions.length) continue;
+
+    for (const action of entry.actions) {
+      if (action.type !== 'Blueprint') continue;
+
+      // Resolve action.source (numeric ID) to GUID via guid_index
+      const sourceId = String(action.source);
+      const nsMap = guidIndex.by_id[sourceId]?.items;
+      if (!nsMap) continue;
+      const sourceGuid = Object.values(nsMap)[0];
+      if (!sourceGuid) continue;
+
+      const sourceEntry = entryByGuid[sourceGuid];
+      if (!sourceEntry || !sourceEntry.blueprints) continue;
+
+      for (const bpIdx of action.blueprint_indices) {
+        // Skip if this blueprint was already processed in the direct loop
+        const bpKey = `${sourceGuid}-${bpIdx}`;
+        if (processedBlueprintKeys.has(bpKey)) continue;
+
+        const bp = sourceEntry.blueprints[bpIdx];
+        if (!bp) continue;
+        if (bp.operation === 'FillTargetItem' || bp.operation === 'RepairTargetItem') continue;
+
+        const blueprintId = `${bpPrefix}-action-${bpCounter++}`;
+        const craftingCategory = CRAFTING_CATEGORIES[bp.category_tag] || '';
+        if (craftingCategory) craftingCategories.add(craftingCategory);
+
+        // Determine edge type from action key, falling back to blueprint name
+        const actionKey = action.key ? action.key.toLowerCase() : '';
+        const bpName = (bp.name || '').toLowerCase();
+        let edgeType = actionKey || bpName || 'craft';
+        // Normalize known types
+        if (edgeType === 'salvage' || edgeType === 'unstack') edgeType = 'salvage';
+        else if (edgeType === 'repair') edgeType = 'repair';
+
+        if (bp.state_transfer) edgeType = 'skin_swap';
+
+        // Resolve workstation tags
+        const workstations = (bp.workstation_tags || []).map(tag => {
+          const resolved = guidIndex.entries[tag];
+          return resolved ? resolved.name : `[${tag.substring(0, 8)}]`;
+        });
+
+        // Parse inputs
+        const inputs = (bp.inputs || [])
+          .map(ref => parseBlueprintRef(ref, sourceEntry.guid, guidIndex))
+          .filter(Boolean);
+
+        // Parse outputs
+        let outputs = (bp.outputs || [])
+          .map(ref => parseBlueprintRef(ref, sourceEntry.guid, guidIndex))
+          .filter(Boolean);
+
+        // If no outputs, the output is the action's owning entry
+        if (outputs.length === 0) {
+          outputs = [{ guid: entry.guid, quantity: 1, isTool: false }];
+        }
+
+        // Create edges
+        if (edgeType === 'salvage') {
+          for (const out of outputs) {
+            if (!ensureNode(sourceEntry.guid) || !ensureNode(out.guid)) continue;
+            edges.push({
+              source: sourceEntry.guid,
+              target: out.guid,
+              type: 'salvage',
+              quantity: out.quantity,
+              tool: false,
+              workstations,
+              skill: bp.skill || '',
+              skillLevel: bp.skill_level || 0,
+              blueprintId,
+              byproduct: false,
+              craftingCategory,
+              conditions: bp.conditions || [],
+            });
+          }
+        } else {
+          for (const inp of inputs) {
+            for (const out of outputs) {
+              if (!ensureNode(inp.guid) || !ensureNode(out.guid)) continue;
+              edges.push({
+                source: inp.guid,
+                target: out.guid,
+                type: edgeType,
+                quantity: inp.quantity,
+                tool: inp.isTool,
+                workstations,
+                skill: bp.skill || '',
+                skillLevel: bp.skill_level || 0,
+                blueprintId,
+                byproduct: false,
+                craftingCategory,
+                conditions: bp.conditions || [],
+              });
+            }
           }
         }
       }

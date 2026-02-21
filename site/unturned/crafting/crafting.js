@@ -28,6 +28,9 @@ const EDGE_COLORS = {
     salvage: '#ff9800',
     repair: '#2196f3',
     skin_swap: '#9b59b6',
+    craft_seed: '#2ecc71',
+    stack: '#3498db',
+    unstack: '#e67e22',
 };
 
 const EDGE_LABELS = {
@@ -35,6 +38,12 @@ const EDGE_LABELS = {
     salvage: 'Salvage',
     repair: 'Repair',
     skin_swap: 'Skin Swap',
+    craft_seed: 'Craft Seed',
+    craft_bandage: 'Craft Bandage',
+    craft_dressing: 'Craft Dressing',
+    craft_rag: 'Craft Rag',
+    stack: 'Stack',
+    unstack: 'Unstack',
 };
 
 const LS_PREFIX = 'ut:crafting:';
@@ -365,9 +374,21 @@ function getVisibleEdges() {
 
     console.log('[MAP-FILTER] getVisibleEdges: using', mapFilteredGraph ? 'FILTERED' : 'RAW', 'graph,', sourceEdges.length, 'source edges');
 
+    // Map action-derived edge types to the base type they fall under for filtering.
+    // e.g. craft_seed, craft_dressing, stack → craft; unstack → salvage
+    const ACTION_TYPE_PARENT = {
+        craft_seed: 'craft',
+        craft_bandage: 'craft',
+        craft_dressing: 'craft',
+        craft_rag: 'craft',
+        stack: 'craft',
+        unstack: 'salvage',
+    };
+
     const result = sourceEdges.filter(e => {
-        // Blueprint type filter
-        if (!bpTypes.includes(e.type)) return false;
+        // Blueprint type filter: check both the exact type and its parent type
+        const parentType = ACTION_TYPE_PARENT[e.type];
+        if (!bpTypes.includes(e.type) && !(parentType && bpTypes.includes(parentType))) return false;
         // Tool edge visibility
         if (e.tool && settings.toolEdges === 'hidden') return false;
         // Crafting category filter
