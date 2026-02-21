@@ -283,10 +283,17 @@ async function buildMapFilters() {
     $mapFilterSection.style.display = '';
     const savedMaps = lsGet('maps', null);
 
+    // Load display names from each map's map.json
+    const mapDisplayNames = {};
+    for (const map of maps) {
+        const mapData = await dataLoader.getMapData(map);
+        mapDisplayNames[map] = mapData?.map?.name || map;
+    }
+
     let html = '<label class="toggle-all-label"><input type="checkbox" id="map-all"> All</label>';
     for (const map of maps) {
         const checked = savedMaps === null ? false : savedMaps.includes(map);
-        html += `<label><input type="checkbox" data-map="${esc(map)}" ${checked ? 'checked' : ''}> ${esc(map)}</label>`;
+        html += `<label><input type="checkbox" data-map="${esc(map)}" ${checked ? 'checked' : ''}> ${esc(mapDisplayNames[map])}</label>`;
     }
     $mapFilters.innerHTML = html;
 
