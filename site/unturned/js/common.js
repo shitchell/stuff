@@ -112,104 +112,97 @@ const BASE_FIELDS = [
 
 const TYPE_FIELD_DEFS = {
   Gun: [
-    { key: 'parsed.slot', label: 'Slot' },
-    { key: 'parsed.range', label: 'Range' },
-    { key: 'parsed.firerate', label: 'Firerate' },
-    { key: 'parsed.damage.player', label: 'Player Dmg' },
-    { key: 'parsed.damage.zombie', label: 'Zombie Dmg' },
-    { key: 'parsed.ammo_max', label: 'Ammo' },
-    { key: 'parsed.durability', label: 'Durability' },
-    { key: 'parsed.spread_aim', label: 'Spread Aim' },
+    { key: 'slot', label: 'Slot' },
+    { key: 'properties.range', label: 'Range' },
+    { key: 'properties.firerate', label: 'Firerate' },
+    { key: 'properties.damage_player', label: 'Player Dmg' },
+    { key: 'properties.damage_zombie', label: 'Zombie Dmg' },
+    { key: 'properties.ammo_max', label: 'Ammo' },
+    { key: 'properties.durability', label: 'Durability' },
+    { key: 'properties.spread_aim', label: 'Spread Aim' },
   ],
   Melee: [
-    { key: 'parsed.slot', label: 'Slot' },
-    { key: 'parsed.range', label: 'Range' },
-    { key: 'parsed.damage.player', label: 'Player Dmg' },
-    { key: 'parsed.damage.zombie', label: 'Zombie Dmg' },
-    { key: 'parsed.strength', label: 'Strength' },
-    { key: 'parsed.stamina', label: 'Stamina' },
-    { key: 'parsed.durability', label: 'Durability' },
+    { key: 'slot', label: 'Slot' },
+    { key: 'properties.range', label: 'Range' },
+    { key: 'properties.damage_player', label: 'Player Dmg' },
+    { key: 'properties.damage_zombie', label: 'Zombie Dmg' },
+    { key: 'properties.strength', label: 'Strength' },
+    { key: 'properties.stamina', label: 'Stamina' },
+    { key: 'properties.durability', label: 'Durability' },
   ],
   Food: [
-    { key: 'parsed.consumable.food', label: 'Food' },
-    { key: 'parsed.consumable.water', label: 'Water' },
-    { key: 'parsed.consumable.health', label: 'Health' },
-    { key: 'parsed.consumable.virus', label: 'Virus' },
+    { key: 'properties.food', label: 'Food' },
+    { key: 'properties.water', label: 'Water' },
+    { key: 'properties.health', label: 'Health' },
+    { key: 'properties.virus', label: 'Virus' },
   ],
   Water: [
-    { key: 'parsed.consumable.food', label: 'Food' },
-    { key: 'parsed.consumable.water', label: 'Water' },
-    { key: 'parsed.consumable.health', label: 'Health' },
-    { key: 'parsed.consumable.virus', label: 'Virus' },
+    { key: 'properties.food', label: 'Food' },
+    { key: 'properties.water', label: 'Water' },
+    { key: 'properties.health', label: 'Health' },
+    { key: 'properties.virus', label: 'Virus' },
   ],
   Medical: [
-    { key: 'parsed.consumable.health', label: 'Health' },
-    { key: 'parsed.consumable.virus', label: 'Virus' },
-    { key: 'parsed.consumable.bleeding_modifier', label: 'Bleeding' },
+    { key: 'properties.health', label: 'Health' },
+    { key: 'properties.virus', label: 'Virus' },
+    { key: 'properties.bleeding_modifier', label: 'Bleeding' },
   ],
   Backpack: [
-    { key: 'parsed.storage.width', label: 'Width' },
-    { key: 'parsed.storage.height', label: 'Height' },
-    { key: 'parsed.armor', label: 'Armor' },
+    { key: 'properties.width', label: 'Width' },
+    { key: 'properties.height', label: 'Height' },
+    { key: 'properties.armor', label: 'Armor' },
   ],
   Shirt: [
-    { key: 'parsed.storage.width', label: 'Width' },
-    { key: 'parsed.storage.height', label: 'Height' },
-    { key: 'parsed.armor', label: 'Armor' },
+    { key: 'properties.width', label: 'Width' },
+    { key: 'properties.height', label: 'Height' },
+    { key: 'properties.armor', label: 'Armor' },
   ],
   Pants: [
-    { key: 'parsed.storage.width', label: 'Width' },
-    { key: 'parsed.storage.height', label: 'Height' },
-    { key: 'parsed.armor', label: 'Armor' },
+    { key: 'properties.width', label: 'Width' },
+    { key: 'properties.height', label: 'Height' },
+    { key: 'properties.armor', label: 'Armor' },
   ],
   Vest: [
-    { key: 'parsed.storage.width', label: 'Width' },
-    { key: 'parsed.storage.height', label: 'Height' },
-    { key: 'parsed.armor', label: 'Armor' },
+    { key: 'properties.width', label: 'Width' },
+    { key: 'properties.height', label: 'Height' },
+    { key: 'properties.armor', label: 'Armor' },
   ],
   Hat: [
-    { key: 'parsed.armor', label: 'Armor' },
+    { key: 'properties.armor', label: 'Armor' },
   ],
   Mask: [
-    { key: 'parsed.armor', label: 'Armor' },
+    { key: 'properties.armor', label: 'Armor' },
   ],
   Glasses: [
-    { key: 'parsed.armor', label: 'Armor' },
+    { key: 'properties.armor', label: 'Armor' },
   ],
   Vehicle: [
-    { key: 'parsed.speed_max', label: 'Speed' },
-    { key: 'parsed.fuel_capacity', label: 'Fuel Cap' },
-    { key: 'parsed.health_max', label: 'Health' },
-    { key: 'parsed.trunk_x', label: 'Trunk W' },
-    { key: 'parsed.trunk_y', label: 'Trunk H' },
+    // Vehicle properties not yet exported by Plan C; columns will auto-populate
+    // via discoverPropertiesColumns() once vehicle data is enriched.
   ],
   Animal: [
-    { key: 'parsed.health', label: 'Health' },
-    { key: 'parsed.damage', label: 'Damage' },
-    { key: 'parsed.speed_run', label: 'Run Speed' },
-    { key: 'parsed.behaviour', label: 'Behaviour' },
-    { key: 'parsed.reward_xp', label: 'XP' },
+    // Animal properties not yet exported by Plan C; columns will auto-populate
+    // via discoverPropertiesColumns() once animal data is enriched.
   ],
   Barricade: [
-    { key: 'parsed.health', label: 'Health' },
-    { key: 'parsed.build', label: 'Build' },
-    { key: 'parsed.range', label: 'Range' },
+    { key: 'properties.health', label: 'Health' },
+    { key: 'properties.range', label: 'Range' },
   ],
   Structure: [
-    { key: 'parsed.health', label: 'Health' },
-    { key: 'parsed.construct', label: 'Construct' },
-    { key: 'parsed.range', label: 'Range' },
+    { key: 'properties.health', label: 'Health' },
+    { key: 'properties.construct', label: 'Construct' },
+    { key: 'properties.range', label: 'Range' },
   ],
   Magazine: [
-    { key: 'parsed.amount', label: 'Amount' },
-    { key: 'parsed.count_max', label: 'Max Count' },
+    { key: 'properties.amount', label: 'Amount' },
+    { key: 'properties.count_max', label: 'Max Count' },
   ],
   Throwable: [
-    { key: 'parsed.fuse', label: 'Fuse' },
-    { key: 'parsed.explosion', label: 'Explosion' },
+    { key: 'properties.fuse_length', label: 'Fuse' },
+    { key: 'properties.explosive', label: 'Explosive' },
   ],
   Spawn: [
-    { key: 'parsed.table_entries.length', label: 'Entries' },
+    // Spawn properties not yet exported; table_entries.length no longer available.
   ],
 };
 
@@ -348,7 +341,7 @@ function saveColumnOverrides(overrides) {
 // ── Expression Parser & Evaluator ───────────────────────────────────────────
 // Recursive descent parser for arithmetic expressions over entry fields.
 // Supports: +, -, *, /, %, parentheses, numeric literals, field references.
-// Field references are dot-separated paths (e.g. parsed.consumable.food).
+// Field references are dot-separated paths (e.g. properties.food).
 // Returns null for missing fields or errors (division by zero, etc).
 
 function tokenizeExpr(expr) {
@@ -466,9 +459,9 @@ function extractExprFields(expr) {
 // ── Custom Column Definitions ───────────────────────────────────────────────
 
 const PRESET_CUSTOM_COLUMNS = [
-  { id: 'cc_capacity', label: 'Capacity', expr: 'parsed.storage.width * parsed.storage.height' },
-  { id: 'cc_food_water_ratio', label: 'Food:Water', expr: 'parsed.consumable.food / parsed.consumable.water' },
-  { id: 'cc_total_restore', label: 'Total Restore', expr: 'parsed.consumable.food + parsed.consumable.water + parsed.consumable.health' },
+  { id: 'cc_capacity', label: 'Capacity', expr: 'properties.width * properties.height' },
+  { id: 'cc_food_water_ratio', label: 'Food:Water', expr: 'properties.food / properties.water' },
+  { id: 'cc_total_restore', label: 'Total Restore', expr: 'properties.food + properties.water + properties.health' },
 ];
 
 function loadCustomColumns() {
@@ -558,21 +551,18 @@ const IMPORTANT_COLUMNS = [
   { key: 'name', label: 'Name' },
   { key: 'type', label: 'Type' },
   { key: 'rarity', label: 'Rarity' },
-  { key: 'parsed.damage.player', label: 'Player Dmg' },
-  { key: 'parsed.damage.zombie', label: 'Zombie Dmg' },
-  { key: 'parsed.range', label: 'Range' },
-  { key: 'parsed.firerate', label: 'Firerate' },
-  { key: 'parsed.consumable.health', label: 'Health' },
-  { key: 'parsed.consumable.food', label: 'Food' },
-  { key: 'parsed.consumable.water', label: 'Water' },
-  { key: 'parsed.consumable.virus', label: 'Virus' },
-  { key: 'parsed.armor', label: 'Armor' },
-  { key: 'parsed.storage.width', label: 'Width' },
-  { key: 'parsed.storage.height', label: 'Height' },
-  { key: '_custom:cc_capacity', label: 'Capacity', expr: 'parsed.storage.width * parsed.storage.height' },
-  { key: 'parsed.speed_max', label: 'Speed' },
-  { key: 'parsed.health', label: 'Health (Structure)' },
-  { key: 'parsed.fuel_capacity', label: 'Fuel Cap' },
+  { key: 'properties.damage_player', label: 'Player Dmg' },
+  { key: 'properties.damage_zombie', label: 'Zombie Dmg' },
+  { key: 'properties.range', label: 'Range' },
+  { key: 'properties.firerate', label: 'Firerate' },
+  { key: 'properties.health', label: 'Health' },
+  { key: 'properties.food', label: 'Food' },
+  { key: 'properties.water', label: 'Water' },
+  { key: 'properties.virus', label: 'Virus' },
+  { key: 'properties.armor', label: 'Armor' },
+  { key: 'properties.width', label: 'Width' },
+  { key: 'properties.height', label: 'Height' },
+  { key: '_custom:cc_capacity', label: 'Capacity', expr: 'properties.width * properties.height' },
 ];
 
 // ── Table Definition Presets ─────────────────────────────────────────────────
@@ -588,7 +578,7 @@ const PRESET_TABLES = [
       { field: 'type', operator: '=', value: 'Throwable' },
     ],
     allConditions: [
-      { field: 'parsed.damage.zombie', operator: '>', value: '0' },
+      { field: 'properties.damage_zombie', operator: '>', value: '0' },
     ],
     visible: true,
   },

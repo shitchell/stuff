@@ -35,7 +35,7 @@ test('detectColumnsForEntries returns relevant columns for weapons', async ({ pa
     return detectColumnsForEntries(weapons).map(c => c.key);
   });
   expect(cols).toContain('name');
-  expect(cols).toContain('parsed.damage.player');
+  expect(cols).toContain('properties.damage_player');
 });
 
 test('loadTableDefs returns preset tables on first load', async ({ page }) => {
