@@ -973,10 +973,11 @@ function buildCraftingGraph(entries, guidIndex, assets, blueprintPrefix) {
       const craftingCategory = CRAFTING_CATEGORIES[bp.category_tag] || '';
       if (craftingCategory) craftingCategories.add(craftingCategory);
 
-      // Determine edge type
+      // Determine edge type from blueprint name, falling back to crafting category
+      const effectiveName = bpName || craftingCategory.toLowerCase();
       let edgeType = 'craft';
-      if (bpName === 'salvage' || bpName === 'unstack') edgeType = 'salvage';
-      else if (bpName === 'repair') edgeType = 'repair';
+      if (effectiveName === 'salvage' || effectiveName === 'unstack') edgeType = 'salvage';
+      else if (effectiveName === 'repair') edgeType = 'repair';
 
       // Resolve workstation tags
       const workstations = (bp.workstation_tags || []).map(tag => {
