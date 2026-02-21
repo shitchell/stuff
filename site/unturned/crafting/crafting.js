@@ -27,6 +27,14 @@ const EDGE_COLORS = {
     craft: '#4caf50',
     salvage: '#ff9800',
     repair: '#2196f3',
+    skin_swap: '#9b59b6',
+};
+
+const EDGE_LABELS = {
+    craft: 'Craft',
+    salvage: 'Salvage',
+    repair: 'Repair',
+    skin_swap: 'Skin Swap',
 };
 
 const LS_PREFIX = 'ut:crafting:';
@@ -94,6 +102,7 @@ function getSettings() {
         bpCraft: lsGet('bp-craft', true),
         bpSalvage: lsGet('bp-salvage', true),
         bpRepair: lsGet('bp-repair', true),
+        bpSkinSwap: lsGet('bp-skin_swap', true),
         nodeLabels: lsGet('node-labels', true),
         shapeByType: lsGet('shape-by-type', true),
         rarityGlow: lsGet('rarity-glow', true),
@@ -1351,7 +1360,7 @@ function onNodeMouseOver(e) {
 
     for (const bp of Object.values(craftRecipes)) {
         let line = `<div class="tt-recipe">`;
-        line += `<span class="tt-recipe-type ${esc(bp.type)}">${esc(bp.type)}</span>`;
+        line += `<span class="tt-recipe-type ${esc(bp.type)}">${esc(EDGE_LABELS[bp.type] || bp.type)}</span>`;
         if (bp.craftingCategory) line += ` <span style="color:#888;font-size:0.72rem">[${esc(bp.craftingCategory)}]</span>`;
         line += `: `;
         line += bp.ingredients.map(esc).join(' + ');
@@ -1370,7 +1379,7 @@ function onNodeMouseOver(e) {
 
     for (const bp of Object.values(outRecipes)) {
         let line = `<div class="tt-recipe">`;
-        line += `<span class="tt-recipe-type ${esc(bp.type)}">${esc(bp.type)}</span>`;
+        line += `<span class="tt-recipe-type ${esc(bp.type)}">${esc(EDGE_LABELS[bp.type] || bp.type)}</span>`;
         if (bp.craftingCategory) line += ` <span style="color:#888;font-size:0.72rem">[${esc(bp.craftingCategory)}]</span>`;
         line += `: `;
         line += `${esc(n.name)} &rarr; `;
@@ -1594,6 +1603,7 @@ async function onFiltersChanged() {
     lsSet('bp-craft', document.querySelector('input[data-bp="craft"]').checked);
     lsSet('bp-salvage', document.querySelector('input[data-bp="salvage"]').checked);
     lsSet('bp-repair', document.querySelector('input[data-bp="repair"]').checked);
+    lsSet('bp-skin_swap', document.querySelector('input[data-bp="skin_swap"]').checked);
 
     const activeMaps = getActiveMaps();
     lsSet('maps', activeMaps);
@@ -1637,13 +1647,15 @@ function wireSettings() {
     document.querySelector('input[data-bp="craft"]').checked = settings.bpCraft;
     document.querySelector('input[data-bp="salvage"]').checked = settings.bpSalvage;
     document.querySelector('input[data-bp="repair"]').checked = settings.bpRepair;
+    document.querySelector('input[data-bp="skin_swap"]').checked = settings.bpSkinSwap;
 
-    $bpAll.checked = settings.bpCraft && settings.bpSalvage && settings.bpRepair;
+    $bpAll.checked = settings.bpCraft && settings.bpSalvage && settings.bpRepair && settings.bpSkinSwap;
     $bpAll.addEventListener('change', () => {
         const val = $bpAll.checked;
         document.querySelector('input[data-bp="craft"]').checked = val;
         document.querySelector('input[data-bp="salvage"]').checked = val;
         document.querySelector('input[data-bp="repair"]').checked = val;
+        document.querySelector('input[data-bp="skin_swap"]').checked = val;
         onFiltersChanged();
     });
 

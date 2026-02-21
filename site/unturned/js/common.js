@@ -979,6 +979,11 @@ function buildCraftingGraph(entries, guidIndex, assets, blueprintPrefix) {
       if (effectiveName === 'salvage' || effectiveName === 'unstack') edgeType = 'salvage';
       else if (effectiveName === 'repair') edgeType = 'repair';
 
+      // State_Transfer blueprints are skin-swap recipes (base ↔ skinned variant)
+      if (bp.state_transfer) {
+        edgeType = 'skin_swap';
+      }
+
       // Resolve workstation tags
       const workstations = (bp.workstation_tags || []).map(tag => {
         const resolved = guidIndex.entries[tag];
