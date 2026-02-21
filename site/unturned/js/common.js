@@ -90,9 +90,12 @@ const dataLoader = {
     return entry ? entry.name : `[${guid.substring(0, 8)}]`;
   },
 
-  async resolveId(numericId) {
+  async resolveId(numericId, namespace = 'items', source = null) {
     const gi = await this.getGuidIndex();
-    const guid = gi.by_id[String(numericId)];
+    const nsMap = gi.by_id[String(numericId)]?.[namespace];
+    if (!nsMap) return null;
+    const guid = source ? (nsMap[source] || Object.values(nsMap)[0])
+                        : Object.values(nsMap)[0];
     if (!guid) return null;
     return gi.entries[guid] || null;
   },
@@ -888,20 +891,23 @@ const CRAFTING_CATEGORIES = {
 
 function parseBlueprintRef(ref, ownerGuid, guidIndex) {
   if (typeof ref === 'string') {
-    // "this x N" or "this"
     if (ref === 'this' || ref.startsWith('this ')) {
       const qty = ref.includes(' x ') ? parseInt(ref.split(' x ')[1]) : 1;
       return { guid: ownerGuid, quantity: qty, isTool: false };
     }
-    // "GUID x N" or "GUID"
     const parts = ref.split(' x ');
     let guid = parts[0];
     const qty = parts.length > 1 ? parseInt(parts[1]) : 1;
-    // Could be numeric legacy ID
+    // Numeric IDs should have been resolved by the exporter.
+    // If we see one here, warn — it means the exporter missed it.
     if (/^\d+$/.test(guid)) {
-      const resolved = guidIndex.by_id[guid];
-      if (resolved) guid = resolved;
-      else return null;
+      console.warn(`[CRAFTING] Unresolved numeric ID in blueprint ref: ${guid}`);
+      const resolved = guidIndex.by_id[guid]?.items;
+      if (resolved) {
+        guid = Object.values(resolved)[0];
+      } else {
+        return null;
+      }
     }
     return { guid, quantity: qty, isTool: false };
   }
@@ -909,9 +915,13 @@ function parseBlueprintRef(ref, ownerGuid, guidIndex) {
     let guid = ref.ID;
     if (guid === 'this') guid = ownerGuid;
     else if (/^\d+$/.test(guid)) {
-      const resolved = guidIndex.by_id[guid];
-      if (resolved) guid = resolved;
-      else return null;
+      console.warn(`[CRAFTING] Unresolved numeric ID in tool ref: ${guid}`);
+      const resolved = guidIndex.by_id[guid]?.items;
+      if (resolved) {
+        guid = Object.values(resolved)[0];
+      } else {
+        return null;
+      }
     }
     const isTool = ref.Delete === false;
     return { guid, quantity: ref.Amount || 1, isTool };
