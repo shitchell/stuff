@@ -203,15 +203,14 @@ async function connectToSender() {
     });
 }
 
-// PeerJS requires a stream to initiate a call — create a silent empty one
+// PeerJS requires a stream to initiate a call — create a minimal video stream
 let emptyStream = null;
 function createEmptyStream() {
     if (emptyStream) return emptyStream;
-    const ctx = new AudioContext();
-    const oscillator = ctx.createOscillator();
-    const dst = ctx.createMediaStreamDestination();
-    oscillator.connect(dst);
-    emptyStream = dst.stream;
+    const canvas = document.createElement('canvas');
+    canvas.width = 1;
+    canvas.height = 1;
+    emptyStream = canvas.captureStream(0);
     return emptyStream;
 }
 
