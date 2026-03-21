@@ -38,6 +38,7 @@ async function startSender() {
             audio: false
         });
         $('#sender-preview').srcObject = localStream;
+        checkCameraCount();
     } catch (err) {
         statusEl.textContent = 'Camera access required to send video.';
         statusEl.className = 'status error';
@@ -97,4 +98,47 @@ function generateQR(roomCode) {
     );
 }
 
+async function flipCamera() {
+    currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+
+    // Stop old tracks
+    if (localStream) {
+        localStream.getTracks().forEach(t => t.stop());
+    }
+
+    try {
+        localStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: currentFacingMode },
+            audio: false
+        });
+        $('#sender-preview').srcObject = localStream;
+
+        // Replace track on active call if connected
+        if (currentCall && currentCall.peerConnection) {
+            const sender = currentCall.peerConnection.getSenders()
+                .find(s => s.track && s.track.kind === 'video');
+            if (sender) {
+                sender.replaceTrack(localStream.getVideoTracks()[0]);
+            }
+        }
+    } catch (err) {
+        // If flip fails (single camera), revert
+        currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+    }
+}
+
+// Detect if device has multiple cameras — hide flip button if not
+async function checkCameraCount() {
+    try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const cameras = devices.filter(d => d.kind === 'videoinput');
+        if (cameras.length < 2) {
+            $('#btn-flip-camera').classList.add('hidden');
+        }
+    } catch {
+        // Can't enumerate — show button anyway
+    }
+}
+
 $('#btn-send').addEventListener('click', startSender);
+$('#btn-flip-camera').addEventListener('click', flipCamera);
