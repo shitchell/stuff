@@ -36,24 +36,19 @@ let currentFacingMode = 'environment';
 let connected = false;
 let receivedStream = null;
 
-// ICE servers config — includes TURN for NAT traversal between mobile devices
+// ICE servers config — includes self-hosted TURN for NAT traversal between mobile devices
 const ICE_SERVERS = [
     { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:155.138.200.212:3478' },
     {
-        urls: 'turn:openrelay.metered.ca:80',
-        username: 'openrelayproject',
-        credential: 'openrelayproject'
+        urls: 'turn:155.138.200.212:3478',
+        username: 'cardboard',
+        credential: 'cardboard2026'
     },
     {
-        urls: 'turn:openrelay.metered.ca:443',
-        username: 'openrelayproject',
-        credential: 'openrelayproject'
-    },
-    {
-        urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-        username: 'openrelayproject',
-        credential: 'openrelayproject'
+        urls: 'turn:155.138.200.212:3478?transport=tcp',
+        username: 'cardboard',
+        credential: 'cardboard2026'
     },
 ];
 
