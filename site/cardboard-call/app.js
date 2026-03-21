@@ -186,16 +186,18 @@ function generateQR(roomCode) {
     const url = baseUrl + '?room=' + encodeURIComponent(roomCode);
     console.log('[QR] Generating QR for URL:', url);
 
-    QRCode.toCanvas(url, { width: 200, margin: 2, color: { dark: '#fff', light: '#111' } },
-        (err, canvas) => {
-            if (err) {
-                console.error('[QR] Error generating QR:', err);
-            } else {
-                console.log('[QR] QR code generated successfully');
-                container.appendChild(canvas);
-            }
-        }
-    );
+    try {
+        new QRCode(container, {
+            text: url,
+            width: 200,
+            height: 200,
+            colorDark: '#ffffff',
+            colorLight: '#111111',
+        });
+        console.log('[QR] QR code generated successfully');
+    } catch (err) {
+        console.error('[QR] Error generating QR:', err);
+    }
 }
 
 async function flipCamera() {
