@@ -30,7 +30,8 @@ function generateRoomCode() {
 }
 
 let peer = null;
-let currentCall = null;
+let currentCall = null;   // used by receiver
+let activeCalls = [];      // used by sender — tracks all connected receivers
 let localStream = null;
 let currentFacingMode = 'environment';
 let connected = false;
@@ -70,6 +71,17 @@ function logStreamInfo(label, stream) {
 
 function logVideoElement(label, el) {
     console.log(`[VIDEO] ${label}: readyState=${el.readyState}, paused=${el.paused}, ended=${el.ended}, muted=${el.muted}, srcObject=${!!el.srcObject}, videoWidth=${el.videoWidth}, videoHeight=${el.videoHeight}, currentTime=${el.currentTime}, networkState=${el.networkState}`);
+}
+
+function updateSenderStatus(statusEl) {
+    const count = activeCalls.length;
+    if (count === 0) {
+        statusEl.textContent = 'Waiting for receiver...';
+        statusEl.className = 'status waiting';
+    } else {
+        statusEl.textContent = `Connected! (${count} receiver${count > 1 ? 's' : ''})`;
+        statusEl.className = 'status connected';
+    }
 }
 
 async function startSender() {
@@ -129,12 +141,11 @@ async function startSender() {
 
     peer.on('call', (call) => {
         console.log('[SENDER] Incoming call from peer:', call.peer);
-        currentCall = call;
-        console.log('[SENDER] Answering call with localStream');
+        activeCalls.push(call);
+        console.log('[SENDER] Answering call with localStream, total receivers:', activeCalls.length);
         logStreamInfo('localStream (answering with)', localStream);
         call.answer(localStream);
-        statusEl.textContent = 'Connected!';
-        statusEl.className = 'status connected';
+        updateSenderStatus(statusEl);
         $('#sender-info').style.opacity = '0.3';
 
         call.on('stream', (remoteStream) => {
@@ -143,14 +154,19 @@ async function startSender() {
         });
 
         call.on('close', () => {
-            console.log('[SENDER] Call closed');
-            statusEl.textContent = 'Receiver disconnected.';
-            statusEl.className = 'status error';
-            $('#sender-info').style.opacity = '1';
+            console.log('[SENDER] Call closed from peer:', call.peer);
+            activeCalls = activeCalls.filter(c => c !== call);
+            console.log('[SENDER] Remaining receivers:', activeCalls.length);
+            updateSenderStatus(statusEl);
+            if (activeCalls.length === 0) {
+                $('#sender-info').style.opacity = '1';
+            }
         });
 
         call.on('error', (err) => {
             console.error('[SENDER] Call error:', err);
+            activeCalls = activeCalls.filter(c => c !== call);
+            updateSenderStatus(statusEl);
         });
     });
 
@@ -199,14 +215,18 @@ async function flipCamera() {
         logStreamInfo('new localStream', localStream);
         $('#sender-preview').srcObject = localStream;
 
-        if (currentCall && currentCall.peerConnection) {
-            const sender = currentCall.peerConnection.getSenders()
-                .find(s => s.track && s.track.kind === 'video');
-            if (sender) {
-                console.log('[CAMERA] Replacing track on active call');
-                sender.replaceTrack(localStream.getVideoTracks()[0]);
+        // Replace track on all active receiver calls
+        const newTrack = localStream.getVideoTracks()[0];
+        activeCalls.forEach((call, i) => {
+            if (call.peerConnection) {
+                const sender = call.peerConnection.getSenders()
+                    .find(s => s.track && s.track.kind === 'video');
+                if (sender) {
+                    console.log(`[CAMERA] Replacing track on call ${i} (${call.peer})`);
+                    sender.replaceTrack(newTrack);
+                }
             }
-        }
+        });
     } catch (err) {
         console.error('[CAMERA] Flip failed:', err);
         currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
