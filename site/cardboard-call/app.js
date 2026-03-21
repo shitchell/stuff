@@ -522,6 +522,37 @@ function exitStereoView() {
     }
 }
 
+// Scale slider — adjusts stereo video size for headset fit
+let scaleHideTimeout = null;
+$('#scale-slider').addEventListener('input', (e) => {
+    const scale = e.target.value / 100;
+    const videos = $('#stereo-videos');
+    videos.style.width = (scale * 100) + '%';
+    videos.style.height = (scale * 100) + '%';
+    console.log('[SCALE] Set to', e.target.value + '%');
+});
+
+// Tap stereo view to toggle scale controls (but not when play overlay is visible)
+$('#stereo-view').addEventListener('click', (e) => {
+    const overlay = $('#play-overlay');
+    const controls = $('#scale-controls');
+    const slider = $('#scale-slider');
+
+    // Don't toggle if play overlay is showing or if tapping the slider itself
+    if (!overlay.classList.contains('hidden')) return;
+    if (e.target === slider || e.target.closest('#scale-controls')) return;
+
+    controls.classList.toggle('hidden');
+
+    // Auto-hide after 4 seconds
+    clearTimeout(scaleHideTimeout);
+    if (!controls.classList.contains('hidden')) {
+        scaleHideTimeout = setTimeout(() => {
+            controls.classList.add('hidden');
+        }, 4000);
+    }
+});
+
 $('#btn-send').addEventListener('click', startSender);
 $('#btn-flip-camera').addEventListener('click', flipCamera);
 $('#btn-receive').addEventListener('click', () => startReceiver());

@@ -157,19 +157,47 @@ body {
 /* Stereo view */
 #stereo-view {
     position: fixed;
-    /* relative needed for play-overlay absolute positioning - but fixed already establishes containing block */
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
     background: #000;
     display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-#stereo-view video {
+#stereo-videos {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+#stereo-videos video {
     width: 50%;
     height: 100%;
     object-fit: cover;
+}
+
+/* Scale controls */
+#scale-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 8px 16px;
+    border-radius: 12px;
+}
+
+#scale-slider {
+    width: 200px;
+    height: 30px;
+    cursor: pointer;
+    accent-color: #3498db;
 }
 
 /* Play overlay */

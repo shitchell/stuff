@@ -35,10 +35,15 @@
             <div id="receiver-status" class="status"></div>
         </div>
         <div id="stereo-view" class="hidden">
-            <video id="video-left" autoplay playsinline muted></video>
-            <video id="video-right" autoplay playsinline muted></video>
+            <div id="stereo-videos">
+                <video id="video-left" autoplay playsinline muted></video>
+                <video id="video-right" autoplay playsinline muted></video>
+            </div>
             <div id="play-overlay">
                 <div id="play-button">&#9654; Tap to Start Video</div>
+            </div>
+            <div id="scale-controls" class="hidden">
+                <input type="range" id="scale-slider" min="30" max="100" value="100" step="1">
             </div>
         </div>
     </section>
