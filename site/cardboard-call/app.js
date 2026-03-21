@@ -36,6 +36,27 @@ let currentFacingMode = 'environment';
 let connected = false;
 let receivedStream = null;
 
+// ICE servers config — includes TURN for NAT traversal between mobile devices
+const ICE_SERVERS = [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    {
+        urls: 'turn:openrelay.metered.ca:80',
+        username: 'openrelayproject',
+        credential: 'openrelayproject'
+    },
+    {
+        urls: 'turn:openrelay.metered.ca:443',
+        username: 'openrelayproject',
+        credential: 'openrelayproject'
+    },
+    {
+        urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+        username: 'openrelayproject',
+        credential: 'openrelayproject'
+    },
+];
+
 function logStreamInfo(label, stream) {
     if (!stream) {
         console.log(`[STREAM] ${label}: null/undefined`);
@@ -90,7 +111,7 @@ async function startSender() {
         console.log('[SENDER] Destroying existing peer');
         peer.destroy();
     }
-    peer = new Peer(roomCode);
+    peer = new Peer(roomCode, { config: { iceServers: ICE_SERVERS } });
 
     peer.on('open', (id) => {
         console.log('[SENDER] Peer open, id:', id);
@@ -240,7 +261,7 @@ async function connectToSender() {
         console.log('[RECEIVER] Destroying existing peer');
         peer.destroy();
     }
-    peer = new Peer();
+    peer = new Peer(undefined, { config: { iceServers: ICE_SERVERS } });
 
     peer.on('open', (id) => {
         console.log('[RECEIVER] Peer open, my id:', id);
@@ -461,11 +482,14 @@ function handlePlayOverlayTap() {
     logVideoElement('video-right before manual play', videoRight);
     logStreamInfo('receivedStream at play time', receivedStream);
 
-    // Re-set srcObject in case it was lost
-    if (receivedStream) {
+    // Only re-set srcObject if it's missing (avoids AbortError on pending play)
+    if (receivedStream && !videoLeft.srcObject) {
         videoLeft.srcObject = receivedStream;
+        console.log('[PLAY] Re-set srcObject on video-left');
+    }
+    if (receivedStream && !videoRight.srcObject) {
         videoRight.srcObject = receivedStream;
-        console.log('[PLAY] Re-set srcObject on both videos');
+        console.log('[PLAY] Re-set srcObject on video-right');
     }
 
     const p1 = videoLeft.play();
