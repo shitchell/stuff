@@ -140,5 +140,136 @@ async function checkCameraCount() {
     }
 }
 
+function startReceiver(prefillCode) {
+    showSection(receiverSection);
+    const input = $('#room-input');
+    const statusEl = $('#receiver-status');
+
+    if (prefillCode) {
+        input.value = prefillCode;
+    }
+}
+
+async function connectToSender() {
+    const roomCode = $('#room-input').value.trim();
+    const statusEl = $('#receiver-status');
+
+    if (!roomCode) {
+        statusEl.textContent = 'Enter a room code.';
+        statusEl.className = 'status error';
+        return;
+    }
+
+    statusEl.textContent = 'Connecting...';
+    statusEl.className = 'status waiting';
+
+    peer = new Peer();
+
+    peer.on('open', () => {
+        // Call the sender (we send no stream, just receive)
+        const call = peer.call(roomCode, createEmptyStream());
+        currentCall = call;
+
+        call.on('stream', (remoteStream) => {
+            enterStereoView(remoteStream);
+        });
+
+        call.on('close', () => {
+            exitStereoView();
+            statusEl.textContent = 'Disconnected.';
+            statusEl.className = 'status error';
+        });
+
+        call.on('error', () => {
+            statusEl.textContent = 'Connection failed.';
+            statusEl.className = 'status error';
+        });
+
+        // Timeout if no stream after 10 seconds
+        setTimeout(() => {
+            if (!$('#stereo-view').classList.contains('hidden')) return; // already connected
+            statusEl.textContent = 'Room not found. Check the code.';
+            statusEl.className = 'status error';
+        }, 10000);
+    });
+
+    peer.on('error', (err) => {
+        statusEl.textContent = 'Connection failed. Try again.';
+        statusEl.className = 'status error';
+    });
+}
+
+// PeerJS requires a stream to initiate a call — create a silent empty one
+function createEmptyStream() {
+    const ctx = new AudioContext();
+    const oscillator = ctx.createOscillator();
+    const dst = ctx.createMediaStreamDestination();
+    oscillator.connect(dst);
+    return dst.stream;
+}
+
+function enterStereoView(stream) {
+    const stereoView = $('#stereo-view');
+    const connectForm = $('#receiver-connect');
+
+    $('#video-left').srcObject = stream;
+    $('#video-right').srcObject = stream;
+
+    connectForm.classList.add('hidden');
+    stereoView.classList.remove('hidden');
+
+    // Go fullscreen
+    const el = document.documentElement;
+    if (el.requestFullscreen) {
+        el.requestFullscreen().catch(() => {});
+    } else if (el.webkitRequestFullscreen) {
+        el.webkitRequestFullscreen();
+    }
+
+    // Lock to landscape
+    try {
+        screen.orientation.lock('landscape').catch(() => {});
+    } catch {
+        // Not supported
+    }
+}
+
+function exitStereoView() {
+    const stereoView = $('#stereo-view');
+    const connectForm = $('#receiver-connect');
+
+    stereoView.classList.add('hidden');
+    connectForm.classList.remove('hidden');
+
+    // Exit fullscreen
+    if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+    }
+
+    // Unlock orientation
+    try {
+        screen.orientation.unlock();
+    } catch {
+        // Not supported
+    }
+}
+
 $('#btn-send').addEventListener('click', startSender);
 $('#btn-flip-camera').addEventListener('click', flipCamera);
+$('#btn-receive').addEventListener('click', () => startReceiver());
+$('#btn-connect').addEventListener('click', connectToSender);
+$('#stereo-view').addEventListener('click', exitStereoView);
+
+// Allow Enter key in room input
+$('#room-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') connectToSender();
+});
+
+// Check URL params on load
+(function init() {
+    const params = new URLSearchParams(window.location.search);
+    const room = params.get('room');
+    if (room) {
+        startReceiver(room);
+    }
+})();
