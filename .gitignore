@@ -2,3 +2,4 @@ node_modules/
 site/3d/diagrams/*.svg
 test-results/
 _work/
+.worktrees/
