@@ -194,3 +194,44 @@ body {
     padding: 1.5rem 3rem;
     border-radius: 16px;
 }
+
+/* Debug panel */
+#debug-toggle {
+    position: fixed;
+    top: 4px;
+    right: 4px;
+    z-index: 9999;
+    background: rgba(255, 0, 0, 0.5);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    cursor: pointer;
+}
+
+#debug-panel {
+    position: fixed;
+    top: 28px;
+    right: 4px;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.9);
+    color: #0f0;
+    font-size: 0.6rem;
+    max-width: 90vw;
+    max-height: 60vh;
+    overflow: auto;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+#debug-panel button {
+    font-size: 0.7rem;
+    margin-right: 4px;
+    margin-bottom: 4px;
+}
+
+#debug-log {
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin: 0;
+}

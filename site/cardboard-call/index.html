@@ -43,6 +43,14 @@
         </div>
     </section>
 
+    <!-- Debug panel -->
+    <div id="debug-toggle" onclick="document.getElementById('debug-panel').classList.toggle('hidden')">DBG</div>
+    <div id="debug-panel" class="hidden">
+        <button onclick="document.getElementById('debug-log').textContent = window.__logs.join('\n')">Refresh</button>
+        <button onclick="navigator.clipboard.writeText(window.__logs.join('\n')).then(() => alert('Copied!'))">Copy</button>
+        <pre id="debug-log"></pre>
+    </div>
+
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <script src="https://unpkg.com/qrcode@1.5.4/build/qrcode.min.js"></script>
     <script src="app.js"></script>

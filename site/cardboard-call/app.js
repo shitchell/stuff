@@ -1,3 +1,10 @@
+// Debug log capture — accessible via window.__logs and debug panel
+window.__logs = [];
+const _origLog = console.log, _origErr = console.error, _origWarn = console.warn;
+console.log = (...a) => { const msg = a.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' '); window.__logs.push(msg); _origLog.apply(console, a); };
+console.error = (...a) => { const msg = '[ERR] ' + a.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' '); window.__logs.push(msg); _origErr.apply(console, a); };
+console.warn = (...a) => { const msg = '[WARN] ' + a.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' '); window.__logs.push(msg); _origWarn.apply(console, a); };
+
 const $ = (sel) => document.querySelector(sel);
 
 const landing = $('#landing');
