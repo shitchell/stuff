@@ -218,8 +218,12 @@ function enterStereoView(stream) {
     const stereoView = $('#stereo-view');
     const connectForm = $('#receiver-connect');
 
-    $('#video-left').srcObject = stream;
-    $('#video-right').srcObject = stream;
+    const videoLeft = $('#video-left');
+    const videoRight = $('#video-right');
+    videoLeft.srcObject = stream;
+    videoRight.srcObject = stream;
+    videoLeft.play().catch(() => {});
+    videoRight.play().catch(() => {});
 
     connectForm.classList.add('hidden');
     stereoView.classList.remove('hidden');
