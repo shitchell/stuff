@@ -527,8 +527,8 @@ let scaleHideTimeout = null;
 $('#scale-slider').addEventListener('input', (e) => {
     const scale = e.target.value / 100;
     const videos = $('#stereo-videos');
-    videos.style.width = (scale * 100) + '%';
-    videos.style.height = (scale * 100) + '%';
+    videos.style.transform = `scale(${scale})`;
+    videos.style.transformOrigin = 'center center';
     console.log('[SCALE] Set to', e.target.value + '%');
 });
 
