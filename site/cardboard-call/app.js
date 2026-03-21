@@ -24,6 +24,7 @@ let peer = null;
 let currentCall = null;
 let localStream = null;
 let currentFacingMode = 'environment';
+let connected = false;
 
 async function startSender() {
     showSection(senderSection);
@@ -142,11 +143,9 @@ async function checkCameraCount() {
 
 function startReceiver(prefillCode) {
     showSection(receiverSection);
-    const input = $('#room-input');
-    const statusEl = $('#receiver-status');
 
     if (prefillCode) {
-        input.value = prefillCode;
+        $('#room-input').value = prefillCode;
     }
 }
 
@@ -162,7 +161,11 @@ async function connectToSender() {
 
     statusEl.textContent = 'Connecting...';
     statusEl.className = 'status waiting';
+    connected = false;
 
+    if (peer) {
+        peer.destroy();
+    }
     peer = new Peer();
 
     peer.on('open', () => {
@@ -171,6 +174,7 @@ async function connectToSender() {
         currentCall = call;
 
         call.on('stream', (remoteStream) => {
+            connected = true;
             enterStereoView(remoteStream);
         });
 
@@ -187,7 +191,7 @@ async function connectToSender() {
 
         // Timeout if no stream after 10 seconds
         setTimeout(() => {
-            if (!$('#stereo-view').classList.contains('hidden')) return; // already connected
+            if (connected) return;
             statusEl.textContent = 'Room not found. Check the code.';
             statusEl.className = 'status error';
         }, 10000);
@@ -200,12 +204,15 @@ async function connectToSender() {
 }
 
 // PeerJS requires a stream to initiate a call — create a silent empty one
+let emptyStream = null;
 function createEmptyStream() {
+    if (emptyStream) return emptyStream;
     const ctx = new AudioContext();
     const oscillator = ctx.createOscillator();
     const dst = ctx.createMediaStreamDestination();
     oscillator.connect(dst);
-    return dst.stream;
+    emptyStream = dst.stream;
+    return emptyStream;
 }
 
 function enterStereoView(stream) {
