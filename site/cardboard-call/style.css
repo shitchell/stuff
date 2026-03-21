@@ -157,6 +157,7 @@ body {
 /* Stereo view */
 #stereo-view {
     position: fixed;
+    /* relative needed for play-overlay absolute positioning - but fixed already establishes containing block */
     top: 0;
     left: 0;
     width: 100vw;
@@ -169,4 +170,27 @@ body {
     width: 50%;
     height: 100%;
     object-fit: cover;
+}
+
+/* Play overlay */
+#play-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 10;
+    cursor: pointer;
+}
+
+#play-button {
+    font-size: 2rem;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 1.5rem 3rem;
+    border-radius: 16px;
 }
