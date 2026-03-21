@@ -163,6 +163,12 @@ async function connectToSender() {
     statusEl.className = 'status waiting';
     connected = false;
 
+    // Prime video elements during user gesture so they're allowed to play
+    const videoLeft = $('#video-left');
+    const videoRight = $('#video-right');
+    videoLeft.play().catch(() => {});
+    videoRight.play().catch(() => {});
+
     if (peer) {
         peer.destroy();
     }
@@ -222,6 +228,7 @@ function enterStereoView(stream) {
     const videoRight = $('#video-right');
     videoLeft.srcObject = stream;
     videoRight.srcObject = stream;
+    // Re-trigger play now that stream is attached
     videoLeft.play().catch(() => {});
     videoRight.play().catch(() => {});
 
