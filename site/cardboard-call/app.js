@@ -315,28 +315,29 @@ function monitorPeerConnection(pc) {
     console.log('[RTC] iceConnectionState:', pc.iceConnectionState);
     console.log('[RTC] signalingState:', pc.signalingState);
 
-    pc.ontrack = (event) => {
+    // Use addEventListener to avoid clobbering PeerJS's internal ontrack handler
+    pc.addEventListener('track', (event) => {
         console.log('[RTC] *** ontrack event ***');
         console.log('[RTC] track kind:', event.track.kind, 'readyState:', event.track.readyState);
         console.log('[RTC] streams:', event.streams.length);
         event.streams.forEach((s, i) => logStreamInfo(`ontrack stream[${i}]`, s));
-    };
+    });
 
-    pc.onconnectionstatechange = () => {
+    pc.addEventListener('connectionstatechange', () => {
         console.log('[RTC] connectionState changed:', pc.connectionState);
-    };
+    });
 
-    pc.oniceconnectionstatechange = () => {
+    pc.addEventListener('iceconnectionstatechange', () => {
         console.log('[RTC] iceConnectionState changed:', pc.iceConnectionState);
-    };
+    });
 
-    pc.onsignalingstatechange = () => {
+    pc.addEventListener('signalingstatechange', () => {
         console.log('[RTC] signalingState changed:', pc.signalingState);
-    };
+    });
 
-    pc.onicecandidate = (event) => {
+    pc.addEventListener('icecandidate', (event) => {
         console.log('[RTC] ICE candidate:', event.candidate ? event.candidate.type : 'null (gathering done)');
-    };
+    });
 
     // Log receivers
     const receivers = pc.getReceivers();
