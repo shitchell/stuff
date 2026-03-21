@@ -1,0 +1,172 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #111;
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Landing */
+#landing {
+    text-align: center;
+    padding: 2rem;
+}
+
+#landing h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+#landing p {
+    color: #888;
+    margin-bottom: 2rem;
+}
+
+#landing button {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 0.75rem auto;
+    padding: 1.25rem;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+#btn-send {
+    background: #2ecc71;
+    color: #111;
+}
+
+#btn-receive {
+    background: #3498db;
+    color: #fff;
+}
+
+/* Sender */
+#sender {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    width: 100%;
+    max-width: 500px;
+}
+
+#sender-preview {
+    width: 100%;
+    max-height: 50vh;
+    border-radius: 8px;
+    background: #000;
+    object-fit: cover;
+}
+
+#sender-info {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+#room-code {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    font-family: monospace;
+    margin-bottom: 1rem;
+}
+
+#qr-code canvas {
+    border-radius: 8px;
+}
+
+#btn-flip-camera {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    background: #555;
+    color: #fff;
+    cursor: pointer;
+    margin-top: 0.5rem;
+}
+
+/* Status */
+.status {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.status.waiting { color: #f1c40f; }
+.status.connected { color: #2ecc71; }
+.status.error { color: #e74c3c; }
+
+/* Receiver connect form */
+#receiver-connect {
+    text-align: center;
+    padding: 2rem;
+}
+
+#receiver-connect label {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+#room-input {
+    font-size: 1.5rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid #555;
+    border-radius: 8px;
+    background: #222;
+    color: #fff;
+    text-align: center;
+    letter-spacing: 0.1em;
+    font-family: monospace;
+    width: 100%;
+    max-width: 300px;
+}
+
+#btn-connect {
+    display: block;
+    margin: 1rem auto;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 8px;
+    background: #3498db;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* Stereo view */
+#stereo-view {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    display: flex;
+}
+
+#stereo-view video {
+    width: 50%;
+    height: 100%;
+    object-fit: cover;
+}

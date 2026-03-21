@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Cardboard Call</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Landing -->
+    <section id="landing">
+        <h1>Cardboard Call</h1>
+        <p>P2P video for Google Cardboard</p>
+        <button id="btn-send">Send Video</button>
+        <button id="btn-receive">Receive Video</button>
+    </section>
+
+    <!-- Sender -->
+    <section id="sender" class="hidden">
+        <div id="sender-status" class="status">Initializing...</div>
+        <video id="sender-preview" autoplay playsinline muted></video>
+        <div id="sender-info">
+            <div id="room-code"></div>
+            <div id="qr-code"></div>
+        </div>
+        <button id="btn-flip-camera">Flip Camera</button>
+    </section>
+
+    <!-- Receiver -->
+    <section id="receiver" class="hidden">
+        <div id="receiver-connect">
+            <label for="room-input">Room Code</label>
+            <input type="text" id="room-input" placeholder="ABCD-1234" autocapitalize="characters">
+            <button id="btn-connect">Connect</button>
+            <div id="receiver-status" class="status"></div>
+        </div>
+        <div id="stereo-view" class="hidden">
+            <video id="video-left" autoplay playsinline></video>
+            <video id="video-right" autoplay playsinline></video>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <script src="https://unpkg.com/qrcode@1.5.4/build/qrcode.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
