@@ -142,6 +142,9 @@ let isHost = false;
 // peers map: peerId -> { name, conn (DataConnection), call (MediaConnection), stream, sharing }
 const peers = new Map();
 
+// Buffer for streams that arrive before the peer is added to the map
+const pendingStreams = new Map(); // peerId -> { stream, call }
+
 // View state
 let mainViewPeerId = null;
 let pipViewPeerId = null;
@@ -279,10 +282,7 @@ function attemptHostHandoff() {
                     peer.call = call;
                     call.on('stream', (remoteStream) => {
                         peer.stream = remoteStream;
-                        const vt = remoteStream.getVideoTracks();
-                        if (vt.length > 0 && vt[0].getSettings().width > 1) {
-                            peer.sharing = true;
-                        }
+                        peer.sharing = true;
                         updatePeerList();
                         updateViewDropdowns();
                     });
@@ -336,10 +336,7 @@ function setupHostListeners() {
                         const p = peers.get(data.peerId);
                         if (p) {
                             p.stream = remoteStream;
-                            const vt = remoteStream.getVideoTracks();
-                            if (vt.length > 0 && vt[0].getSettings().width > 1) {
-                                p.sharing = true;
-                            }
+                            p.sharing = true;
                             updatePeerList();
                             updateViewDropdowns();
                         }
@@ -405,6 +402,18 @@ function addPeer(peerId, name, conn) {
     if (peers.has(peerId)) return;
     console.log('[PEERS] Adding peer:', name, peerId);
     peers.set(peerId, { name, conn, call: null, stream: null, sharing: false });
+
+    // Check for buffered streams that arrived before this peer was added
+    const pending = pendingStreams.get(peerId);
+    if (pending) {
+        console.log('[PEERS] Applying buffered stream for:', name);
+        const peer = peers.get(peerId);
+        peer.stream = pending.stream;
+        peer.call = pending.call;
+        peer.sharing = true;
+        pendingStreams.delete(peerId);
+    }
+
     updatePeerList();
     updateViewDropdowns();
 }
@@ -448,10 +457,7 @@ function connectToPeer(peerId, name, initialSharing) {
                 const p = peers.get(peerId);
                 if (p) {
                     p.stream = remoteStream;
-                    const vt = remoteStream.getVideoTracks();
-                    if (vt.length > 0 && vt[0].getSettings().width > 1) {
-                        p.sharing = true;
-                    }
+                    p.sharing = true;
                     updatePeerList();
                     updateViewDropdowns();
                 }
@@ -487,23 +493,27 @@ function handleIncomingCall(call) {
 
     call.on('stream', (remoteStream) => {
         console.log('[CALL] Received stream from:', call.peer);
-        const peer = peers.get(call.peer);
-        if (peer) {
-            peer.stream = remoteStream;
-            peer.call = call;
-            // If stream has real video tracks, mark as sharing
-            const videoTracks = remoteStream.getVideoTracks();
-            if (videoTracks.length > 0 && videoTracks[0].getSettings().width > 1) {
-                peer.sharing = true;
-            }
-            updatePeerList();
-            updateViewDropdowns();
-        }
+        applyStreamToPeer(call.peer, remoteStream, call);
     });
 
     call.on('close', () => {
         console.log('[CALL] Call closed from:', call.peer);
     });
+}
+
+function applyStreamToPeer(peerId, stream, call) {
+    const peer = peers.get(peerId);
+    if (peer) {
+        console.log('[STREAM] Applying stream to peer:', peer.name);
+        peer.stream = stream;
+        peer.call = call;
+        peer.sharing = true;
+        updatePeerList();
+        updateViewDropdowns();
+    } else {
+        console.log('[STREAM] Peer not in map yet, buffering stream for:', peerId);
+        pendingStreams.set(peerId, { stream, call });
+    }
 }
 
 function handleCameraStatus(data) {
