@@ -148,7 +148,8 @@ async function startSender() {
                 return;
             }
             peer.destroy();
-            return startSender();
+            startSender().catch(err => console.error('[SENDER] Retry failed:', err));
+            return;
         }
         statusEl.textContent = 'Connection failed. Try again.';
         statusEl.className = 'status error';
@@ -378,7 +379,8 @@ async function connectToSender() {
     });
 
     peer.on('disconnected', () => {
-        console.log('[RECEIVER] Peer disconnected from signaling server');
+        console.log('[RECEIVER] Peer disconnected from signaling server, reconnecting...');
+        if (!peer.destroyed) peer.reconnect();
     });
 }
 
@@ -422,7 +424,7 @@ function monitorPeerConnection(pc) {
 // PeerJS requires a stream to initiate a call — create a minimal video stream
 let emptyStream = null;
 function createEmptyStream() {
-    if (emptyStream) return emptyStream;
+    if (emptyStream && emptyStream.active) return emptyStream;
     console.log('[STREAM] Creating empty canvas stream');
     const canvas = document.createElement('canvas');
     canvas.width = 1;

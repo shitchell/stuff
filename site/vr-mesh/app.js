@@ -168,6 +168,7 @@ let pipViewPeerId = null;
 let pipCorner = 'bl';
 let pipDisconnectTimeout = null;
 let becomingHost = false;
+let vrWakeLock = null;
 
 // --- Centralized Peer Management ---
 
@@ -349,6 +350,7 @@ function becomeHost(myId) {
         if (err.type === 'unavailable-id') {
             console.log('[HOST] Room taken, retrying as joiner');
             isHost = false;
+            joinRetries = 0;
             joinRoom();
         } else {
             $('#join-status').textContent = 'Connection failed. Try again.';
@@ -594,7 +596,6 @@ async function startCamera() {
                         .find(s => s.track && s.track.kind === 'video');
                     if (sender) {
                         sender.replaceTrack(localStream.getVideoTracks()[0]);
-                        broadcastCameraStatus(true);
                         return;
                     }
                 }
@@ -834,6 +835,14 @@ function enterVR() {
 
     // Landscape lock
     try { screen.orientation.lock('landscape').catch(() => {}); } catch {}
+
+    // Prevent screen from dimming in VR headset
+    if ('wakeLock' in navigator) {
+        navigator.wakeLock.request('screen').then(lock => {
+            console.log('[VR] Wake lock acquired');
+            vrWakeLock = lock;
+        }).catch(err => console.log('[VR] Wake lock failed:', err));
+    }
 }
 
 function showPIP(stream) {
@@ -891,6 +900,10 @@ function positionPIP(corner) {
 function exitVR() {
     console.log('[VR] exitVR called');
     console.log('[VR] Current state: vr-view hidden:', vrView.classList.contains('hidden'), 'lobby hidden:', lobby.classList.contains('hidden'));
+    if (vrWakeLock) {
+        vrWakeLock.release().catch(() => {});
+        vrWakeLock = null;
+    }
     if (pipDisconnectTimeout) { clearTimeout(pipDisconnectTimeout); pipDisconnectTimeout = null; }
     hidePIP();
     $('#vr-overlay').classList.add('hidden');
