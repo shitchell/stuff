@@ -403,6 +403,107 @@ function createEmptyStream() {
     return emptyStream;
 }
 
+// --- Camera Sharing ---
+async function startCamera() {
+    try {
+        localStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: currentFacingMode },
+            audio: false
+        });
+        console.log('[CAMERA] Camera started');
+        $('#camera-preview').srcObject = localStream;
+        $('#camera-preview').classList.remove('hidden');
+        sharingCamera = true;
+        $('#btn-share-camera').classList.add('active');
+        $('#btn-share-camera').textContent = 'Stop Sharing';
+
+        await checkCameraCount();
+
+        // Call all connected peers to send them our stream
+        peers.forEach((peer, id) => {
+            console.log('[CAMERA] Calling peer:', peer.name);
+            const call = myPeer.call(id, localStream);
+            peer.call = call;
+
+            call.on('stream', (remoteStream) => {
+                console.log('[CAMERA] Received stream back from:', peer.name);
+                peer.stream = remoteStream;
+                updatePeerList();
+                updateViewDropdowns();
+            });
+        });
+
+        // Notify peers of camera status
+        broadcastCameraStatus(true);
+        updateViewDropdowns();
+    } catch (err) {
+        console.error('[CAMERA] Error:', err);
+    }
+}
+
+function stopCamera() {
+    if (localStream) {
+        localStream.getTracks().forEach(t => t.stop());
+        localStream = null;
+    }
+    sharingCamera = false;
+    $('#camera-preview').classList.add('hidden');
+    $('#camera-preview').srcObject = null;
+    $('#btn-share-camera').classList.remove('active');
+    $('#btn-share-camera').textContent = 'Share Camera';
+    $('#btn-flip-camera').classList.add('hidden');
+
+    broadcastCameraStatus(false);
+    updateViewDropdowns();
+}
+
+async function flipCamera() {
+    currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+    if (localStream) {
+        localStream.getTracks().forEach(t => t.stop());
+    }
+
+    try {
+        localStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: currentFacingMode },
+            audio: false
+        });
+        $('#camera-preview').srcObject = localStream;
+
+        // Replace track on all active calls
+        const newTrack = localStream.getVideoTracks()[0];
+        peers.forEach((peer) => {
+            if (peer.call && peer.call.peerConnection) {
+                const sender = peer.call.peerConnection.getSenders()
+                    .find(s => s.track && s.track.kind === 'video');
+                if (sender) sender.replaceTrack(newTrack);
+            }
+        });
+    } catch (err) {
+        console.error('[CAMERA] Flip failed:', err);
+        currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+    }
+}
+
+async function checkCameraCount() {
+    try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const cameras = devices.filter(d => d.kind === 'videoinput');
+        if (cameras.length >= 2) {
+            $('#btn-flip-camera').classList.remove('hidden');
+        }
+    } catch {}
+}
+
+function broadcastCameraStatus(sharing) {
+    const msg = { type: 'camera-status', peerId: myPeer.id, sharing };
+    peers.forEach((peer) => {
+        if (peer.conn && peer.conn.open) {
+            peer.conn.send(msg);
+        }
+    });
+}
+
 // --- UI Updates ---
 function updatePeerList() {
     const container = $('#peers-container');
@@ -547,5 +648,15 @@ $$('.corner-btn').forEach(btn => {
         pipCorner = btn.dataset.corner;
     });
 });
+
+$('#btn-share-camera').addEventListener('click', () => {
+    if (sharingCamera) {
+        stopCamera();
+    } else {
+        startCamera();
+    }
+});
+
+$('#btn-flip-camera').addEventListener('click', flipCamera);
 
 init();
