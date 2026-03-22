@@ -330,6 +330,7 @@ function removePeer(peerId) {
     peers.delete(peerId);
     updatePeerList();
     updateViewDropdowns();
+    checkVRStreams();
 }
 
 function connectToPeer(peerId, name) {
@@ -586,6 +587,159 @@ function updateViewDropdowns() {
     $('#pip-corner-picker').classList.toggle('hidden', !pipSelect.value);
 }
 
+// --- VR View ---
+function getStreamForPeer(peerId) {
+    if (peerId === 'self') return localStream;
+    const peer = peers.get(peerId);
+    return peer ? peer.stream : null;
+}
+
+function enterVR() {
+    const mainStream = getStreamForPeer(mainViewPeerId);
+    if (!mainStream) {
+        console.warn('[VR] No main stream available');
+        return;
+    }
+
+    console.log('[VR] Entering VR, main:', mainViewPeerId, 'pip:', pipViewPeerId);
+    showSection(vrView);
+
+    // Main view
+    $('#vr-left').srcObject = mainStream;
+    $('#vr-right').srcObject = mainStream;
+    $('#vr-left').play().catch(() => {});
+    $('#vr-right').play().catch(() => {});
+
+    // PIP view
+    if (pipViewPeerId) {
+        const pipStream = getStreamForPeer(pipViewPeerId);
+        if (pipStream) {
+            showPIP(pipStream);
+        }
+    }
+
+    // Fullscreen
+    const el = document.documentElement;
+    if (el.requestFullscreen) {
+        el.requestFullscreen().catch(() => {});
+    } else if (el.webkitRequestFullscreen) {
+        el.webkitRequestFullscreen();
+    }
+
+    // Landscape lock
+    try { screen.orientation.lock('landscape').catch(() => {}); } catch {}
+}
+
+function showPIP(stream) {
+    const pipL = $('#vr-pip-left');
+    const pipR = $('#vr-pip-right');
+
+    pipL.querySelector('video').srcObject = stream;
+    pipR.querySelector('video').srcObject = stream;
+    pipL.querySelector('video').play().catch(() => {});
+    pipR.querySelector('video').play().catch(() => {});
+
+    positionPIP(pipCorner);
+    pipL.classList.remove('hidden');
+    pipR.classList.remove('hidden');
+}
+
+function hidePIP() {
+    $('#vr-pip-left').classList.add('hidden');
+    $('#vr-pip-right').classList.add('hidden');
+}
+
+function positionPIP(corner) {
+    const pipL = $('#vr-pip-left');
+    const pipR = $('#vr-pip-right');
+    const margin = '2%';
+
+    // Reset all positioning
+    [pipL, pipR].forEach(el => {
+        el.style.top = el.style.bottom = el.style.left = el.style.right = 'auto';
+        el.style.width = '12.5%';
+        el.style.aspectRatio = '4/3';
+    });
+
+    // Vertical position
+    if (corner.startsWith('t')) {
+        pipL.style.top = margin;
+        pipR.style.top = margin;
+    } else {
+        pipL.style.bottom = margin;
+        pipR.style.bottom = margin;
+    }
+
+    // Horizontal: position within each eye's half
+    if (corner.endsWith('l')) {
+        // Left side of each eye: left eye near outer edge, right eye near center
+        pipL.style.left = margin;
+        pipR.style.left = `calc(50% + ${margin})`;
+    } else {
+        // Right side of each eye: left eye near center, right eye near outer edge
+        pipL.style.right = `calc(50% + ${margin})`;
+        pipR.style.right = margin;
+    }
+}
+
+function exitVR() {
+    console.log('[VR] Exiting VR');
+    hidePIP();
+    $('#vr-overlay').classList.add('hidden');
+
+    if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+    }
+    try { screen.orientation.unlock(); } catch {}
+
+    showSection(lobby);
+}
+
+// --- Stream Loss ---
+function checkVRStreams() {
+    if (vrView.classList.contains('hidden')) return;
+
+    // Check main view
+    if (mainViewPeerId) {
+        const stream = getStreamForPeer(mainViewPeerId);
+        if (!stream || !stream.active) {
+            const name = mainViewPeerId === 'self' ? myName :
+                (peers.get(mainViewPeerId)?.name || 'Unknown');
+            showVROverlay(`Stream lost — ${name} disconnected`);
+        }
+    }
+
+    // Check PIP view
+    if (pipViewPeerId) {
+        const stream = getStreamForPeer(pipViewPeerId);
+        if (!stream || !stream.active) {
+            showPIPDisconnected();
+        }
+    }
+}
+
+function showVROverlay(msg) {
+    $('#vr-overlay-msg').textContent = msg;
+    $('#vr-overlay').classList.remove('hidden');
+}
+
+function showPIPDisconnected() {
+    const pipL = $('#vr-pip-left');
+    const pipR = $('#vr-pip-right');
+
+    pipL.querySelector('video').srcObject = null;
+    pipR.querySelector('video').srcObject = null;
+    pipL.style.background = '#000';
+    pipR.style.background = '#000';
+
+    setTimeout(() => {
+        hidePIP();
+        pipL.style.background = '';
+        pipR.style.background = '';
+        pipViewPeerId = null;
+    }, 3000);
+}
+
 // --- Init ---
 async function init() {
     await loadConfig();
@@ -658,5 +812,28 @@ $('#btn-share-camera').addEventListener('click', () => {
 });
 
 $('#btn-flip-camera').addEventListener('click', flipCamera);
+
+$('#btn-enter-vr').addEventListener('click', enterVR);
+$('#vr-exit-zone').addEventListener('click', exitVR);
+
+// Scale slider
+let vrScaleTimeout = null;
+$('#vr-scale-slider').addEventListener('input', (e) => {
+    const scale = e.target.value / 100;
+    $('#vr-main').style.transform = `scale(${scale})`;
+    $('#vr-main').style.transformOrigin = 'center center';
+});
+
+// Tap VR to show scale slider
+$('#vr-view').addEventListener('click', (e) => {
+    if (e.target.closest('#vr-exit-zone') || e.target.closest('#vr-scale-controls')) return;
+    if (e.target.closest('.vr-pip')) return;
+    const controls = $('#vr-scale-controls');
+    controls.classList.toggle('hidden');
+    clearTimeout(vrScaleTimeout);
+    if (!controls.classList.contains('hidden')) {
+        vrScaleTimeout = setTimeout(() => controls.classList.add('hidden'), 4000);
+    }
+});
 
 init();
