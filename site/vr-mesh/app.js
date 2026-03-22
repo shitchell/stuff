@@ -717,6 +717,7 @@ function enterVR() {
     }
 
     console.log('[VR] Entering VR, main:', mainViewPeerId, 'pip:', pipViewPeerId);
+    document.body.classList.add('vr-active');
     showSection(vrView);
     $('#vr-controls').classList.remove('hidden');
     $('#vr-controls-inner').classList.add('hidden');
@@ -814,6 +815,7 @@ function exitVR() {
     try { screen.orientation.unlock(); } catch {}
 
     $('#vr-controls').classList.add('hidden');
+    document.body.classList.remove('vr-active');
     showSection(lobby);
     console.log('[VR] exitVR complete, lobby should be visible');
 }

@@ -15,6 +15,11 @@ body {
     padding-top: 2rem;
 }
 
+body.vr-active {
+    padding: 0;
+    overflow: hidden;
+}
+
 .hidden { display: none !important; }
 
 /* --- Join Screen --- */
@@ -287,6 +292,7 @@ body {
     width: 100dvw;
     height: 100dvh;
     background: #000;
+    overflow: hidden;
 }
 
 #vr-main {
