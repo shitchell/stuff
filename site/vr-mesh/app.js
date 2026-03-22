@@ -180,7 +180,7 @@ async function joinRoom() {
             if (data.type === 'peer-list') {
                 data.peers.forEach(p => {
                     if (p.peerId !== myId) {
-                        connectToPeer(p.peerId, p.name);
+                        connectToPeer(p.peerId, p.name, p.sharing);
                     }
                 });
                 enterLobby();
@@ -263,9 +263,33 @@ function attemptHostHandoff() {
         isHost = true;
         setupHostListeners();
 
+        // Reconnect to all existing peers
+        peers.clear();
         oldPeers.forEach((peer, id) => {
             connectToPeer(id, peer.name);
         });
+
+        // Re-share camera if it was active
+        if (sharingCamera && localStream) {
+            console.log('[HOST] Re-sharing camera after handoff');
+            setTimeout(() => {
+                peers.forEach((peer, id) => {
+                    console.log('[HOST] Re-calling peer:', peer.name);
+                    const call = myPeer.call(id, localStream);
+                    peer.call = call;
+                    call.on('stream', (remoteStream) => {
+                        peer.stream = remoteStream;
+                        const vt = remoteStream.getVideoTracks();
+                        if (vt.length > 0 && vt[0].getSettings().width > 1) {
+                            peer.sharing = true;
+                        }
+                        updatePeerList();
+                        updateViewDropdowns();
+                    });
+                });
+                broadcastCameraStatus(true);
+            }, 1000);
+        }
     });
 
     myPeer.on('error', (err) => {
@@ -287,16 +311,40 @@ function setupHostListeners() {
 
         conn.on('data', (data) => {
             if (data.type === 'hello') {
-                console.log('[HOST] Peer introduced:', data.name, data.peerId);
+                console.log('[HOST] Peer introduced:', data.name, data.peerId, 'sharing:', data.sharing);
                 addPeer(data.peerId, data.name, conn);
+                if (data.sharing) {
+                    const p = peers.get(data.peerId);
+                    if (p) p.sharing = true;
+                }
 
                 const peerList = [
-                    { peerId: myPeer.id, name: myName },
+                    { peerId: myPeer.id, name: myName, sharing: sharingCamera },
                     ...Array.from(peers.entries()).map(([id, p]) => ({
-                        peerId: id, name: p.name
+                        peerId: id, name: p.name, sharing: p.sharing
                     }))
                 ];
                 conn.send({ type: 'peer-list', peers: peerList });
+
+                // If we're sharing, call the new peer
+                if (sharingCamera && localStream) {
+                    console.log('[HOST] Calling new peer with our stream:', data.name);
+                    const call = myPeer.call(data.peerId, localStream);
+                    const newPeer = peers.get(data.peerId);
+                    if (newPeer) newPeer.call = call;
+                    call.on('stream', (remoteStream) => {
+                        const p = peers.get(data.peerId);
+                        if (p) {
+                            p.stream = remoteStream;
+                            const vt = remoteStream.getVideoTracks();
+                            if (vt.length > 0 && vt[0].getSettings().width > 1) {
+                                p.sharing = true;
+                            }
+                            updatePeerList();
+                            updateViewDropdowns();
+                        }
+                    });
+                }
 
                 peers.forEach((p, id) => {
                     if (id !== data.peerId && p.conn && p.conn.open) {
@@ -374,15 +422,41 @@ function removePeer(peerId) {
     checkVRStreams();
 }
 
-function connectToPeer(peerId, name) {
+function connectToPeer(peerId, name, initialSharing) {
     if (peers.has(peerId)) return;
-    console.log('[PEERS] Connecting to peer:', name, peerId);
+    console.log('[PEERS] Connecting to peer:', name, peerId, 'sharing:', initialSharing);
     const conn = myPeer.connect(peerId, { reliable: true });
 
     conn.on('open', () => {
         console.log('[PEERS] Data connection open to:', name);
-        conn.send({ type: 'hello', name: myName, peerId: myPeer.id });
+        conn.send({ type: 'hello', name: myName, peerId: myPeer.id, sharing: sharingCamera });
         addPeer(peerId, name, conn);
+        if (initialSharing) {
+            const peer = peers.get(peerId);
+            if (peer) peer.sharing = true;
+            updatePeerList();
+            updateViewDropdowns();
+        }
+
+        // If we're sharing camera, call this peer
+        if (sharingCamera && localStream) {
+            console.log('[PEERS] Calling peer with our stream:', name);
+            const call = myPeer.call(peerId, localStream);
+            const peer = peers.get(peerId);
+            if (peer) peer.call = call;
+            call.on('stream', (remoteStream) => {
+                const p = peers.get(peerId);
+                if (p) {
+                    p.stream = remoteStream;
+                    const vt = remoteStream.getVideoTracks();
+                    if (vt.length > 0 && vt[0].getSettings().width > 1) {
+                        p.sharing = true;
+                    }
+                    updatePeerList();
+                    updateViewDropdowns();
+                }
+            });
+        }
 
         conn.on('data', (data) => {
             if (data.type === 'camera-status') {
