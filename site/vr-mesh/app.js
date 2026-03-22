@@ -184,6 +184,12 @@ async function joinRoom() {
                     }
                 });
                 enterLobby();
+            } else if (data.type === 'camera-status') {
+                handleCameraStatus(data);
+            } else if (data.type === 'new-peer') {
+                connectToPeer(data.peerId, data.name);
+            } else if (data.type === 'peer-left') {
+                removePeer(data.peerId);
             }
         });
 
@@ -411,6 +417,11 @@ function handleIncomingCall(call) {
         if (peer) {
             peer.stream = remoteStream;
             peer.call = call;
+            // If stream has real video tracks, mark as sharing
+            const videoTracks = remoteStream.getVideoTracks();
+            if (videoTracks.length > 0 && videoTracks[0].getSettings().width > 1) {
+                peer.sharing = true;
+            }
             updatePeerList();
             updateViewDropdowns();
         }
