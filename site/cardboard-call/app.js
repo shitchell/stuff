@@ -36,9 +36,11 @@ let localStream = null;
 let senderRetries = 0;
 const MAX_SENDER_RETRIES = 5;
 let currentFacingMode = 'environment';
+let flipping = false;
 let connected = false;
 let receivedStream = null;
 let connectTimeout = null;
+let pcCheckInterval = null;
 
 // ICE servers config — includes self-hosted TURN for NAT traversal between mobile devices
 const ICE_SERVERS = [
@@ -146,8 +148,7 @@ async function startSender() {
                 return;
             }
             peer.destroy();
-            startSender();
-            return;
+            return startSender();
         }
         statusEl.textContent = 'Connection failed. Try again.';
         statusEl.className = 'status error';
@@ -185,7 +186,8 @@ async function startSender() {
     });
 
     peer.on('disconnected', () => {
-        console.log('[SENDER] Peer disconnected from signaling server');
+        console.log('[SENDER] Peer disconnected from signaling server, reconnecting...');
+        if (!peer.destroyed) peer.reconnect();
     });
 
     peer.on('close', () => {
@@ -215,37 +217,43 @@ function generateQR(roomCode) {
 }
 
 async function flipCamera() {
-    console.log('[CAMERA] Flipping from', currentFacingMode);
-    currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
-
-    if (localStream) {
-        localStream.getTracks().forEach(t => t.stop());
-    }
-
+    if (flipping) return;
+    flipping = true;
     try {
-        localStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: currentFacingMode },
-            audio: false
-        });
-        console.log('[CAMERA] Got new stream with facingMode:', currentFacingMode);
-        logStreamInfo('new localStream', localStream);
-        $('#sender-preview').srcObject = localStream;
-
-        // Replace track on all active receiver calls
-        const newTrack = localStream.getVideoTracks()[0];
-        activeCalls.forEach((call, i) => {
-            if (call.peerConnection) {
-                const sender = call.peerConnection.getSenders()
-                    .find(s => s.track && s.track.kind === 'video');
-                if (sender) {
-                    console.log(`[CAMERA] Replacing track on call ${i} (${call.peer})`);
-                    sender.replaceTrack(newTrack);
-                }
-            }
-        });
-    } catch (err) {
-        console.error('[CAMERA] Flip failed:', err);
+        console.log('[CAMERA] Flipping from', currentFacingMode);
         currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+
+        if (localStream) {
+            localStream.getTracks().forEach(t => t.stop());
+        }
+
+        try {
+            localStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: currentFacingMode },
+                audio: false
+            });
+            console.log('[CAMERA] Got new stream with facingMode:', currentFacingMode);
+            logStreamInfo('new localStream', localStream);
+            $('#sender-preview').srcObject = localStream;
+
+            // Replace track on all active receiver calls
+            const newTrack = localStream.getVideoTracks()[0];
+            activeCalls.forEach((call, i) => {
+                if (call.peerConnection) {
+                    const sender = call.peerConnection.getSenders()
+                        .find(s => s.track && s.track.kind === 'video');
+                    if (sender) {
+                        console.log(`[CAMERA] Replacing track on call ${i} (${call.peer})`);
+                        sender.replaceTrack(newTrack);
+                    }
+                }
+            });
+        } catch (err) {
+            console.error('[CAMERA] Flip failed:', err);
+            currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+        }
+    } finally {
+        flipping = false;
     }
 }
 
@@ -273,6 +281,7 @@ function startReceiver(prefillCode) {
 
 async function connectToSender() {
     if (connectTimeout) clearTimeout(connectTimeout);
+    if (pcCheckInterval) { clearInterval(pcCheckInterval); pcCheckInterval = null; }
 
     const roomCode = $('#room-input').value.trim();
     const statusEl = $('#receiver-status');
@@ -318,6 +327,7 @@ async function connectToSender() {
             console.log('[RECEIVER] *** STREAM EVENT FIRED ***');
             logStreamInfo('received remoteStream', remoteStream);
             connected = true;
+            if (connectTimeout) { clearTimeout(connectTimeout); connectTimeout = null; }
             receivedStream = remoteStream;
             enterStereoView(remoteStream);
         });
@@ -342,14 +352,15 @@ async function connectToSender() {
         } else {
             console.log('[RECEIVER] peerConnection not yet available, waiting...');
             // PeerJS may set it up after a tick
-            const checkPC = setInterval(() => {
+            pcCheckInterval = setInterval(() => {
                 if (call.peerConnection) {
                     console.log('[RECEIVER] peerConnection now available');
                     monitorPeerConnection(call.peerConnection);
-                    clearInterval(checkPC);
+                    clearInterval(pcCheckInterval);
+                    pcCheckInterval = null;
                 }
             }, 100);
-            setTimeout(() => clearInterval(checkPC), 5000);
+            setTimeout(() => { if (pcCheckInterval) { clearInterval(pcCheckInterval); pcCheckInterval = null; } }, 5000);
         }
 
         connectTimeout = setTimeout(() => {

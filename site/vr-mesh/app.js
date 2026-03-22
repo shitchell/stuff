@@ -5,7 +5,7 @@ async function loadConfig() {
     try {
         const resp = await fetch('config.json');
         if (resp.ok) {
-            CONFIG = await resp.json();
+            CONFIG = { ...CONFIG, ...await resp.json() };
             console.log('[CONFIG] Loaded:', JSON.stringify(CONFIG));
         } else {
             console.warn('[CONFIG] config.json not found, using defaults');
@@ -166,6 +166,76 @@ const pendingStreams = new Map(); // peerId -> { stream, call }
 let mainViewPeerId = null;
 let pipViewPeerId = null;
 let pipCorner = 'bl';
+let pipDisconnectTimeout = null;
+let becomingHost = false;
+
+// --- Centralized Peer Management ---
+
+// Centralized peer replacement — ensures old peer is cleaned up
+function replacePeer(...args) {
+    if (myPeer && !myPeer.destroyed) {
+        myPeer.destroy();
+    }
+    myPeer = new Peer(...args);
+    // Register common listeners on every new peer
+    myPeer.on('call', handleIncomingCall);
+    myPeer.on('connection', handleIncomingConnection);
+    return myPeer;
+}
+
+function handleIncomingConnection(conn) {
+    conn.on('data', (data) => {
+        if (data.type === 'hello') {
+            console.log('[PEER] Peer introduced:', data.name, data.peerId, 'sharing:', data.sharing);
+            addPeer(data.peerId, data.name, conn);
+            if (data.sharing) {
+                const p = peers.get(data.peerId);
+                if (p) p.sharing = true;
+            }
+            // If we're host, send peer list and broadcast new peer
+            if (isHost) {
+                const peerList = [
+                    { peerId: myPeer.id, name: myName, sharing: sharingCamera },
+                    ...Array.from(peers.entries()).map(([id, p]) => ({
+                        peerId: id, name: p.name, sharing: p.sharing
+                    }))
+                ];
+                conn.send({ type: 'peer-list', peers: peerList });
+                if (sharingCamera && localStream) {
+                    callPeerWithStream(data.peerId);
+                }
+                peers.forEach((p, id) => {
+                    if (id !== data.peerId && p.conn && p.conn.open) {
+                        p.conn.send({ type: 'new-peer', peerId: data.peerId, name: data.name });
+                    }
+                });
+            }
+        } else if (data.type === 'camera-status') {
+            handleCameraStatus(data);
+        } else if (data.type === 'new-peer') {
+            connectToPeer(data.peerId, data.name);
+        } else if (data.type === 'peer-left') {
+            removePeer(data.peerId);
+        }
+    });
+    conn.on('close', () => {
+        let closedPeerId = null;
+        peers.forEach((p, id) => {
+            if (p.conn === conn) closedPeerId = id;
+        });
+        if (closedPeerId) {
+            console.log('[PEER] Connection closed, removing:', closedPeerId);
+            removePeer(closedPeerId);
+            if (isHost) {
+                peers.forEach((p, id) => {
+                    if (p.conn && p.conn.open) {
+                        p.conn.send({ type: 'peer-left', peerId: closedPeerId });
+                    }
+                });
+            }
+        }
+    });
+}
 
 // --- Room Join ---
 let joinedRoom = false; // true once we've entered the lobby
@@ -195,7 +265,7 @@ async function joinRoom() {
     saveName(myName);
     saveRoomToHistory(roomName);
 
-    myPeer = new Peer(undefined, { config: { iceServers: CONFIG.iceServers } });
+    replacePeer(undefined, { config: { iceServers: CONFIG.iceServers } });
 
     myPeer.on('open', (myId) => {
         console.log('[PEER] My peer ID:', myId);
@@ -231,6 +301,7 @@ async function joinRoom() {
         });
 
         setTimeout(() => {
+            if (joinedRoom || becomingHost) return;
             if (!lobby.classList.contains('hidden')) return;
             if (hostConn.open) return;
             console.log('[JOIN] Host connection timeout, becoming host');
@@ -261,21 +332,20 @@ async function joinRoom() {
 
 function becomeHost(myId) {
     console.log('[HOST] Becoming host for room:', roomName);
+    becomingHost = true;
     isHost = true;
 
-    if (myPeer && !myPeer.destroyed) {
-        myPeer.destroy();
-    }
-    myPeer = new Peer(roomName, { config: { iceServers: CONFIG.iceServers } });
+    replacePeer(roomName, { config: { iceServers: CONFIG.iceServers } });
 
     myPeer.on('open', () => {
         console.log('[HOST] Registered as room:', roomName);
-        setupHostListeners();
+        becomingHost = false;
         enterLobby();
     });
 
     myPeer.on('error', (err) => {
         console.error('[HOST] Error:', err.type, err);
+        becomingHost = false;
         if (err.type === 'unavailable-id') {
             console.log('[HOST] Room taken, retrying as joiner');
             isHost = false;
@@ -294,15 +364,11 @@ function attemptHostHandoff() {
 
     const oldPeers = new Map(peers);
 
-    if (myPeer && !myPeer.destroyed) {
-        myPeer.destroy();
-    }
-    myPeer = new Peer(roomName, { config: { iceServers: CONFIG.iceServers } });
+    replacePeer(roomName, { config: { iceServers: CONFIG.iceServers } });
 
     myPeer.on('open', () => {
         console.log('[HOST] Successfully became new host');
         isHost = true;
-        setupHostListeners();
 
         // Reconnect to all existing peers
         peers.clear();
@@ -323,7 +389,10 @@ function attemptHostHandoff() {
     myPeer.on('error', (err) => {
         if (err.type === 'unavailable-id') {
             console.log('[HOST] Someone else became host first');
-            myPeer = new Peer(undefined, { config: { iceServers: CONFIG.iceServers } });
+            replacePeer(undefined, { config: { iceServers: CONFIG.iceServers } });
+            myPeer.on('error', (err) => {
+                console.error('[PEER] Error on fallback peer:', err.type);
+            });
             myPeer.on('open', () => {
                 oldPeers.forEach((peer, id) => {
                     connectToPeer(id, peer.name);
@@ -331,61 +400,6 @@ function attemptHostHandoff() {
             });
         }
     });
-}
-
-function setupHostListeners() {
-    myPeer.on('connection', (conn) => {
-        console.log('[HOST] Incoming connection from:', conn.peer);
-
-        conn.on('data', (data) => {
-            if (data.type === 'hello') {
-                console.log('[HOST] Peer introduced:', data.name, data.peerId, 'sharing:', data.sharing);
-                addPeer(data.peerId, data.name, conn);
-                if (data.sharing) {
-                    const p = peers.get(data.peerId);
-                    if (p) p.sharing = true;
-                }
-
-                const peerList = [
-                    { peerId: myPeer.id, name: myName, sharing: sharingCamera },
-                    ...Array.from(peers.entries()).map(([id, p]) => ({
-                        peerId: id, name: p.name, sharing: p.sharing
-                    }))
-                ];
-                conn.send({ type: 'peer-list', peers: peerList });
-
-                // If we're sharing, call the new peer
-                if (sharingCamera && localStream) {
-                    callPeerWithStream(data.peerId);
-                }
-
-                peers.forEach((p, id) => {
-                    if (id !== data.peerId && p.conn && p.conn.open) {
-                        p.conn.send({ type: 'new-peer', peerId: data.peerId, name: data.name });
-                    }
-                });
-            }
-        });
-
-        conn.on('close', () => {
-            console.log('[HOST] Peer connection closed:', conn.peer);
-            // Find the peer by connection reference
-            let closedPeerId = null;
-            peers.forEach((p, id) => {
-                if (p.conn === conn) closedPeerId = id;
-            });
-            if (closedPeerId) {
-                removePeer(closedPeerId);
-                peers.forEach((p, id) => {
-                    if (p.conn && p.conn.open) {
-                        p.conn.send({ type: 'peer-left', peerId: closedPeerId });
-                    }
-                });
-            }
-        });
-    });
-
-    myPeer.on('call', handleIncomingCall);
 }
 
 function enterLobby() {
@@ -402,22 +416,6 @@ function enterLobby() {
     updatePeerList();
     updateViewDropdowns();
 
-    if (!isHost) {
-        myPeer.on('connection', (conn) => {
-            conn.on('data', (data) => {
-                if (data.type === 'hello') {
-                    addPeer(data.peerId, data.name, conn);
-                } else if (data.type === 'new-peer') {
-                    connectToPeer(data.peerId, data.name);
-                } else if (data.type === 'camera-status') {
-                    handleCameraStatus(data);
-                } else if (data.type === 'peer-left') {
-                    removePeer(data.peerId);
-                }
-            });
-        });
-        myPeer.on('call', handleIncomingCall);
-    }
 }
 
 function generateRoomQR() {
@@ -589,16 +587,20 @@ async function startCamera() {
 
         // Call all connected peers to send them our stream
         peers.forEach((peer, id) => {
+            if (peer.call) {
+                // Already have a call, just replace the track
+                if (peer.call.peerConnection) {
+                    const sender = peer.call.peerConnection.getSenders()
+                        .find(s => s.track && s.track.kind === 'video');
+                    if (sender) {
+                        sender.replaceTrack(localStream.getVideoTracks()[0]);
+                        broadcastCameraStatus(true);
+                        return;
+                    }
+                }
+            }
             console.log('[CAMERA] Calling peer:', peer.name);
-            const call = myPeer.call(id, localStream);
-            peer.call = call;
-
-            call.on('stream', (remoteStream) => {
-                console.log('[CAMERA] Received stream back from:', peer.name);
-                peer.stream = remoteStream;
-                updatePeerList();
-                updateViewDropdowns();
-            });
+            callPeerWithStream(id);
         });
 
         // Notify peers of camera status
@@ -772,6 +774,8 @@ function updateViewDropdowns() {
         pipSelect.disabled = true;
     }
 
+    mainViewPeerId = mainSelect.value || null;
+    pipViewPeerId = pipSelect.value || null;
     $('#btn-enter-vr').disabled = !mainSelect.value;
     $('#pip-corner-picker').classList.toggle('hidden', !pipSelect.value);
 }
@@ -887,6 +891,7 @@ function positionPIP(corner) {
 function exitVR() {
     console.log('[VR] exitVR called');
     console.log('[VR] Current state: vr-view hidden:', vrView.classList.contains('hidden'), 'lobby hidden:', lobby.classList.contains('hidden'));
+    if (pipDisconnectTimeout) { clearTimeout(pipDisconnectTimeout); pipDisconnectTimeout = null; }
     hidePIP();
     $('#vr-overlay').classList.add('hidden');
 
@@ -944,11 +949,12 @@ function showPIPDisconnected() {
     pipL.style.background = '#000';
     pipR.style.background = '#000';
 
-    setTimeout(() => {
+    pipDisconnectTimeout = setTimeout(() => {
         hidePIP();
         pipL.style.background = '';
         pipR.style.background = '';
         pipViewPeerId = null;
+        pipDisconnectTimeout = null;
     }, 3000);
 }
 
@@ -980,6 +986,9 @@ $('#btn-join').addEventListener('click', () => {
     joinRetries = 0;
     joinRoom();
 });
+$('#name-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { $('#room-input').focus(); }
+});
 $('#room-input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         joinRetries = 0;
@@ -1001,11 +1010,8 @@ $('#btn-leave').addEventListener('click', () => {
     myPeer = null;
     isHost = false;
     joinedRoom = false;
-    sharingCamera = false;
-    if (localStream) {
-        localStream.getTracks().forEach(t => t.stop());
-    }
-    localStream = null;
+    becomingHost = false;
+    if (sharingCamera) stopCamera();
     showSection(joinScreen);
 });
 
