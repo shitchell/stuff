@@ -130,6 +130,361 @@ function setupRoomHistory() {
     });
 }
 
+// --- State ---
+let myPeer = null;
+let myName = '';
+let roomName = '';
+let localStream = null;
+let currentFacingMode = 'environment';
+let sharingCamera = false;
+let isHost = false;
+
+// peers map: peerId -> { name, conn (DataConnection), call (MediaConnection), stream, sharing }
+const peers = new Map();
+
+// View state
+let mainViewPeerId = null;
+let pipViewPeerId = null;
+let pipCorner = 'bl';
+
+// --- Room Join ---
+async function joinRoom() {
+    const nameInput = $('#name-input');
+    const roomInput = $('#room-input');
+    const statusEl = $('#join-status');
+
+    myName = nameInput.value.trim() || nameInput.placeholder;
+    roomName = roomInput.value.trim() || roomInput.placeholder;
+
+    console.log('[JOIN] Joining room:', roomName, 'as:', myName);
+    statusEl.textContent = 'Connecting...';
+    statusEl.className = 'status waiting';
+
+    saveName(myName);
+    saveRoomToHistory(roomName);
+
+    myPeer = new Peer(undefined, { config: { iceServers: CONFIG.iceServers } });
+
+    myPeer.on('open', (myId) => {
+        console.log('[PEER] My peer ID:', myId);
+
+        const hostConn = myPeer.connect(roomName, { reliable: true });
+
+        hostConn.on('open', () => {
+            console.log('[JOIN] Connected to room host');
+            hostConn.send({ type: 'hello', name: myName, peerId: myId });
+        });
+
+        hostConn.on('data', (data) => {
+            console.log('[JOIN] Received from host:', JSON.stringify(data));
+            if (data.type === 'peer-list') {
+                data.peers.forEach(p => {
+                    if (p.peerId !== myId) {
+                        connectToPeer(p.peerId, p.name);
+                    }
+                });
+                enterLobby();
+            }
+        });
+
+        hostConn.on('error', (err) => {
+            console.log('[JOIN] Could not reach host, becoming host. Error:', err);
+            becomeHost(myId);
+        });
+
+        setTimeout(() => {
+            if (!lobby.classList.contains('hidden')) return;
+            if (hostConn.open) return;
+            console.log('[JOIN] Host connection timeout, becoming host');
+            becomeHost(myPeer.id);
+        }, 5000);
+    });
+
+    myPeer.on('error', (err) => {
+        console.error('[PEER] Error:', err.type, err);
+        if (err.type === 'peer-unavailable') {
+            console.log('[JOIN] Room not found, becoming host');
+            becomeHost(myPeer.id);
+        } else {
+            statusEl.textContent = 'Connection failed. Try again.';
+            statusEl.className = 'status error';
+        }
+    });
+}
+
+function becomeHost(myId) {
+    console.log('[HOST] Becoming host for room:', roomName);
+    isHost = true;
+
+    if (myPeer && !myPeer.destroyed) {
+        myPeer.destroy();
+    }
+    myPeer = new Peer(roomName, { config: { iceServers: CONFIG.iceServers } });
+
+    myPeer.on('open', () => {
+        console.log('[HOST] Registered as room:', roomName);
+        setupHostListeners();
+        enterLobby();
+    });
+
+    myPeer.on('error', (err) => {
+        console.error('[HOST] Error:', err.type, err);
+        if (err.type === 'unavailable-id') {
+            console.log('[HOST] Room taken, retrying as joiner');
+            isHost = false;
+            joinRoom();
+        } else {
+            $('#join-status').textContent = 'Connection failed. Try again.';
+            $('#join-status').className = 'status error';
+        }
+    });
+}
+
+function setupHostListeners() {
+    myPeer.on('connection', (conn) => {
+        console.log('[HOST] Incoming connection from:', conn.peer);
+
+        conn.on('data', (data) => {
+            if (data.type === 'hello') {
+                console.log('[HOST] Peer introduced:', data.name, data.peerId);
+                addPeer(data.peerId, data.name, conn);
+
+                const peerList = [
+                    { peerId: myPeer.id, name: myName },
+                    ...Array.from(peers.entries()).map(([id, p]) => ({
+                        peerId: id, name: p.name
+                    }))
+                ];
+                conn.send({ type: 'peer-list', peers: peerList });
+
+                peers.forEach((p, id) => {
+                    if (id !== data.peerId && p.conn && p.conn.open) {
+                        p.conn.send({ type: 'new-peer', peerId: data.peerId, name: data.name });
+                    }
+                });
+            }
+        });
+    });
+
+    myPeer.on('call', handleIncomingCall);
+}
+
+function enterLobby() {
+    console.log('[LOBBY] Entering lobby');
+    showSection(lobby);
+    $('#lobby-room-name').textContent = roomName;
+    $('#lobby-your-name').textContent = myName;
+    generateRoomQR();
+    updatePeerList();
+    updateViewDropdowns();
+
+    if (!isHost) {
+        myPeer.on('connection', (conn) => {
+            conn.on('data', (data) => {
+                if (data.type === 'hello') {
+                    addPeer(data.peerId, data.name, conn);
+                } else if (data.type === 'new-peer') {
+                    connectToPeer(data.peerId, data.name);
+                } else if (data.type === 'camera-status') {
+                    handleCameraStatus(data);
+                } else if (data.type === 'peer-left') {
+                    removePeer(data.peerId);
+                }
+            });
+        });
+        myPeer.on('call', handleIncomingCall);
+    }
+}
+
+function generateRoomQR() {
+    const container = $('#lobby-qr');
+    container.innerHTML = '';
+    const baseUrl = window.location.origin + window.location.pathname;
+    const url = baseUrl + '?room=' + encodeURIComponent(roomName);
+    try {
+        new QRCode(container, {
+            text: url, width: 160, height: 160,
+            colorDark: '#ffffff', colorLight: '#111111',
+        });
+    } catch (err) {
+        console.error('[QR] Error:', err);
+    }
+}
+
+// --- Peer Management ---
+function addPeer(peerId, name, conn) {
+    if (peers.has(peerId)) return;
+    console.log('[PEERS] Adding peer:', name, peerId);
+    peers.set(peerId, { name, conn, call: null, stream: null, sharing: false });
+    updatePeerList();
+    updateViewDropdowns();
+}
+
+function removePeer(peerId) {
+    console.log('[PEERS] Removing peer:', peerId);
+    const peer = peers.get(peerId);
+    if (peer) {
+        if (peer.conn) peer.conn.close();
+        if (peer.call) peer.call.close();
+    }
+    peers.delete(peerId);
+    updatePeerList();
+    updateViewDropdowns();
+}
+
+function connectToPeer(peerId, name) {
+    if (peers.has(peerId)) return;
+    console.log('[PEERS] Connecting to peer:', name, peerId);
+    const conn = myPeer.connect(peerId, { reliable: true });
+
+    conn.on('open', () => {
+        console.log('[PEERS] Data connection open to:', name);
+        conn.send({ type: 'hello', name: myName, peerId: myPeer.id });
+        addPeer(peerId, name, conn);
+
+        conn.on('data', (data) => {
+            if (data.type === 'camera-status') {
+                handleCameraStatus(data);
+            } else if (data.type === 'new-peer') {
+                connectToPeer(data.peerId, data.name);
+            } else if (data.type === 'peer-left') {
+                removePeer(data.peerId);
+            }
+        });
+    });
+
+    conn.on('close', () => {
+        console.log('[PEERS] Connection closed to:', name);
+        removePeer(peerId);
+    });
+}
+
+function handleIncomingCall(call) {
+    console.log('[CALL] Incoming call from:', call.peer);
+    const stream = sharingCamera ? localStream : createEmptyStream();
+    call.answer(stream);
+
+    call.on('stream', (remoteStream) => {
+        console.log('[CALL] Received stream from:', call.peer);
+        const peer = peers.get(call.peer);
+        if (peer) {
+            peer.stream = remoteStream;
+            peer.call = call;
+            updatePeerList();
+            updateViewDropdowns();
+        }
+    });
+
+    call.on('close', () => {
+        console.log('[CALL] Call closed from:', call.peer);
+    });
+}
+
+function handleCameraStatus(data) {
+    console.log('[PEERS] Camera status update:', data.peerId, data.sharing);
+    const peer = peers.get(data.peerId);
+    if (peer) {
+        peer.sharing = data.sharing;
+        updatePeerList();
+        updateViewDropdowns();
+    }
+}
+
+let emptyStream = null;
+function createEmptyStream() {
+    if (emptyStream) return emptyStream;
+    const canvas = document.createElement('canvas');
+    canvas.width = 1;
+    canvas.height = 1;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, 1, 1);
+    emptyStream = canvas.captureStream(0);
+    return emptyStream;
+}
+
+// --- UI Updates ---
+function updatePeerList() {
+    const container = $('#peers-container');
+    container.innerHTML = '';
+
+    if (peers.size === 0) {
+        container.innerHTML = '<div style="color:#666">Waiting for peers...</div>';
+        return;
+    }
+
+    peers.forEach((peer, id) => {
+        const item = document.createElement('div');
+        item.className = 'peer-item';
+        item.innerHTML = `
+            <span class="peer-name">${peer.name}</span>
+            <span class="peer-status ${peer.sharing ? 'sharing' : 'not-sharing'}">
+                ${peer.sharing ? 'Sharing' : 'Not sharing'}
+            </span>
+        `;
+        if (peer.sharing && peer.stream) {
+            const thumb = document.createElement('video');
+            thumb.className = 'peer-thumb';
+            thumb.srcObject = peer.stream;
+            thumb.autoplay = true;
+            thumb.muted = true;
+            thumb.playsInline = true;
+            item.appendChild(thumb);
+        }
+        container.appendChild(item);
+    });
+}
+
+function updateViewDropdowns() {
+    const mainSelect = $('#main-view-select');
+    const pipSelect = $('#pip-view-select');
+    const currentMain = mainSelect.value;
+    const currentPip = pipSelect.value;
+
+    const sources = [];
+    if (sharingCamera && localStream) {
+        sources.push({ id: 'self', name: myName + ' (you)' });
+    }
+    peers.forEach((peer, id) => {
+        if (peer.sharing && peer.stream) {
+            sources.push({ id, name: peer.name });
+        }
+    });
+
+    mainSelect.innerHTML = '';
+    if (sources.length === 0) {
+        mainSelect.innerHTML = '<option value="">No streams available</option>';
+        mainSelect.disabled = true;
+    } else {
+        mainSelect.innerHTML = '<option value="">Select a stream...</option>';
+        sources.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.id;
+            opt.textContent = s.name;
+            if (s.id === currentMain) opt.selected = true;
+            mainSelect.appendChild(opt);
+        });
+        mainSelect.disabled = false;
+    }
+
+    pipSelect.innerHTML = '<option value="">None</option>';
+    if (sources.length >= 2) {
+        sources.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.id;
+            opt.textContent = s.name;
+            if (s.id === currentPip) opt.selected = true;
+            pipSelect.appendChild(opt);
+        });
+        pipSelect.disabled = false;
+    } else {
+        pipSelect.disabled = true;
+    }
+
+    $('#btn-enter-vr').disabled = !mainSelect.value;
+    $('#pip-corner-picker').classList.toggle('hidden', !pipSelect.value);
+}
+
 // --- Init ---
 async function init() {
     await loadConfig();
@@ -152,5 +507,45 @@ async function init() {
 
     setupRoomHistory();
 }
+
+// --- Event Listeners ---
+$('#btn-join').addEventListener('click', joinRoom);
+$('#room-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') joinRoom();
+});
+
+$('#btn-leave').addEventListener('click', () => {
+    console.log('[LOBBY] Leaving room');
+    peers.forEach((peer) => {
+        if (peer.conn && peer.conn.open) {
+            peer.conn.send({ type: 'peer-left', peerId: myPeer.id });
+        }
+    });
+    if (myPeer) myPeer.destroy();
+    peers.clear();
+    myPeer = null;
+    isHost = false;
+    sharingCamera = false;
+    localStream = null;
+    showSection(joinScreen);
+});
+
+$('#main-view-select').addEventListener('change', () => {
+    mainViewPeerId = $('#main-view-select').value || null;
+    $('#btn-enter-vr').disabled = !mainViewPeerId;
+});
+
+$('#pip-view-select').addEventListener('change', () => {
+    pipViewPeerId = $('#pip-view-select').value || null;
+    $('#pip-corner-picker').classList.toggle('hidden', !pipViewPeerId);
+});
+
+$$('.corner-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        $$('.corner-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        pipCorner = btn.dataset.corner;
+    });
+});
 
 init();
