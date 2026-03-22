@@ -736,7 +736,7 @@ function enterVR() {
         return;
     }
 
-    console.log('[VR] === v0.2 === Entering VR, main:', mainViewPeerId, 'pip:', pipViewPeerId);
+    console.log('[VR] === v0.3 === Entering VR, main:', mainViewPeerId, 'pip:', pipViewPeerId);
     // Reset any stale transform from previous scale slider use
     vrView.style.transform = '';
     document.body.classList.add('vr-active');
@@ -747,7 +747,31 @@ function enterVR() {
     function logDimensions(label) {
         const vvr = vrView.getBoundingClientRect();
         const vmr = $('#vr-main').getBoundingClientRect();
-        console.log(`[VR-DIM] ${label}: viewport=${window.innerWidth}x${window.innerHeight} vrView=${Math.round(vvr.width)}x${Math.round(vvr.height)}@${Math.round(vvr.top)},${Math.round(vvr.left)} vrMain=${Math.round(vmr.width)}x${Math.round(vmr.height)}@${Math.round(vmr.top)},${Math.round(vmr.left)} orientation=${screen.orientation?.type || 'unknown'} transform="${vrView.style.transform}"`);
+        const pipL = $('#vr-pip-left');
+        const pipR = $('#vr-pip-right');
+        const plr = pipL.getBoundingClientRect();
+        const prr = pipR.getBoundingClientRect();
+        const bodyStyle = getComputedStyle(document.body);
+        const vrStyle = getComputedStyle(vrView);
+        console.log(`[VR-DIM] ${label}:`
+            + ` viewport=${window.innerWidth}x${window.innerHeight}`
+            + ` screen=${screen.width}x${screen.height}`
+            + ` vrView=${Math.round(vvr.width)}x${Math.round(vvr.height)}@top=${Math.round(vvr.top)},left=${Math.round(vvr.left)}`
+            + ` vrMain=${Math.round(vmr.width)}x${Math.round(vmr.height)}@top=${Math.round(vmr.top)},left=${Math.round(vmr.left)}`
+            + ` pipL=${Math.round(plr.width)}x${Math.round(plr.height)}@top=${Math.round(plr.top)},left=${Math.round(plr.left)},hidden=${pipL.classList.contains('hidden')}`
+            + ` pipR=${Math.round(prr.width)}x${Math.round(prr.height)}@top=${Math.round(prr.top)},left=${Math.round(prr.left)},hidden=${pipR.classList.contains('hidden')}`
+            + ` orientation=${screen.orientation?.type || 'unknown'}`
+            + ` fullscreen=${document.fullscreenElement ? document.fullscreenElement.tagName : 'none'}`
+            + ` bodyPadding=${bodyStyle.paddingTop}`
+            + ` bodyMargin=${bodyStyle.marginTop}`
+            + ` bodyOverflow=${bodyStyle.overflow}`
+            + ` vrTransform=${vrStyle.transform}`
+            + ` vrPosition=${vrStyle.position}`
+            + ` vrInset=${vrStyle.inset}`
+            + ` vrOverflow=${vrStyle.overflow}`
+            + ` docScrollH=${document.documentElement.scrollHeight}`
+            + ` bodyScrollH=${document.body.scrollHeight}`
+        );
     }
     logDimensions('immediate');
     setTimeout(() => logDimensions('after 500ms'), 500);
@@ -764,14 +788,21 @@ function enterVR() {
     if (pipViewPeerId) {
         const pipStream = getStreamForPeer(pipViewPeerId);
         if (pipStream) {
+            console.log('[VR] Showing PIP for:', pipViewPeerId);
             showPIP(pipStream);
         }
+    } else {
+        console.log('[VR] No PIP selected');
     }
 
     // Fullscreen
+    console.log('[VR] Requesting fullscreen');
     const el = document.documentElement;
     if (el.requestFullscreen) {
-        el.requestFullscreen().catch(() => {});
+        el.requestFullscreen().then(() => {
+            console.log('[VR] Fullscreen granted');
+            logDimensions('post-fullscreen');
+        }).catch((err) => console.error('[VR] Fullscreen rejected:', err));
     } else if (el.webkitRequestFullscreen) {
         el.webkitRequestFullscreen();
     }
