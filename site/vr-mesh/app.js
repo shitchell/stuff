@@ -158,6 +158,8 @@ let pipViewPeerId = null;
 let pipCorner = 'bl';
 
 // --- Room Join ---
+let joinedRoom = false; // true once we've entered the lobby
+
 async function joinRoom() {
     const nameInput = $('#name-input');
     const roomInput = $('#room-input');
@@ -165,6 +167,7 @@ async function joinRoom() {
 
     myName = nameInput.value.trim() || nameInput.placeholder;
     roomName = roomInput.value.trim() || roomInput.placeholder;
+    joinedRoom = false;
 
     console.log('[JOIN] Joining room:', roomName, 'as:', myName);
     statusEl.textContent = 'Connecting...';
@@ -217,17 +220,20 @@ async function joinRoom() {
     });
 
     myPeer.on('error', (err) => {
-        console.error('[PEER] Error:', err.type, err);
+        console.error('[PEER] Error:', err.type, 'joinedRoom:', joinedRoom);
         if (err.type === 'peer-unavailable') {
-            // Only treat as "room not found" if we haven't entered the lobby yet.
-            // After joining, peer-unavailable errors are for individual peers (harmless).
-            if (lobby.classList.contains('hidden')) {
-                console.log('[JOIN] Room not found, becoming host');
+            if (!joinedRoom) {
+                // Room host doesn't exist — we're first, become host
+                console.log('[JOIN] ROOM_NOT_FOUND: no host registered for room "' + roomName + '", becoming host');
                 becomeHost(myPeer.id);
             } else {
-                console.log('[PEER] peer-unavailable after joining, ignoring (stale peer)');
+                // A specific peer we tried to connect to doesn't exist (stale/disconnected)
+                console.log('[PEER] STALE_PEER: peer-unavailable after join, ignoring');
             }
-        } else if (err.type !== 'network') {
+        } else if (err.type === 'network') {
+            console.warn('[PEER] NETWORK_ERROR: transient network issue, ignoring');
+        } else {
+            console.error('[PEER] CONNECTION_FAILED:', err.type);
             statusEl.textContent = 'Connection failed. Try again.';
             statusEl.className = 'status error';
         }
@@ -347,6 +353,11 @@ function setupHostListeners() {
 }
 
 function enterLobby() {
+    if (joinedRoom) {
+        console.log('[LOBBY] Already joined, ignoring duplicate enterLobby call');
+        return;
+    }
+    joinedRoom = true;
     console.log('[LOBBY] Entering lobby');
     showSection(lobby);
     $('#lobby-room-name').textContent = roomName;
@@ -916,6 +927,7 @@ $('#btn-leave').addEventListener('click', () => {
     peers.clear();
     myPeer = null;
     isHost = false;
+    joinedRoom = false;
     sharingCamera = false;
     localStream = null;
     showSection(joinScreen);
