@@ -52,10 +52,13 @@ function showSection(section) {
     section.classList.remove('hidden');
 }
 
-// Monitor fullscreen changes
+// Exit VR when fullscreen is exited (e.g. via Escape key)
 document.addEventListener('fullscreenchange', () => {
     console.log('[FULLSCREEN] Changed, element:', document.fullscreenElement ? document.fullscreenElement.id || document.fullscreenElement.tagName : 'none');
-    console.log('[FULLSCREEN] vr-view hidden:', vrView.classList.contains('hidden'), 'lobby hidden:', lobby.classList.contains('hidden'));
+    if (!document.fullscreenElement && !vrView.classList.contains('hidden')) {
+        console.log('[FULLSCREEN] Fullscreen exited while in VR, calling exitVR');
+        exitVR();
+    }
 });
 
 // --- Fun name generator ---
