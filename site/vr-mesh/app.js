@@ -930,8 +930,8 @@ $('#vr-exit-zone').addEventListener('click', exitVR);
 let vrScaleTimeout = null;
 $('#vr-scale-slider').addEventListener('input', (e) => {
     const scale = e.target.value / 100;
-    $('#vr-main').style.transform = `scale(${scale})`;
-    $('#vr-main').style.transformOrigin = 'center center';
+    vrView.style.transform = `scale(${scale})`;
+    vrView.style.transformOrigin = 'center center';
 });
 
 // Tap VR controls overlay to show/hide exit + slider
