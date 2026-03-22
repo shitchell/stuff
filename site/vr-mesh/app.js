@@ -219,9 +219,15 @@ async function joinRoom() {
     myPeer.on('error', (err) => {
         console.error('[PEER] Error:', err.type, err);
         if (err.type === 'peer-unavailable') {
-            console.log('[JOIN] Room not found, becoming host');
-            becomeHost(myPeer.id);
-        } else {
+            // Only treat as "room not found" if we haven't entered the lobby yet.
+            // After joining, peer-unavailable errors are for individual peers (harmless).
+            if (lobby.classList.contains('hidden')) {
+                console.log('[JOIN] Room not found, becoming host');
+                becomeHost(myPeer.id);
+            } else {
+                console.log('[PEER] peer-unavailable after joining, ignoring (stale peer)');
+            }
+        } else if (err.type !== 'network') {
             statusEl.textContent = 'Connection failed. Try again.';
             statusEl.className = 'status error';
         }
