@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+    <title>VR Mesh</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Join Screen -->
+    <section id="join-screen">
+        <h1>VR Mesh</h1>
+        <p>Peer-to-peer VR video mesh</p>
+
+        <div class="form-group">
+            <label for="name-input">Your Name</label>
+            <input type="text" id="name-input" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+            <label for="room-input">Room</label>
+            <div class="combo-input">
+                <input type="text" id="room-input" autocomplete="off">
+                <button id="room-dropdown-btn" type="button">&#9660;</button>
+            </div>
+            <div id="room-history" class="hidden"></div>
+        </div>
+
+        <button id="btn-join" class="btn-primary">Join</button>
+        <div id="join-status" class="status"></div>
+    </section>
+
+    <!-- Lobby -->
+    <section id="lobby" class="hidden">
+        <div id="lobby-header">
+            <div>
+                <span id="lobby-room-name" class="room-label"></span>
+                <span id="lobby-your-name" class="name-label"></span>
+            </div>
+            <button id="btn-leave" class="btn-small">Leave</button>
+        </div>
+
+        <!-- Camera controls -->
+        <div id="camera-controls">
+            <button id="btn-share-camera" class="btn-toggle">Share Camera</button>
+            <button id="btn-flip-camera" class="btn-small hidden">Flip</button>
+        </div>
+        <video id="camera-preview" class="hidden" autoplay playsinline muted></video>
+
+        <!-- QR Code -->
+        <div id="lobby-qr"></div>
+
+        <!-- Peer list -->
+        <div id="peer-list">
+            <h3>Peers</h3>
+            <div id="peers-container"></div>
+        </div>
+
+        <!-- View setup -->
+        <div id="view-setup">
+            <h3>View Setup</h3>
+            <div class="form-group">
+                <label for="main-view-select">Main View</label>
+                <select id="main-view-select" disabled>
+                    <option value="">No streams available</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="pip-view-select">PIP View</label>
+                <select id="pip-view-select" disabled>
+                    <option value="">None</option>
+                </select>
+            </div>
+            <div id="pip-corner-picker" class="hidden">
+                <label>PIP Corner</label>
+                <div class="corner-grid">
+                    <button class="corner-btn" data-corner="tl">TL</button>
+                    <button class="corner-btn" data-corner="tr">TR</button>
+                    <button class="corner-btn active" data-corner="bl">BL</button>
+                    <button class="corner-btn" data-corner="br">BR</button>
+                </div>
+            </div>
+        </div>
+
+        <button id="btn-enter-vr" class="btn-primary" disabled>Enter VR</button>
+    </section>
+
+    <!-- VR View -->
+    <section id="vr-view" class="hidden">
+        <div id="vr-main">
+            <video id="vr-left" autoplay playsinline muted></video>
+            <video id="vr-right" autoplay playsinline muted></video>
+        </div>
+        <div id="vr-pip-left" class="vr-pip hidden">
+            <video autoplay playsinline muted></video>
+        </div>
+        <div id="vr-pip-right" class="vr-pip hidden">
+            <video autoplay playsinline muted></video>
+        </div>
+        <div id="vr-overlay" class="hidden">
+            <div id="vr-overlay-msg"></div>
+        </div>
+        <div id="vr-scale-controls" class="hidden">
+            <input type="range" id="vr-scale-slider" min="30" max="100" value="100" step="1">
+        </div>
+        <div id="vr-exit-zone">&#10005;</div>
+    </section>
+
+    <!-- Debug panel (populated by JS if config.debug) -->
+    <div id="debug-toggle" class="hidden">DBG</div>
+    <div id="debug-panel" class="hidden">
+        <button id="debug-refresh">Refresh</button>
+        <button id="debug-copy">Copy</button>
+        <pre id="debug-log"></pre>
+    </div>
+
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <script src="https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
