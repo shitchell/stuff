@@ -287,10 +287,7 @@ body.vr-active {
 /* --- VR View --- */
 #vr-view {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100dvw;
-    height: 100dvh;
+    inset: 0;
     background: #000;
     overflow: hidden;
 }
