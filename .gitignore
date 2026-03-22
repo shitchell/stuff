@@ -3,4 +3,3 @@ site/3d/diagrams/*.svg
 test-results/
 _work/
 .worktrees/
-site/vr-mesh/config.json
