@@ -240,6 +240,41 @@ function becomeHost(myId) {
     });
 }
 
+function attemptHostHandoff() {
+    if (isHost) return;
+
+    console.log('[HOST] Attempting host handoff for room:', roomName);
+
+    const oldPeers = new Map(peers);
+
+    if (myPeer && !myPeer.destroyed) {
+        myPeer.destroy();
+    }
+    myPeer = new Peer(roomName, { config: { iceServers: CONFIG.iceServers } });
+
+    myPeer.on('open', () => {
+        console.log('[HOST] Successfully became new host');
+        isHost = true;
+        setupHostListeners();
+
+        oldPeers.forEach((peer, id) => {
+            connectToPeer(id, peer.name);
+        });
+    });
+
+    myPeer.on('error', (err) => {
+        if (err.type === 'unavailable-id') {
+            console.log('[HOST] Someone else became host first');
+            myPeer = new Peer(undefined, { config: { iceServers: CONFIG.iceServers } });
+            myPeer.on('open', () => {
+                oldPeers.forEach((peer, id) => {
+                    connectToPeer(id, peer.name);
+                });
+            });
+        }
+    });
+}
+
 function setupHostListeners() {
     myPeer.on('connection', (conn) => {
         console.log('[HOST] Incoming connection from:', conn.peer);
@@ -357,6 +392,11 @@ function connectToPeer(peerId, name) {
     conn.on('close', () => {
         console.log('[PEERS] Connection closed to:', name);
         removePeer(peerId);
+
+        // If the disconnected peer was the host, attempt handoff
+        if (peerId === roomName) {
+            attemptHostHandoff();
+        }
     });
 }
 
