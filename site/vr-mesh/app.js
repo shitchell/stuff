@@ -736,12 +736,23 @@ function enterVR() {
         return;
     }
 
-    console.log('[VR] Entering VR, main:', mainViewPeerId, 'pip:', pipViewPeerId);
+    console.log('[VR] === v0.2 === Entering VR, main:', mainViewPeerId, 'pip:', pipViewPeerId);
+    // Reset any stale transform from previous scale slider use
+    vrView.style.transform = '';
     document.body.classList.add('vr-active');
     showSection(vrView);
     $('#vr-controls').classList.remove('hidden');
     $('#vr-controls-inner').classList.add('hidden');
-    console.log('[VR] VR view shown, controls shown, inner hidden');
+
+    function logDimensions(label) {
+        const vvr = vrView.getBoundingClientRect();
+        const vmr = $('#vr-main').getBoundingClientRect();
+        console.log(`[VR-DIM] ${label}: viewport=${window.innerWidth}x${window.innerHeight} vrView=${Math.round(vvr.width)}x${Math.round(vvr.height)}@${Math.round(vvr.top)},${Math.round(vvr.left)} vrMain=${Math.round(vmr.width)}x${Math.round(vmr.height)}@${Math.round(vmr.top)},${Math.round(vmr.left)} orientation=${screen.orientation?.type || 'unknown'} transform="${vrView.style.transform}"`);
+    }
+    logDimensions('immediate');
+    setTimeout(() => logDimensions('after 500ms'), 500);
+    setTimeout(() => logDimensions('after 1500ms'), 1500);
+    setTimeout(() => logDimensions('after 3000ms'), 3000);
 
     // Main view
     $('#vr-left').srcObject = mainStream;
