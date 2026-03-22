@@ -349,11 +349,6 @@ body {
     right: 0;
     bottom: 0;
     z-index: 2147483647;
-    pointer-events: none;
-}
-
-#vr-controls > * {
-    pointer-events: auto;
 }
 
 /* Exit zone */
