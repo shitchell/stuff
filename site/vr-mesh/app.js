@@ -47,9 +47,16 @@ const lobby = $('#lobby');
 const vrView = $('#vr-view');
 
 function showSection(section) {
+    console.log('[UI] showSection:', section.id);
     [joinScreen, lobby, vrView].forEach(s => s.classList.add('hidden'));
     section.classList.remove('hidden');
 }
+
+// Monitor fullscreen changes
+document.addEventListener('fullscreenchange', () => {
+    console.log('[FULLSCREEN] Changed, element:', document.fullscreenElement ? document.fullscreenElement.id || document.fullscreenElement.tagName : 'none');
+    console.log('[FULLSCREEN] vr-view hidden:', vrView.classList.contains('hidden'), 'lobby hidden:', lobby.classList.contains('hidden'));
+});
 
 // --- Fun name generator ---
 const ADJECTIVES = ['Red', 'Blue', 'Green', 'Gold', 'Silver', 'Swift', 'Bold', 'Calm', 'Wild', 'Bright'];
@@ -703,8 +710,9 @@ function getStreamForPeer(peerId) {
 
 function enterVR() {
     const mainStream = getStreamForPeer(mainViewPeerId);
+    console.log('[VR] enterVR called, mainViewPeerId:', mainViewPeerId, 'stream:', mainStream ? 'exists' : 'null', 'active:', mainStream?.active);
     if (!mainStream) {
-        console.warn('[VR] No main stream available');
+        console.warn('[VR] No main stream available, aborting enterVR');
         return;
     }
 
@@ -712,6 +720,7 @@ function enterVR() {
     showSection(vrView);
     $('#vr-controls').classList.remove('hidden');
     $('#vr-controls-inner').classList.add('hidden');
+    console.log('[VR] VR view shown, controls shown, inner hidden');
 
     // Main view
     $('#vr-left').srcObject = mainStream;
@@ -792,29 +801,36 @@ function positionPIP(corner) {
 }
 
 function exitVR() {
-    console.log('[VR] Exiting VR');
+    console.log('[VR] exitVR called');
+    console.log('[VR] exitVR caller:', new Error().stack.split('\n').slice(1, 4).join(' <- '));
+    console.log('[VR] Current state: vr-view hidden:', vrView.classList.contains('hidden'), 'lobby hidden:', lobby.classList.contains('hidden'));
     hidePIP();
     $('#vr-overlay').classList.add('hidden');
 
+    console.log('[VR] Fullscreen element:', document.fullscreenElement ? document.fullscreenElement.id || document.fullscreenElement.tagName : 'none');
     if (document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {});
+        document.exitFullscreen().catch((err) => console.error('[VR] exitFullscreen failed:', err));
     }
     try { screen.orientation.unlock(); } catch {}
 
     $('#vr-controls').classList.add('hidden');
     showSection(lobby);
+    console.log('[VR] exitVR complete, lobby should be visible');
 }
 
 // --- Stream Loss ---
 function checkVRStreams() {
     if (vrView.classList.contains('hidden')) return;
+    console.log('[VR-CHECK] Checking VR streams, mainViewPeerId:', mainViewPeerId, 'pipViewPeerId:', pipViewPeerId);
 
     // Check main view
     if (mainViewPeerId) {
         const stream = getStreamForPeer(mainViewPeerId);
+        console.log('[VR-CHECK] Main stream:', stream ? 'exists' : 'null', 'active:', stream?.active, 'peerId:', mainViewPeerId);
         if (!stream || !stream.active) {
             const name = mainViewPeerId === 'self' ? myName :
                 (peers.get(mainViewPeerId)?.name || 'Unknown');
+            console.log('[VR-CHECK] *** MAIN STREAM LOST *** name:', name);
             showVROverlay(`Stream lost — ${name} disconnected`);
         }
     }
@@ -822,7 +838,9 @@ function checkVRStreams() {
     // Check PIP view
     if (pipViewPeerId) {
         const stream = getStreamForPeer(pipViewPeerId);
+        console.log('[VR-CHECK] PIP stream:', stream ? 'exists' : 'null', 'active:', stream?.active, 'peerId:', pipViewPeerId);
         if (!stream || !stream.active) {
+            console.log('[VR-CHECK] *** PIP STREAM LOST ***');
             showPIPDisconnected();
         }
     }
@@ -923,8 +941,15 @@ $('#btn-share-camera').addEventListener('click', () => {
 
 $('#btn-flip-camera').addEventListener('click', flipCamera);
 
-$('#btn-enter-vr').addEventListener('click', enterVR);
-$('#vr-exit-zone').addEventListener('click', exitVR);
+$('#btn-enter-vr').addEventListener('click', () => {
+    console.log('[EVENT] Enter VR button clicked');
+    enterVR();
+});
+$('#vr-exit-zone').addEventListener('click', (e) => {
+    console.log('[EVENT] Exit zone clicked');
+    e.stopPropagation();
+    exitVR();
+});
 
 // Scale slider
 let vrScaleTimeout = null;
@@ -936,12 +961,21 @@ $('#vr-scale-slider').addEventListener('input', (e) => {
 
 // Tap VR controls overlay to show/hide exit + slider
 $('#vr-controls').addEventListener('click', (e) => {
-    if (e.target.closest('#vr-exit-zone') || e.target.closest('#vr-scale-controls')) return;
+    console.log('[EVENT] vr-controls clicked, target:', e.target.id || e.target.tagName, 'closest exit:', !!e.target.closest('#vr-exit-zone'), 'closest scale:', !!e.target.closest('#vr-scale-controls'));
+    if (e.target.closest('#vr-exit-zone') || e.target.closest('#vr-scale-controls')) {
+        console.log('[EVENT] Ignoring — click was on exit zone or scale controls');
+        return;
+    }
     const inner = $('#vr-controls-inner');
+    const wasHidden = inner.classList.contains('hidden');
     inner.classList.toggle('hidden');
+    console.log('[EVENT] Toggled vr-controls-inner, was:', wasHidden ? 'hidden' : 'visible', 'now:', inner.classList.contains('hidden') ? 'hidden' : 'visible');
     clearTimeout(vrScaleTimeout);
     if (!inner.classList.contains('hidden')) {
-        vrScaleTimeout = setTimeout(() => inner.classList.add('hidden'), 4000);
+        vrScaleTimeout = setTimeout(() => {
+            console.log('[EVENT] Auto-hiding vr-controls-inner after 4s');
+            inner.classList.add('hidden');
+        }, 4000);
     }
 });
 
