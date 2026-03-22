@@ -22,9 +22,9 @@ async function loadConfig() {
 function enableDebug() {
     window.__logs = [];
     const _log = console.log, _err = console.error, _warn = console.warn;
-    console.log = (...a) => { const m = a.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' '); window.__logs.push(m); _log.apply(console, a); };
-    console.error = (...a) => { const m = '[ERR] ' + a.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' '); window.__logs.push(m); _err.apply(console, a); };
-    console.warn = (...a) => { const m = '[WARN] ' + a.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' '); window.__logs.push(m); _warn.apply(console, a); };
+    console.log = (...a) => { const m = a.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' '); window.__logs.push(m); if (window.__logs.length > 1000) window.__logs.shift(); _log.apply(console, a); };
+    console.error = (...a) => { const m = '[ERR] ' + a.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' '); window.__logs.push(m); if (window.__logs.length > 1000) window.__logs.shift(); _err.apply(console, a); };
+    console.warn = (...a) => { const m = '[WARN] ' + a.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' '); window.__logs.push(m); if (window.__logs.length > 1000) window.__logs.shift(); _warn.apply(console, a); };
 
     const toggle = document.getElementById('debug-toggle');
     const panel = document.getElementById('debug-panel');
@@ -169,11 +169,20 @@ let pipCorner = 'bl';
 
 // --- Room Join ---
 let joinedRoom = false; // true once we've entered the lobby
+let joinRetries = 0;
+const MAX_JOIN_RETRIES = 5;
 
 async function joinRoom() {
     const nameInput = $('#name-input');
     const roomInput = $('#room-input');
     const statusEl = $('#join-status');
+
+    joinRetries++;
+    if (joinRetries > MAX_JOIN_RETRIES) {
+        statusEl.textContent = 'Could not join room. Try again.';
+        statusEl.className = 'status error';
+        return;
+    }
 
     myName = nameInput.value.trim() || nameInput.placeholder;
     roomName = roomInput.value.trim() || roomInput.placeholder;
@@ -625,6 +634,7 @@ function stopCamera() {
 }
 
 async function flipCamera() {
+    const oldMode = currentFacingMode;
     currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
     if (localStream) {
         localStream.getTracks().forEach(t => t.stop());
@@ -648,7 +658,18 @@ async function flipCamera() {
         });
     } catch (err) {
         console.error('[CAMERA] Flip failed:', err);
-        currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+        currentFacingMode = oldMode;
+        // Re-acquire the old camera since we stopped it
+        try {
+            localStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: currentFacingMode },
+                audio: false
+            });
+            $('#camera-preview').srcObject = localStream;
+        } catch (e) {
+            console.error('[CAMERA] Could not restore camera:', e);
+            stopCamera();
+        }
     }
 }
 
@@ -773,6 +794,7 @@ function enterVR() {
     console.log('[VR] Entering VR, main:', mainViewPeerId, 'pip:', pipViewPeerId);
     // Reset any stale transform from previous scale slider use
     vrView.style.transform = '';
+    $('#vr-scale-slider').value = 100;
     document.body.classList.add('vr-active');
     showSection(vrView);
     $('#vr-controls').classList.remove('hidden');
@@ -954,13 +976,20 @@ async function init() {
 }
 
 // --- Event Listeners ---
-$('#btn-join').addEventListener('click', joinRoom);
+$('#btn-join').addEventListener('click', () => {
+    joinRetries = 0;
+    joinRoom();
+});
 $('#room-input').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') joinRoom();
+    if (e.key === 'Enter') {
+        joinRetries = 0;
+        joinRoom();
+    }
 });
 
 $('#btn-leave').addEventListener('click', () => {
     console.log('[LOBBY] Leaving room');
+    joinRetries = 0;
     peers.forEach((peer) => {
         if (peer.conn && peer.conn.open) {
             peer.conn.send({ type: 'peer-left', peerId: myPeer.id });
@@ -968,6 +997,7 @@ $('#btn-leave').addEventListener('click', () => {
     });
     if (myPeer) myPeer.destroy();
     peers.clear();
+    pendingStreams.clear();
     myPeer = null;
     isHost = false;
     joinedRoom = false;
@@ -1048,6 +1078,11 @@ $('#vr-controls').addEventListener('click', (e) => {
             inner.classList.add('hidden');
         }, 4000);
     }
+});
+
+window.addEventListener('pagehide', () => {
+    if (localStream) localStream.getTracks().forEach(t => t.stop());
+    if (myPeer && !myPeer.destroyed) myPeer.destroy();
 });
 
 init();

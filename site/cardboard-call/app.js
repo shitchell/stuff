@@ -1,9 +1,9 @@
 // Debug log capture — accessible via window.__logs and debug panel
 window.__logs = [];
 const _origLog = console.log, _origErr = console.error, _origWarn = console.warn;
-console.log = (...a) => { const msg = a.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' '); window.__logs.push(msg); _origLog.apply(console, a); };
-console.error = (...a) => { const msg = '[ERR] ' + a.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' '); window.__logs.push(msg); _origErr.apply(console, a); };
-console.warn = (...a) => { const msg = '[WARN] ' + a.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' '); window.__logs.push(msg); _origWarn.apply(console, a); };
+console.log = (...a) => { const msg = a.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' '); window.__logs.push(msg); if (window.__logs.length > 1000) window.__logs.shift(); _origLog.apply(console, a); };
+console.error = (...a) => { const msg = '[ERR] ' + a.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' '); window.__logs.push(msg); if (window.__logs.length > 1000) window.__logs.shift(); _origErr.apply(console, a); };
+console.warn = (...a) => { const msg = '[WARN] ' + a.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' '); window.__logs.push(msg); if (window.__logs.length > 1000) window.__logs.shift(); _origWarn.apply(console, a); };
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -38,6 +38,7 @@ const MAX_SENDER_RETRIES = 5;
 let currentFacingMode = 'environment';
 let connected = false;
 let receivedStream = null;
+let connectTimeout = null;
 
 // ICE servers config — includes self-hosted TURN for NAT traversal between mobile devices
 const ICE_SERVERS = [
@@ -93,22 +94,27 @@ async function startSender() {
     statusEl.textContent = 'Starting camera...';
     statusEl.className = 'status waiting';
 
-    // Get camera
-    try {
-        console.log('[SENDER] Requesting camera with facingMode:', currentFacingMode);
-        localStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: currentFacingMode },
-            audio: false
-        });
-        console.log('[SENDER] Got camera stream');
-        logStreamInfo('localStream', localStream);
+    // Get camera (skip if we already have a valid stream, e.g. on retry)
+    if (!localStream || !localStream.active) {
+        try {
+            console.log('[SENDER] Requesting camera with facingMode:', currentFacingMode);
+            localStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: currentFacingMode },
+                audio: false
+            });
+            console.log('[SENDER] Got camera stream');
+            logStreamInfo('localStream', localStream);
+            $('#sender-preview').srcObject = localStream;
+            checkCameraCount();
+        } catch (err) {
+            console.error('[SENDER] Camera error:', err);
+            statusEl.textContent = 'Camera access required to send video.';
+            statusEl.className = 'status error';
+            return;
+        }
+    } else {
         $('#sender-preview').srcObject = localStream;
         checkCameraCount();
-    } catch (err) {
-        console.error('[SENDER] Camera error:', err);
-        statusEl.textContent = 'Camera access required to send video.';
-        statusEl.className = 'status error';
-        return;
     }
 
     // Create peer with room code as ID
@@ -266,6 +272,8 @@ function startReceiver(prefillCode) {
 }
 
 async function connectToSender() {
+    if (connectTimeout) clearTimeout(connectTimeout);
+
     const roomCode = $('#room-input').value.trim();
     const statusEl = $('#receiver-status');
 
@@ -344,7 +352,7 @@ async function connectToSender() {
             setTimeout(() => clearInterval(checkPC), 5000);
         }
 
-        setTimeout(() => {
+        connectTimeout = setTimeout(() => {
             if (connected) return;
             console.log('[RECEIVER] Timeout reached, connected=false');
             statusEl.textContent = 'Room not found. Check the code.';
@@ -541,6 +549,9 @@ function exitStereoView() {
     stereoView.classList.add('hidden');
     connectForm.classList.remove('hidden');
 
+    $('#video-left').srcObject = null;
+    $('#video-right').srcObject = null;
+
     if (document.fullscreenElement) {
         document.exitFullscreen().catch(() => {});
     }
@@ -595,6 +606,11 @@ $('#play-overlay').addEventListener('click', handlePlayOverlayTap);
 // Allow Enter key in room input
 $('#room-input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') connectToSender();
+});
+
+window.addEventListener('pagehide', () => {
+    if (localStream) localStream.getTracks().forEach(t => t.stop());
+    if (peer && !peer.destroyed) peer.destroy();
 });
 
 // Check URL params on load
