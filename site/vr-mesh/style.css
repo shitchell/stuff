@@ -360,24 +360,8 @@ body {
 #vr-exit-zone {
     position: absolute;
     top: 8px;
-    left: calc(50% - 22px);
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.2rem;
-    cursor: pointer;
-}
-
-/* Scale toggle button */
-#vr-scale-toggle {
-    position: absolute;
-    top: 8px;
-    left: calc(50% + 22px);
+    left: 50%;
+    transform: translateX(-50%);
     background: rgba(255, 255, 255, 0.15);
     color: #fff;
     width: 36px;

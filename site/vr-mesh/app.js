@@ -711,6 +711,7 @@ function enterVR() {
     console.log('[VR] Entering VR, main:', mainViewPeerId, 'pip:', pipViewPeerId);
     showSection(vrView);
     $('#vr-controls').classList.remove('hidden');
+    $('#vr-controls-inner').classList.add('hidden');
 
     // Main view
     $('#vr-left').srcObject = mainStream;
@@ -933,13 +934,14 @@ $('#vr-scale-slider').addEventListener('input', (e) => {
     $('#vr-main').style.transformOrigin = 'center center';
 });
 
-// Gear button toggles scale slider
-$('#vr-scale-toggle').addEventListener('click', () => {
-    const controls = $('#vr-scale-controls');
-    controls.classList.toggle('hidden');
+// Tap VR controls overlay to show/hide exit + slider
+$('#vr-controls').addEventListener('click', (e) => {
+    if (e.target.closest('#vr-exit-zone') || e.target.closest('#vr-scale-controls')) return;
+    const inner = $('#vr-controls-inner');
+    inner.classList.toggle('hidden');
     clearTimeout(vrScaleTimeout);
-    if (!controls.classList.contains('hidden')) {
-        vrScaleTimeout = setTimeout(() => controls.classList.add('hidden'), 4000);
+    if (!inner.classList.contains('hidden')) {
+        vrScaleTimeout = setTimeout(() => inner.classList.add('hidden'), 4000);
     }
 });
 

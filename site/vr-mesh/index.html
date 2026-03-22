@@ -104,10 +104,11 @@
 
     <!-- VR controls — outside vr-view so they render above fullscreen layer -->
     <div id="vr-controls" class="hidden">
-        <div id="vr-exit-zone">&#10005;</div>
-        <div id="vr-scale-toggle">&#9881;</div>
-        <div id="vr-scale-controls" class="hidden">
-            <input type="range" id="vr-scale-slider" min="30" max="100" value="100" step="1">
+        <div id="vr-controls-inner" class="hidden">
+            <div id="vr-exit-zone">&#10005;</div>
+            <div id="vr-scale-controls">
+                <input type="range" id="vr-scale-slider" min="30" max="100" value="100" step="1">
+            </div>
         </div>
     </div>
 
