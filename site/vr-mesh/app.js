@@ -123,7 +123,14 @@ function setupRoomHistory() {
             item.className = 'room-history-item';
             const date = new Date(r.lastJoined);
             const dateStr = date.toLocaleDateString();
-            item.innerHTML = `<span class="room-name">${r.name}</span><span class="room-date">${dateStr}</span>`;
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'room-name';
+            nameSpan.textContent = r.name;
+            const dateSpan = document.createElement('span');
+            dateSpan.className = 'room-date';
+            dateSpan.textContent = dateStr;
+            item.appendChild(nameSpan);
+            item.appendChild(dateSpan);
             item.addEventListener('click', () => {
                 input.value = r.name;
                 historyEl.classList.add('hidden');
@@ -346,6 +353,23 @@ function setupHostListeners() {
                 peers.forEach((p, id) => {
                     if (id !== data.peerId && p.conn && p.conn.open) {
                         p.conn.send({ type: 'new-peer', peerId: data.peerId, name: data.name });
+                    }
+                });
+            }
+        });
+
+        conn.on('close', () => {
+            console.log('[HOST] Peer connection closed:', conn.peer);
+            // Find the peer by connection reference
+            let closedPeerId = null;
+            peers.forEach((p, id) => {
+                if (p.conn === conn) closedPeerId = id;
+            });
+            if (closedPeerId) {
+                removePeer(closedPeerId);
+                peers.forEach((p, id) => {
+                    if (p.conn && p.conn.open) {
+                        p.conn.send({ type: 'peer-left', peerId: closedPeerId });
                     }
                 });
             }
@@ -573,6 +597,14 @@ async function startCamera() {
         updateViewDropdowns();
     } catch (err) {
         console.error('[CAMERA] Error:', err);
+        // Show a brief message near the share camera button
+        const btn = $('#btn-share-camera');
+        btn.textContent = 'Camera access needed';
+        btn.classList.add('error');
+        setTimeout(() => {
+            btn.textContent = 'Share Camera';
+            btn.classList.remove('error');
+        }, 3000);
     }
 }
 
@@ -652,12 +684,14 @@ function updatePeerList() {
     peers.forEach((peer, id) => {
         const item = document.createElement('div');
         item.className = 'peer-item';
-        item.innerHTML = `
-            <span class="peer-name">${peer.name}</span>
-            <span class="peer-status ${peer.sharing ? 'sharing' : 'not-sharing'}">
-                ${peer.sharing ? 'Sharing' : 'Not sharing'}
-            </span>
-        `;
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'peer-name';
+        nameSpan.textContent = peer.name;
+        const statusSpan = document.createElement('span');
+        statusSpan.className = 'peer-status ' + (peer.sharing ? 'sharing' : 'not-sharing');
+        statusSpan.textContent = peer.sharing ? 'Sharing' : 'Not sharing';
+        item.appendChild(nameSpan);
+        item.appendChild(statusSpan);
         if (peer.sharing && peer.stream) {
             const thumb = document.createElement('video');
             thumb.className = 'peer-thumb';
@@ -736,47 +770,13 @@ function enterVR() {
         return;
     }
 
-    console.log('[VR] === v0.3 === Entering VR, main:', mainViewPeerId, 'pip:', pipViewPeerId);
+    console.log('[VR] Entering VR, main:', mainViewPeerId, 'pip:', pipViewPeerId);
     // Reset any stale transform from previous scale slider use
     vrView.style.transform = '';
     document.body.classList.add('vr-active');
     showSection(vrView);
     $('#vr-controls').classList.remove('hidden');
     $('#vr-controls-inner').classList.add('hidden');
-
-    function logDimensions(label) {
-        const vvr = vrView.getBoundingClientRect();
-        const vmr = $('#vr-main').getBoundingClientRect();
-        const pipL = $('#vr-pip-left');
-        const pipR = $('#vr-pip-right');
-        const plr = pipL.getBoundingClientRect();
-        const prr = pipR.getBoundingClientRect();
-        const bodyStyle = getComputedStyle(document.body);
-        const vrStyle = getComputedStyle(vrView);
-        console.log(`[VR-DIM] ${label}:`
-            + ` viewport=${window.innerWidth}x${window.innerHeight}`
-            + ` screen=${screen.width}x${screen.height}`
-            + ` vrView=${Math.round(vvr.width)}x${Math.round(vvr.height)}@top=${Math.round(vvr.top)},left=${Math.round(vvr.left)}`
-            + ` vrMain=${Math.round(vmr.width)}x${Math.round(vmr.height)}@top=${Math.round(vmr.top)},left=${Math.round(vmr.left)}`
-            + ` pipL=${Math.round(plr.width)}x${Math.round(plr.height)}@top=${Math.round(plr.top)},left=${Math.round(plr.left)},hidden=${pipL.classList.contains('hidden')}`
-            + ` pipR=${Math.round(prr.width)}x${Math.round(prr.height)}@top=${Math.round(prr.top)},left=${Math.round(prr.left)},hidden=${pipR.classList.contains('hidden')}`
-            + ` orientation=${screen.orientation?.type || 'unknown'}`
-            + ` fullscreen=${document.fullscreenElement ? document.fullscreenElement.tagName : 'none'}`
-            + ` bodyPadding=${bodyStyle.paddingTop}`
-            + ` bodyMargin=${bodyStyle.marginTop}`
-            + ` bodyOverflow=${bodyStyle.overflow}`
-            + ` vrTransform=${vrStyle.transform}`
-            + ` vrPosition=${vrStyle.position}`
-            + ` vrInset=${vrStyle.inset}`
-            + ` vrOverflow=${vrStyle.overflow}`
-            + ` docScrollH=${document.documentElement.scrollHeight}`
-            + ` bodyScrollH=${document.body.scrollHeight}`
-        );
-    }
-    logDimensions('immediate');
-    setTimeout(() => logDimensions('after 500ms'), 500);
-    setTimeout(() => logDimensions('after 1500ms'), 1500);
-    setTimeout(() => logDimensions('after 3000ms'), 3000);
 
     // Main view
     $('#vr-left').srcObject = mainStream;
@@ -801,7 +801,6 @@ function enterVR() {
     if (el.requestFullscreen) {
         el.requestFullscreen().then(() => {
             console.log('[VR] Fullscreen granted');
-            logDimensions('post-fullscreen');
         }).catch((err) => console.error('[VR] Fullscreen rejected:', err));
     } else if (el.webkitRequestFullscreen) {
         el.webkitRequestFullscreen();
@@ -865,7 +864,6 @@ function positionPIP(corner) {
 
 function exitVR() {
     console.log('[VR] exitVR called');
-    console.log('[VR] exitVR caller:', new Error().stack.split('\n').slice(1, 4).join(' <- '));
     console.log('[VR] Current state: vr-view hidden:', vrView.classList.contains('hidden'), 'lobby hidden:', lobby.classList.contains('hidden'));
     hidePIP();
     $('#vr-overlay').classList.add('hidden');
@@ -974,6 +972,9 @@ $('#btn-leave').addEventListener('click', () => {
     isHost = false;
     joinedRoom = false;
     sharingCamera = false;
+    if (localStream) {
+        localStream.getTracks().forEach(t => t.stop());
+    }
     localStream = null;
     showSection(joinScreen);
 });
@@ -1022,6 +1023,11 @@ $('#vr-scale-slider').addEventListener('input', (e) => {
     const scale = e.target.value / 100;
     vrView.style.transform = `scale(${scale})`;
     vrView.style.transformOrigin = 'center center';
+    // Reset auto-hide timer while adjusting
+    clearTimeout(vrScaleTimeout);
+    vrScaleTimeout = setTimeout(() => {
+        $('#vr-controls-inner').classList.add('hidden');
+    }, 4000);
 });
 
 // Tap VR controls overlay to show/hide exit + slider

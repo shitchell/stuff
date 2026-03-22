@@ -33,6 +33,8 @@ let peer = null;
 let currentCall = null;   // used by receiver
 let activeCalls = [];      // used by sender — tracks all connected receivers
 let localStream = null;
+let senderRetries = 0;
+const MAX_SENDER_RETRIES = 5;
 let currentFacingMode = 'environment';
 let connected = false;
 let receivedStream = null;
@@ -131,6 +133,12 @@ async function startSender() {
     peer.on('error', (err) => {
         console.error('[SENDER] Peer error:', err.type, err);
         if (err.type === 'unavailable-id') {
+            senderRetries++;
+            if (senderRetries > MAX_SENDER_RETRIES) {
+                statusEl.textContent = 'Could not create room. Try again.';
+                statusEl.className = 'status error';
+                return;
+            }
             peer.destroy();
             startSender();
             return;
@@ -575,7 +583,10 @@ $('#stereo-view').addEventListener('click', (e) => {
     }
 });
 
-$('#btn-send').addEventListener('click', startSender);
+$('#btn-send').addEventListener('click', () => {
+    senderRetries = 0;
+    startSender();
+});
 $('#btn-flip-camera').addEventListener('click', flipCamera);
 $('#btn-receive').addEventListener('click', () => startReceiver());
 $('#btn-connect').addEventListener('click', connectToSender);
