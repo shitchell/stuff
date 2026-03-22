@@ -1,0 +1,11 @@
+{
+  "debug": true,
+  "iceServers": [
+    { "urls": "stun:stun.l.google.com:19302" },
+    {
+      "urls": "turn:YOUR_TURN_SERVER:3478",
+      "username": "YOUR_USERNAME",
+      "credential": "YOUR_CREDENTIAL"
+    }
+  ]
+}

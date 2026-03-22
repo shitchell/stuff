@@ -1,0 +1,421 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #111;
+    color: #e0e0e0;
+    min-height: 100dvh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 2rem;
+}
+
+.hidden { display: none !important; }
+
+/* --- Join Screen --- */
+#join-screen {
+    text-align: center;
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+}
+
+#join-screen h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+#join-screen p {
+    color: #888;
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.9rem;
+    color: #aaa;
+    margin-bottom: 0.25rem;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    font-size: 1.1rem;
+    padding: 0.75rem;
+    border: 2px solid #333;
+    border-radius: 8px;
+    background: #1a1a1a;
+    color: #fff;
+    font-family: inherit;
+}
+
+.form-group select {
+    cursor: pointer;
+}
+
+/* Combo input (room field with dropdown arrow) */
+.combo-input {
+    display: flex;
+}
+
+.combo-input input {
+    border-radius: 8px 0 0 8px;
+    border-right: none;
+    flex: 1;
+}
+
+.combo-input button {
+    border: 2px solid #333;
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    background: #222;
+    color: #888;
+    padding: 0 0.75rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+/* Room history dropdown */
+#room-history {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.room-history-item {
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.room-history-item:hover {
+    background: #252525;
+}
+
+.room-history-item .room-name { color: #fff; }
+.room-history-item .room-date { color: #666; font-size: 0.75rem; }
+
+/* Buttons */
+.btn-primary {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    background: #3498db;
+    color: #fff;
+    margin-top: 1rem;
+}
+
+.btn-primary:disabled {
+    background: #333;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.btn-toggle {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    border: 2px solid #555;
+    border-radius: 8px;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+}
+
+.btn-toggle.active {
+    background: #2ecc71;
+    border-color: #2ecc71;
+    color: #111;
+}
+
+.btn-small {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border: 1px solid #555;
+    border-radius: 6px;
+    background: transparent;
+    color: #ccc;
+    cursor: pointer;
+}
+
+/* Status */
+.status {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.status.waiting { color: #f1c40f; }
+.status.connected { color: #2ecc71; }
+.status.error { color: #e74c3c; }
+
+/* --- Lobby --- */
+#lobby {
+    width: 100%;
+    max-width: 500px;
+    padding: 1rem;
+}
+
+#lobby-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #333;
+}
+
+.room-label {
+    font-weight: 700;
+    font-size: 1.1rem;
+    font-family: monospace;
+}
+
+.name-label {
+    color: #888;
+    margin-left: 0.75rem;
+    font-size: 0.9rem;
+}
+
+#camera-controls {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+#camera-preview {
+    width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    background: #000;
+    object-fit: cover;
+    margin-bottom: 1rem;
+}
+
+#lobby-qr {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+#peer-list {
+    margin-bottom: 1rem;
+}
+
+#peer-list h3, #view-setup h3 {
+    font-size: 0.95rem;
+    color: #888;
+    margin-bottom: 0.5rem;
+}
+
+.peer-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0;
+}
+
+.peer-name { flex: 1; }
+.peer-status {
+    font-size: 0.75rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+}
+
+.peer-status.sharing { background: #2ecc71; color: #111; }
+.peer-status.not-sharing { background: #333; color: #888; }
+
+.peer-thumb {
+    width: 48px;
+    height: 36px;
+    border-radius: 4px;
+    object-fit: cover;
+    background: #000;
+}
+
+/* View setup */
+#view-setup {
+    margin-bottom: 1rem;
+}
+
+.corner-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    width: 80px;
+    margin-top: 0.25rem;
+}
+
+.corner-btn {
+    padding: 0.3rem;
+    font-size: 0.7rem;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background: transparent;
+    color: #888;
+    cursor: pointer;
+}
+
+.corner-btn.active {
+    background: #3498db;
+    border-color: #3498db;
+    color: #fff;
+}
+
+/* --- VR View --- */
+#vr-view {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+}
+
+#vr-main {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+}
+
+#vr-main video {
+    width: 50%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* PIP */
+.vr-pip {
+    position: absolute;
+    width: 12.5%;
+    z-index: 5;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.vr-pip video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* VR overlay (stream lost message) */
+#vr-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 15;
+}
+
+#vr-overlay-msg {
+    font-size: 1.5rem;
+    color: #e74c3c;
+    text-align: center;
+    padding: 2rem;
+}
+
+/* Scale controls */
+#vr-scale-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 8px 16px;
+    border-radius: 12px;
+}
+
+#vr-scale-slider {
+    width: 200px;
+    height: 30px;
+    cursor: pointer;
+    accent-color: #3498db;
+}
+
+/* Exit zone */
+#vr-exit-zone {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+/* Debug panel */
+#debug-toggle {
+    position: fixed;
+    top: 4px;
+    right: 4px;
+    z-index: 9999;
+    background: rgba(255, 0, 0, 0.5);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    cursor: pointer;
+}
+
+#debug-panel {
+    position: fixed;
+    top: 28px;
+    right: 4px;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.9);
+    color: #0f0;
+    font-size: 0.6rem;
+    max-width: 90vw;
+    max-height: 60vh;
+    overflow: auto;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+#debug-panel button {
+    font-size: 0.7rem;
+    margin-right: 4px;
+    margin-bottom: 4px;
+}
+
+#debug-log {
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin: 0;
+}
