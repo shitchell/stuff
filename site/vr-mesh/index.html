@@ -100,11 +100,16 @@
         <div id="vr-overlay" class="hidden">
             <div id="vr-overlay-msg"></div>
         </div>
+    </section>
+
+    <!-- VR controls — outside vr-view so they render above fullscreen layer -->
+    <div id="vr-controls" class="hidden">
+        <div id="vr-exit-zone">&#10005;</div>
+        <div id="vr-scale-toggle">&#9881;</div>
         <div id="vr-scale-controls" class="hidden">
             <input type="range" id="vr-scale-slider" min="30" max="100" value="100" step="1">
         </div>
-        <div id="vr-exit-zone">&#10005;</div>
-    </section>
+    </div>
 
     <!-- Debug panel (populated by JS if config.debug) -->
     <div id="debug-toggle" class="hidden">DBG</div>

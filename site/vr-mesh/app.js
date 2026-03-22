@@ -710,6 +710,7 @@ function enterVR() {
 
     console.log('[VR] Entering VR, main:', mainViewPeerId, 'pip:', pipViewPeerId);
     showSection(vrView);
+    $('#vr-controls').classList.remove('hidden');
 
     // Main view
     $('#vr-left').srcObject = mainStream;
@@ -799,6 +800,7 @@ function exitVR() {
     }
     try { screen.orientation.unlock(); } catch {}
 
+    $('#vr-controls').classList.add('hidden');
     showSection(lobby);
 }
 
@@ -931,10 +933,8 @@ $('#vr-scale-slider').addEventListener('input', (e) => {
     $('#vr-main').style.transformOrigin = 'center center';
 });
 
-// Tap VR to show scale slider
-$('#vr-view').addEventListener('click', (e) => {
-    if (e.target.closest('#vr-exit-zone') || e.target.closest('#vr-scale-controls')) return;
-    if (e.target.closest('.vr-pip')) return;
+// Gear button toggles scale slider
+$('#vr-scale-toggle').addEventListener('click', () => {
     const controls = $('#vr-scale-controls');
     controls.classList.toggle('hidden');
     clearTimeout(vrScaleTimeout);
