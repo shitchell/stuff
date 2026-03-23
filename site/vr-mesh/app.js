@@ -418,6 +418,10 @@ function enterLobby() {
     updatePeerList();
     updateViewDropdowns();
 
+    // Update URL so refresh keeps you in this room
+    const url = new URL(window.location);
+    url.searchParams.set('room', roomName);
+    history.replaceState(null, '', url);
 }
 
 function generateRoomQR() {
@@ -989,6 +993,8 @@ async function init() {
     const roomParam = params.get('room');
     if (roomParam) {
         $('#room-input').value = roomParam;
+        // Auto-join if room is in URL (e.g. page refresh or QR scan)
+        joinRoom();
     }
 
     setupRoomHistory();
@@ -1025,6 +1031,10 @@ $('#btn-leave').addEventListener('click', () => {
     joinedRoom = false;
     becomingHost = false;
     if (sharingCamera) stopCamera();
+    // Clear room from URL
+    const url = new URL(window.location);
+    url.searchParams.delete('room');
+    history.replaceState(null, '', url);
     showSection(joinScreen);
 });
 
