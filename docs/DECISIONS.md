@@ -11,7 +11,8 @@ bidirectional peer mesh ("VR Mesh") with optional camera sharing, PIP views, and
 configurable TURN servers. Both pages were designed, implemented, debugged on
 real phones, and taken through 5 rounds of code review in a single session.
 
-**GVP source:** Inferred inline
+**GVP source:** Inferred inline (GVP = Goals, Values, Principles — a framework
+for mapping decisions to motivations)
 
 ### Inferred Goals/Values (no GVP file)
 
@@ -267,7 +268,7 @@ real phones, and taken through 5 rounds of code review in a single session.
 
 - **Chosen:** Self-hosted coturn on shitchell.com (155.138.200.212:3478)
 - **Rationale:** user said, "can we add a TURN server to my shitchell server?" after free Open Relay credentials were found to be dead
-- **Maps to:** G2, P1
+- **Maps to:** V2, P1
 - **Tags:** infrastructure, networking
 
 **Considered:**
@@ -392,6 +393,168 @@ real phones, and taken through 5 rounds of code review in a single session.
 | Alternative | Source | Description | Why not? |
 |---|---|---|---|
 | No URL tracking | discussed | Original implementation — refresh loses room | user wanted refresh persistence |
+
+---
+
+### D21: Audio
+
+> Whether the video calls include audio
+
+- **Chosen:** Video only — no audio transmitted
+- **Rationale:** TBD — audio was never discussed. The `getUserMedia` calls use
+  `{ video: ..., audio: false }` throughout. The use case (phones in VR headsets)
+  makes audio impractical — users would talk to each other in person.
+- **Maps to:** V1, G1
+- **Tags:** scope, media
+
+**Considered:**
+
+| Alternative | Source | Description | Why not? |
+|---|---|---|---|
+| Include audio | claude considered | Transmit audio alongside video | Not discussed — impractical for in-person VR headset use |
+
+---
+
+### D22: WebRTC Library — PeerJS
+
+> Which library to use for WebRTC peer connections
+
+- **Chosen:** PeerJS (loaded from unpkg CDN)
+- **Rationale:** TBD — PeerJS was assumed from the start. It provides a simple
+  API for WebRTC with built-in signaling via their free cloud server, which
+  aligns with the "no backend" constraint (G2).
+- **Maps to:** G2, V1
+- **Tags:** technology, architecture
+
+**Considered:**
+
+| Alternative | Source | Description | Why not? |
+|---|---|---|---|
+| simple-peer | claude considered | Lightweight WebRTC wrapper | Not discussed |
+| Raw WebRTC API | claude considered | No library, direct RTCPeerConnection | Not discussed — significantly more code for signaling |
+| Self-hosted PeerJS server | claude considered | Run own signaling server | Not discussed |
+
+---
+
+### D23: PeerJS Signaling Server
+
+> Which signaling server to use for PeerJS connection brokering
+
+- **Chosen:** PeerJS default cloud server (`0.peerjs.com`)
+- **Rationale:** TBD — the default was used without discussion. It's free,
+  requires no setup, and aligns with G2 (static hosting, no backend).
+- **Maps to:** G2
+- **Tags:** infrastructure, networking
+
+**Considered:**
+
+| Alternative | Source | Description | Why not? |
+|---|---|---|---|
+| Self-hosted PeerJS server | claude considered | Run peerjs-server on shitchell.com | Not discussed — would add infrastructure for marginal benefit |
+
+---
+
+### D24: Fullscreen Target — documentElement
+
+> Which DOM element to request fullscreen on for VR mode
+
+- **Chosen:** `document.documentElement` (the `<html>` element)
+- **Rationale:** Discovered through debugging. Fullscreening `#vr-view` directly
+  broke video rendering (black screen on mobile). `documentElement` works for
+  video but requires VR controls to be placed outside `#vr-view` as siblings
+  (see D15).
+- **Maps to:** V2
+- **Tags:** mobile, fullscreen, VR
+
+**Considered:**
+
+| Alternative | Source | Description | Why not? |
+|---|---|---|---|
+| Fullscreen `#vr-view` | discussed | Would keep controls in same stacking context | Broke video rendering — black screen on mobile |
+
+---
+
+### D25: Stereoscopic Rendering Approach
+
+> How the VR split-screen effect is achieved
+
+- **Chosen:** CSS-only — two `<video>` elements side-by-side via flexbox, each
+  showing the same `srcObject` stream, each taking 50% width with
+  `object-fit: cover`. No WebGL, no Three.js.
+- **Rationale:** Claude said in the design, "No Three.js/WebGL — flat video
+  doesn't need 3D rendering; CSS split is simpler and more performant"
+- **Maps to:** V1
+- **Tags:** rendering, VR
+
+**Considered:**
+
+| Alternative | Source | Description | Why not? |
+|---|---|---|---|
+| Three.js / WebGL | discussed | Render video on 3D plane | "Flat video doesn't need 3D rendering; CSS split is simpler and more performant" |
+| Canvas rendering | claude considered | Draw video frames to canvas | Not discussed — unnecessary complexity for flat video |
+
+---
+
+### D26: Scale Slider Purpose
+
+> What the VR scale slider does and why it exists
+
+- **Chosen:** A range slider (30%-100%) that CSS-transforms the VR view to scale
+  it down, adding black borders. Used to adjust the video size for different
+  phone/headset combinations where the default full-screen split is too wide for
+  comfortable stereoscopic viewing.
+- **Rationale:** user said their "phone size is a bit bigger, and it's hard for
+  me to condense the two images into one"
+- **Maps to:** V2
+- **Tags:** VR, UX, accessibility
+
+**Considered:**
+
+| Alternative | Source | Description | Why not? |
+|---|---|---|---|
+| Fixed size only | discussed | No adjustment | user's phone didn't fit well in their headset at default scale |
+
+---
+
+### D27: Cardboard Call Replacement Criteria
+
+> When to replace Cardboard Call with VR Mesh
+
+- **Chosen:** No formal criteria — replace when VR Mesh is stable
+- **Rationale:** user said, "once this is stable, we can delete the cardboard
+  call." No specific metrics or timeline discussed.
+- **Maps to:** P1, P2
+- **Tags:** migration, lifecycle
+
+**Considered:**
+
+| Alternative | Source | Description | Why not? |
+|---|---|---|---|
+| Immediate replacement | discussed | Replace on merge | user said, "B for now since the cardboard call is stable" |
+| Feature parity checklist | claude considered | Define specific features needed before replacement | Not discussed |
+
+---
+
+### D28: Empty Stream Canvas Hack
+
+> How to initiate a PeerJS call without a real camera stream
+
+- **Chosen:** Create a 1x1 canvas, call `captureStream(0)`, and use the
+  resulting `MediaStream` as the caller's stream. PeerJS requires a stream to
+  call `peer.call()`, but receivers/non-sharing peers don't have a camera active.
+- **Rationale:** PeerJS API requires a `MediaStream` argument to `peer.call()`.
+  Originally used an `AudioContext` oscillator stream, but that caused WebRTC
+  negotiation failures (SDP mismatch between audio-only offer and video answer).
+  The canvas approach provides a valid video track.
+- **Maps to:** V1
+- **Tags:** WebRTC, workaround
+
+**Considered:**
+
+| Alternative | Source | Description | Why not? |
+|---|---|---|---|
+| AudioContext oscillator stream | discussed | Create silent audio stream | Caused WebRTC negotiation failure — "the AudioContext-based empty stream had an unstarted oscillator producing no active tracks, causing WebRTC negotiation to silently fail" |
+| `new MediaStream()` (empty) | claude considered | Stream with no tracks | PeerJS may reject streams with no tracks |
 
 ---
 
