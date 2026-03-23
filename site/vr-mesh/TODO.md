@@ -30,3 +30,9 @@ edge-case robustness or minor polish.
    persists. Clear it in `exitVR` or `hidePIP`.
 
 6. **Trailing blank line in `enterLobby()`** — Whitespace nit at the end of the function.
+
+## Feature Enhancements
+
+7. **List all cameras** — Replace front/rear toggle with a full camera picker
+   listing all available devices (phones with 3+ cameras, USB cameras on
+   computers). "Maximum flexibility for configurable setups."
