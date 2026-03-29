@@ -152,11 +152,15 @@ let myPeer = null;
 let myName = '';
 let roomName = '';
 let localStream = null;
-let currentFacingMode = 'environment';
+let selectedDeviceId = null;
 let sharingCamera = false;
 let isHost = false;
 let whepPeerConnection = null;
 let whepResourceUrl = null;
+let whepStream = null;
+// WHEP virtual peer: calls made to real peers to send the WHEP stream
+// peerId -> MediaConnection
+const whepCalls = new Map();
 
 // peers map: peerId -> { name, conn (DataConnection), call (MediaConnection), stream, sharing }
 const peers = new Map();
@@ -203,9 +207,17 @@ function handleIncomingConnection(conn) {
                         peerId: id, name: p.name, sharing: p.sharing
                     }))
                 ];
+                // Include WHEP virtual peer if active
+                if (whepStream && whepStream.active) {
+                    peerList.push({ peerId: 'whep-stream', name: getWhepStreamName(), sharing: true, virtual: true });
+                }
                 conn.send({ type: 'peer-list', peers: peerList });
                 if (sharingCamera && localStream) {
                     callPeerWithStream(data.peerId);
+                }
+                // Send WHEP stream to the new peer
+                if (whepStream && whepStream.active) {
+                    callPeerWithWhepStream(data.peerId);
                 }
                 peers.forEach((p, id) => {
                     if (id !== data.peerId && p.conn && p.conn.open) {
@@ -219,6 +231,17 @@ function handleIncomingConnection(conn) {
             connectToPeer(data.peerId, data.name);
         } else if (data.type === 'peer-left') {
             removePeer(data.peerId);
+        } else if (data.type === 'virtual-peer') {
+            // A remote peer is advertising a virtual peer (e.g. WHEP stream)
+            console.log('[PEER] Virtual peer announced:', data.virtualPeerId, data.name);
+            addPeer(data.virtualPeerId, data.name, null);
+            const p = peers.get(data.virtualPeerId);
+            if (p) { p.sharing = true; p.virtual = true; }
+            updatePeerList();
+            updateViewDropdowns();
+        } else if (data.type === 'virtual-peer-left') {
+            console.log('[PEER] Virtual peer left:', data.virtualPeerId);
+            removePeer(data.virtualPeerId);
         }
     });
     conn.on('close', () => {
@@ -285,7 +308,14 @@ async function joinRoom() {
             if (data.type === 'peer-list') {
                 data.peers.forEach(p => {
                     if (p.peerId !== myId) {
-                        connectToPeer(p.peerId, p.name);
+                        if (p.virtual) {
+                            // Virtual peer — just add to peers map, stream will arrive via call
+                            addPeer(p.peerId, p.name, null);
+                            const peer = peers.get(p.peerId);
+                            if (peer) { peer.sharing = true; peer.virtual = true; }
+                        } else {
+                            connectToPeer(p.peerId, p.name);
+                        }
                     }
                 });
                 enterLobby();
@@ -295,6 +325,16 @@ async function joinRoom() {
                 connectToPeer(data.peerId, data.name);
             } else if (data.type === 'peer-left') {
                 removePeer(data.peerId);
+            } else if (data.type === 'virtual-peer') {
+                console.log('[PEER] Virtual peer announced:', data.virtualPeerId, data.name);
+                addPeer(data.virtualPeerId, data.name, null);
+                const p = peers.get(data.virtualPeerId);
+                if (p) { p.sharing = true; p.virtual = true; }
+                updatePeerList();
+                updateViewDropdowns();
+            } else if (data.type === 'virtual-peer-left') {
+                console.log('[PEER] Virtual peer left:', data.virtualPeerId);
+                removePeer(data.virtualPeerId);
             }
         });
 
@@ -384,8 +424,22 @@ function attemptHostHandoff() {
         if (sharingCamera && localStream) {
             console.log('[HOST] Re-sharing camera after handoff');
             setTimeout(() => {
-                peers.forEach((peer, id) => callPeerWithStream(id));
+                peers.forEach((peer, id) => {
+                    if (id === 'whep-stream') return;
+                    callPeerWithStream(id);
+                });
                 broadcastCameraStatus(true);
+                // Re-share WHEP stream if active
+                if (whepStream && whepStream.active) {
+                    const whepName = getWhepStreamName();
+                    peers.forEach((peer, id) => {
+                        if (id === 'whep-stream') return;
+                        callPeerWithWhepStream(id);
+                        if (peer.conn && peer.conn.open) {
+                            peer.conn.send({ type: 'virtual-peer', virtualPeerId: 'whep-stream', name: whepName });
+                        }
+                    });
+                }
             }, 1000);
         }
     });
@@ -489,6 +543,11 @@ function connectToPeer(peerId, name) {
         if (sharingCamera && localStream) {
             callPeerWithStream(peerId);
         }
+        // If we have a WHEP stream, send it too
+        if (whepStream && whepStream.active) {
+            callPeerWithWhepStream(peerId);
+            conn.send({ type: 'virtual-peer', virtualPeerId: 'whep-stream', name: getWhepStreamName() });
+        }
 
         conn.on('data', (data) => {
             if (data.type === 'camera-status') {
@@ -497,6 +556,16 @@ function connectToPeer(peerId, name) {
                 connectToPeer(data.peerId, data.name);
             } else if (data.type === 'peer-left') {
                 removePeer(data.peerId);
+            } else if (data.type === 'virtual-peer') {
+                console.log('[PEER] Virtual peer announced:', data.virtualPeerId, data.name);
+                addPeer(data.virtualPeerId, data.name, null);
+                const p = peers.get(data.virtualPeerId);
+                if (p) { p.sharing = true; p.virtual = true; }
+                updatePeerList();
+                updateViewDropdowns();
+            } else if (data.type === 'virtual-peer-left') {
+                console.log('[PEER] Virtual peer left:', data.virtualPeerId);
+                removePeer(data.virtualPeerId);
             }
         });
     });
@@ -513,13 +582,16 @@ function connectToPeer(peerId, name) {
 }
 
 function handleIncomingCall(call) {
-    console.log('[CALL] Incoming call from:', call.peer);
+    console.log('[CALL] Incoming call from:', call.peer, 'metadata:', JSON.stringify(call.metadata));
     const stream = sharingCamera ? localStream : createEmptyStream();
     call.answer(stream);
 
     call.on('stream', (remoteStream) => {
-        console.log('[CALL] Received stream from:', call.peer);
-        applyStreamToPeer(call.peer, remoteStream, call);
+        // Check if this is a WHEP virtual peer stream
+        const isWhepCall = call.metadata && call.metadata.virtualPeerId === 'whep-stream';
+        const targetPeerId = isWhepCall ? 'whep-stream' : call.peer;
+        console.log('[CALL] Received stream from:', call.peer, isWhepCall ? '(WHEP virtual peer)' : '');
+        applyStreamToPeer(targetPeerId, remoteStream, call);
     });
 
     call.on('close', () => {
@@ -537,6 +609,33 @@ function callPeerWithStream(peerId) {
     call.on('stream', (remoteStream) => {
         applyStreamToPeer(peerId, remoteStream, call);
     });
+}
+
+// Call a peer with the WHEP stream (virtual peer)
+function callPeerWithWhepStream(peerId) {
+    if (!whepStream || !whepStream.active) return;
+    console.log('[WHEP] Calling peer with WHEP stream:', peerId);
+    const call = myPeer.call(peerId, whepStream, { metadata: { virtualPeerId: 'whep-stream' } });
+    whepCalls.set(peerId, call);
+    call.on('stream', () => {
+        // We don't need the return stream for WHEP calls
+    });
+    call.on('close', () => {
+        whepCalls.delete(peerId);
+    });
+}
+
+function getWhepStreamName() {
+    const url = $('#stream-url-input').value.trim();
+    if (url) {
+        try {
+            const parsed = new URL(url);
+            // Use path segment as name, e.g. "/cam" -> "cam"
+            const pathName = parsed.pathname.replace(/\/whep$/, '').split('/').filter(Boolean).pop();
+            if (pathName) return pathName;
+        } catch {}
+    }
+    return 'External Stream';
 }
 
 function applyStreamToPeer(peerId, stream, call) {
@@ -578,23 +677,95 @@ function createEmptyStream() {
 }
 
 // --- Camera Sharing ---
-async function startCamera() {
+async function populateCameraList() {
+    const select = $('#camera-select');
     try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const cameras = devices.filter(d => d.kind === 'videoinput');
+        select.innerHTML = '';
+        if (cameras.length === 0) {
+            select.innerHTML = '<option value="">No cameras found</option>';
+            return;
+        }
+        cameras.forEach((cam, i) => {
+            const opt = document.createElement('option');
+            opt.value = cam.deviceId;
+            opt.textContent = cam.label || `Camera ${i + 1}`;
+            if (cam.deviceId === selectedDeviceId) opt.selected = true;
+            select.appendChild(opt);
+        });
+        // If no device was previously selected, select the first
+        if (!selectedDeviceId && cameras.length > 0) {
+            selectedDeviceId = cameras[0].deviceId;
+        }
+        // Auto-select if current device is in the list
+        if (selectedDeviceId) {
+            select.value = selectedDeviceId;
+        }
+        if (cameras.length > 1) {
+            select.classList.remove('hidden');
+        }
+    } catch (err) {
+        console.warn('[CAMERA] Could not enumerate devices:', err);
+    }
+}
+
+async function switchCamera(deviceId) {
+    if (!deviceId) return;
+    selectedDeviceId = deviceId;
+    try {
+        if (localStream) {
+            localStream.getTracks().forEach(t => t.stop());
+        }
         localStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: currentFacingMode },
+            video: { deviceId: { exact: deviceId } },
             audio: false
         });
+        $('#camera-preview').srcObject = localStream;
+
+        // Replace track on all active calls
+        const newTrack = localStream.getVideoTracks()[0];
+        peers.forEach((peer) => {
+            if (peer.virtual) return; // skip virtual peers
+            if (peer.call && peer.call.peerConnection) {
+                const sender = peer.call.peerConnection.getSenders()
+                    .find(s => s.track && s.track.kind === 'video');
+                if (sender) sender.replaceTrack(newTrack);
+            }
+        });
+    } catch (err) {
+        console.error('[CAMERA] Switch failed:', err);
+    }
+}
+
+async function startCamera() {
+    try {
+        const constraints = { audio: false };
+        if (selectedDeviceId) {
+            constraints.video = { deviceId: { exact: selectedDeviceId } };
+        } else {
+            constraints.video = { facingMode: 'environment' };
+        }
+        localStream = await navigator.mediaDevices.getUserMedia(constraints);
         console.log('[CAMERA] Camera started');
+
+        // After getting permission, populate camera list (labels now available)
+        const track = localStream.getVideoTracks()[0];
+        if (track) {
+            const settings = track.getSettings();
+            if (settings.deviceId) selectedDeviceId = settings.deviceId;
+        }
+        await populateCameraList();
+
         $('#camera-preview').srcObject = localStream;
         $('#camera-preview').classList.remove('hidden');
         sharingCamera = true;
         $('#btn-share-camera').classList.add('active');
         $('#btn-share-camera').textContent = 'Stop Sharing';
 
-        await checkCameraCount();
-
         // Call all connected peers to send them our stream
         peers.forEach((peer, id) => {
+            if (peer.virtual) return; // skip virtual peers (e.g. WHEP)
             if (peer.call) {
                 // Already have a call, just replace the track
                 if (peer.call.peerConnection) {
@@ -627,11 +798,6 @@ async function startCamera() {
 }
 
 function stopCamera() {
-    // Disconnect external stream if active
-    if (whepPeerConnection) {
-        disconnectExternalStream();
-    }
-
     if (localStream) {
         localStream.getTracks().forEach(t => t.stop());
         localStream = null;
@@ -639,65 +805,14 @@ function stopCamera() {
     sharingCamera = false;
     $('#camera-preview').classList.add('hidden');
     $('#camera-preview').srcObject = null;
-    $('#stream-preview').classList.add('hidden');
-    $('#stream-preview').srcObject = null;
     $('#btn-share-camera').classList.remove('active');
     $('#btn-share-camera').textContent = 'Share Camera';
-    $('#btn-flip-camera').classList.add('hidden');
+    $('#camera-select').classList.add('hidden');
 
     broadcastCameraStatus(false);
     updateViewDropdowns();
 }
 
-async function flipCamera() {
-    const oldMode = currentFacingMode;
-    currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
-    if (localStream) {
-        localStream.getTracks().forEach(t => t.stop());
-    }
-
-    try {
-        localStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: currentFacingMode },
-            audio: false
-        });
-        $('#camera-preview').srcObject = localStream;
-
-        // Replace track on all active calls
-        const newTrack = localStream.getVideoTracks()[0];
-        peers.forEach((peer) => {
-            if (peer.call && peer.call.peerConnection) {
-                const sender = peer.call.peerConnection.getSenders()
-                    .find(s => s.track && s.track.kind === 'video');
-                if (sender) sender.replaceTrack(newTrack);
-            }
-        });
-    } catch (err) {
-        console.error('[CAMERA] Flip failed:', err);
-        currentFacingMode = oldMode;
-        // Re-acquire the old camera since we stopped it
-        try {
-            localStream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: currentFacingMode },
-                audio: false
-            });
-            $('#camera-preview').srcObject = localStream;
-        } catch (e) {
-            console.error('[CAMERA] Could not restore camera:', e);
-            stopCamera();
-        }
-    }
-}
-
-async function checkCameraCount() {
-    try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const cameras = devices.filter(d => d.kind === 'videoinput');
-        if (cameras.length >= 2) {
-            $('#btn-flip-camera').classList.remove('hidden');
-        }
-    } catch {}
-}
 
 function broadcastCameraStatus(sharing) {
     const msg = { type: 'camera-status', peerId: myPeer.id, sharing };
@@ -722,11 +837,6 @@ async function connectExternalStream(url) {
     statusEl.className = 'status waiting';
 
     try {
-        // If camera is currently sharing, stop it first
-        if (sharingCamera) {
-            stopCamera();
-        }
-
         // Create RTCPeerConnection
         const pc = new RTCPeerConnection({
             iceServers: CONFIG.iceServers
@@ -739,7 +849,6 @@ async function connectExternalStream(url) {
 
         // Collect ICE candidates to trickle via PATCH
         const pendingCandidates = [];
-        let canTrickle = false;
 
         pc.onicecandidate = (event) => {
             if (event.candidate && whepResourceUrl) {
@@ -756,47 +865,46 @@ async function connectExternalStream(url) {
             }
         };
 
-        // When we get the remote stream
+        // When we get the remote stream — treat as virtual peer
         pc.ontrack = (event) => {
             console.log('[WHEP] Got track:', event.track.kind);
             if (event.streams && event.streams[0]) {
-                localStream = event.streams[0];
+                whepStream = event.streams[0];
             } else {
-                // Build a stream from the track
-                if (!localStream || !localStream.active) {
-                    localStream = new MediaStream();
+                if (!whepStream || !whepStream.active) {
+                    whepStream = new MediaStream();
                 }
-                localStream.addTrack(event.track);
+                whepStream.addTrack(event.track);
             }
 
             // Show preview
             const preview = $('#stream-preview');
-            preview.srcObject = localStream;
+            preview.srcObject = whepStream;
             preview.classList.remove('hidden');
 
-            sharingCamera = true;
-            $('#btn-share-camera').classList.add('active');
-            $('#btn-share-camera').textContent = 'Stop Sharing';
+            // Add WHEP as a virtual peer in the local peers map
+            const whepName = getWhepStreamName();
+            if (!peers.has('whep-stream')) {
+                addPeer('whep-stream', whepName, null);
+            }
+            const whepPeer = peers.get('whep-stream');
+            if (whepPeer) {
+                whepPeer.stream = whepStream;
+                whepPeer.sharing = true;
+                whepPeer.virtual = true;
+            }
 
-            // Share with peers
+            // Call all connected peers to send them the WHEP stream
             peers.forEach((peer, id) => {
-                if (peer.call) {
-                    if (peer.call.peerConnection) {
-                        const videoTrack = localStream.getVideoTracks()[0];
-                        if (videoTrack) {
-                            const sender = peer.call.peerConnection.getSenders()
-                                .find(s => s.track && s.track.kind === 'video');
-                            if (sender) {
-                                sender.replaceTrack(videoTrack);
-                                return;
-                            }
-                        }
-                    }
+                if (id === 'whep-stream') return; // skip the virtual peer itself
+                callPeerWithWhepStream(id);
+                // Notify peer about the virtual peer
+                if (peer.conn && peer.conn.open) {
+                    peer.conn.send({ type: 'virtual-peer', virtualPeerId: 'whep-stream', name: whepName });
                 }
-                callPeerWithStream(id);
             });
 
-            broadcastCameraStatus(true);
+            updatePeerList();
             updateViewDropdowns();
 
             statusEl.textContent = 'Connected';
@@ -878,26 +986,24 @@ function disconnectExternalStream() {
         whepResourceUrl = null;
     }
 
-    // If the external stream was our localStream, clear it
-    if (localStream && !sharingCamera) {
-        // Camera was already stopped, nothing to do
-    } else if (localStream) {
-        // Only stop tracks if they came from WHEP (not getUserMedia)
-        // We can tell because getUserMedia tracks have deviceId in settings
-        const tracks = localStream.getTracks();
-        const isWhepStream = tracks.length > 0 && !tracks[0].getSettings().deviceId;
-        if (isWhepStream) {
-            localStream = null;
-            sharingCamera = false;
-            $('#camera-preview').classList.add('hidden');
-            $('#stream-preview').classList.add('hidden');
-            $('#stream-preview').srcObject = null;
-            $('#btn-share-camera').classList.remove('active');
-            $('#btn-share-camera').textContent = 'Share Camera';
-            broadcastCameraStatus(false);
-            updateViewDropdowns();
+    // Close all WHEP media calls to peers
+    whepCalls.forEach((call) => {
+        try { call.close(); } catch {}
+    });
+    whepCalls.clear();
+
+    // Notify peers that the virtual peer is gone
+    peers.forEach((peer, id) => {
+        if (id === 'whep-stream') return;
+        if (peer.conn && peer.conn.open) {
+            peer.conn.send({ type: 'virtual-peer-left', virtualPeerId: 'whep-stream' });
         }
-    }
+    });
+
+    // Remove the virtual peer from our peers map
+    removePeer('whep-stream');
+
+    whepStream = null;
 
     $('#stream-preview').classList.add('hidden');
     $('#stream-preview').srcObject = null;
@@ -996,6 +1102,8 @@ function updateViewDropdowns() {
 // --- VR View ---
 function getStreamForPeer(peerId) {
     if (peerId === 'self') return localStream;
+    // For local WHEP stream, use whepStream directly (more reliable than peers map)
+    if (peerId === 'whep-stream' && whepStream && whepStream.active) return whepStream;
     const peer = peers.get(peerId);
     return peer ? peer.stream : null;
 }
@@ -1226,6 +1334,8 @@ $('#room-input').addEventListener('keydown', (e) => {
 $('#btn-leave').addEventListener('click', () => {
     console.log('[LOBBY] Leaving room');
     joinRetries = 0;
+    if (whepPeerConnection) disconnectExternalStream();
+    if (sharingCamera) stopCamera();
     peers.forEach((peer) => {
         if (peer.conn && peer.conn.open) {
             peer.conn.send({ type: 'peer-left', peerId: myPeer.id });
@@ -1238,8 +1348,6 @@ $('#btn-leave').addEventListener('click', () => {
     isHost = false;
     joinedRoom = false;
     becomingHost = false;
-    if (whepPeerConnection) disconnectExternalStream();
-    if (sharingCamera) stopCamera();
     // Clear room from URL
     const url = new URL(window.location);
     url.searchParams.delete('room');
@@ -1273,7 +1381,11 @@ $('#btn-share-camera').addEventListener('click', () => {
     }
 });
 
-$('#btn-flip-camera').addEventListener('click', flipCamera);
+$('#camera-select').addEventListener('change', (e) => {
+    if (sharingCamera && e.target.value) {
+        switchCamera(e.target.value);
+    }
+});
 
 $('#btn-connect-stream').addEventListener('click', () => {
     if (whepPeerConnection) {
@@ -1341,6 +1453,7 @@ $('#vr-controls').addEventListener('click', (e) => {
 window.addEventListener('pagehide', () => {
     if (whepPeerConnection) disconnectExternalStream();
     if (localStream) localStream.getTracks().forEach(t => t.stop());
+    if (whepStream) whepStream.getTracks().forEach(t => t.stop());
     if (myPeer && !myPeer.destroyed) myPeer.destroy();
 });
 
