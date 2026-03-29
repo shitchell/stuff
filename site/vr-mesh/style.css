@@ -206,13 +206,40 @@ body.vr-active {
     margin-bottom: 0.5rem;
 }
 
-#camera-preview {
+#camera-preview, #stream-preview {
     width: 100%;
     max-height: 200px;
     border-radius: 8px;
     background: #000;
     object-fit: cover;
     margin-bottom: 1rem;
+}
+
+/* External stream controls */
+#stream-controls {
+    margin-bottom: 0.5rem;
+}
+
+#stream-controls .combo-input input {
+    font-size: 0.95rem;
+    padding: 0.6rem 0.75rem;
+}
+
+#stream-controls .combo-input button {
+    padding: 0 1rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+#btn-connect-stream.active {
+    background: #c0392b;
+    border-color: #c0392b;
+    color: #fff;
+}
+
+#stream-status {
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
 }
 
 #lobby-qr {

@@ -155,6 +155,8 @@ let localStream = null;
 let currentFacingMode = 'environment';
 let sharingCamera = false;
 let isHost = false;
+let whepPeerConnection = null;
+let whepResourceUrl = null;
 
 // peers map: peerId -> { name, conn (DataConnection), call (MediaConnection), stream, sharing }
 const peers = new Map();
@@ -625,6 +627,11 @@ async function startCamera() {
 }
 
 function stopCamera() {
+    // Disconnect external stream if active
+    if (whepPeerConnection) {
+        disconnectExternalStream();
+    }
+
     if (localStream) {
         localStream.getTracks().forEach(t => t.stop());
         localStream = null;
@@ -632,6 +639,8 @@ function stopCamera() {
     sharingCamera = false;
     $('#camera-preview').classList.add('hidden');
     $('#camera-preview').srcObject = null;
+    $('#stream-preview').classList.add('hidden');
+    $('#stream-preview').srcObject = null;
     $('#btn-share-camera').classList.remove('active');
     $('#btn-share-camera').textContent = 'Share Camera';
     $('#btn-flip-camera').classList.add('hidden');
@@ -697,6 +706,205 @@ function broadcastCameraStatus(sharing) {
             peer.conn.send(msg);
         }
     });
+}
+
+// --- External Stream (WHEP) ---
+async function connectExternalStream(url) {
+    const statusEl = $('#stream-status');
+    const btn = $('#btn-connect-stream');
+
+    // Normalize the URL: append /whep if the path doesn't already end with it
+    if (!url.endsWith('/whep')) {
+        url = url.replace(/\/$/, '') + '/whep';
+    }
+
+    statusEl.textContent = 'Connecting...';
+    statusEl.className = 'status waiting';
+
+    try {
+        // If camera is currently sharing, stop it first
+        if (sharingCamera) {
+            stopCamera();
+        }
+
+        // Create RTCPeerConnection
+        const pc = new RTCPeerConnection({
+            iceServers: CONFIG.iceServers
+        });
+        whepPeerConnection = pc;
+
+        // We need to add a transceiver to receive video
+        pc.addTransceiver('video', { direction: 'recvonly' });
+        pc.addTransceiver('audio', { direction: 'recvonly' });
+
+        // Collect ICE candidates to trickle via PATCH
+        const pendingCandidates = [];
+        let canTrickle = false;
+
+        pc.onicecandidate = (event) => {
+            if (event.candidate && whepResourceUrl) {
+                // Trickle ICE candidate via PATCH
+                const candidate = event.candidate;
+                const body = `a=${candidate.candidate}\r\n`;
+                fetch(whepResourceUrl, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/trickle-ice-sdpfrag' },
+                    body: body
+                }).catch(err => console.warn('[WHEP] ICE trickle failed:', err));
+            } else if (event.candidate) {
+                pendingCandidates.push(event.candidate);
+            }
+        };
+
+        // When we get the remote stream
+        pc.ontrack = (event) => {
+            console.log('[WHEP] Got track:', event.track.kind);
+            if (event.streams && event.streams[0]) {
+                localStream = event.streams[0];
+            } else {
+                // Build a stream from the track
+                if (!localStream || !localStream.active) {
+                    localStream = new MediaStream();
+                }
+                localStream.addTrack(event.track);
+            }
+
+            // Show preview
+            const preview = $('#stream-preview');
+            preview.srcObject = localStream;
+            preview.classList.remove('hidden');
+
+            sharingCamera = true;
+            $('#btn-share-camera').classList.add('active');
+            $('#btn-share-camera').textContent = 'Stop Sharing';
+
+            // Share with peers
+            peers.forEach((peer, id) => {
+                if (peer.call) {
+                    if (peer.call.peerConnection) {
+                        const videoTrack = localStream.getVideoTracks()[0];
+                        if (videoTrack) {
+                            const sender = peer.call.peerConnection.getSenders()
+                                .find(s => s.track && s.track.kind === 'video');
+                            if (sender) {
+                                sender.replaceTrack(videoTrack);
+                                return;
+                            }
+                        }
+                    }
+                }
+                callPeerWithStream(id);
+            });
+
+            broadcastCameraStatus(true);
+            updateViewDropdowns();
+
+            statusEl.textContent = 'Connected';
+            statusEl.className = 'status connected';
+        };
+
+        pc.onconnectionstatechange = () => {
+            console.log('[WHEP] Connection state:', pc.connectionState);
+            if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
+                statusEl.textContent = 'Stream disconnected';
+                statusEl.className = 'status error';
+            }
+        };
+
+        // Create SDP offer
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+
+        // POST the offer to the WHEP endpoint
+        console.log('[WHEP] Sending offer to:', url);
+        const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/sdp' },
+            body: pc.localDescription.sdp
+        });
+
+        if (!resp.ok) {
+            const errText = await resp.text().catch(() => '');
+            throw new Error(`WHEP endpoint returned ${resp.status}: ${errText}`);
+        }
+
+        // Get the resource URL for ICE trickling
+        const location = resp.headers.get('Location');
+        if (location) {
+            // Location may be relative
+            whepResourceUrl = new URL(location, url).href;
+            console.log('[WHEP] Resource URL:', whepResourceUrl);
+
+            // Send any pending ICE candidates
+            for (const candidate of pendingCandidates) {
+                const body = `a=${candidate.candidate}\r\n`;
+                fetch(whepResourceUrl, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/trickle-ice-sdpfrag' },
+                    body: body
+                }).catch(err => console.warn('[WHEP] ICE trickle failed:', err));
+            }
+            pendingCandidates.length = 0;
+        }
+
+        // Set the remote SDP answer
+        const answerSDP = await resp.text();
+        console.log('[WHEP] Got answer SDP, length:', answerSDP.length);
+        await pc.setRemoteDescription(new RTCSessionDescription({
+            type: 'answer',
+            sdp: answerSDP
+        }));
+
+        btn.textContent = 'Disconnect';
+        btn.classList.add('active');
+
+    } catch (err) {
+        console.error('[WHEP] Error:', err);
+        statusEl.textContent = 'Failed: ' + err.message;
+        statusEl.className = 'status error';
+        disconnectExternalStream();
+    }
+}
+
+function disconnectExternalStream() {
+    if (whepPeerConnection) {
+        whepPeerConnection.close();
+        whepPeerConnection = null;
+    }
+
+    // Send DELETE to the resource URL to clean up server-side
+    if (whepResourceUrl) {
+        fetch(whepResourceUrl, { method: 'DELETE' }).catch(() => {});
+        whepResourceUrl = null;
+    }
+
+    // If the external stream was our localStream, clear it
+    if (localStream && !sharingCamera) {
+        // Camera was already stopped, nothing to do
+    } else if (localStream) {
+        // Only stop tracks if they came from WHEP (not getUserMedia)
+        // We can tell because getUserMedia tracks have deviceId in settings
+        const tracks = localStream.getTracks();
+        const isWhepStream = tracks.length > 0 && !tracks[0].getSettings().deviceId;
+        if (isWhepStream) {
+            localStream = null;
+            sharingCamera = false;
+            $('#camera-preview').classList.add('hidden');
+            $('#stream-preview').classList.add('hidden');
+            $('#stream-preview').srcObject = null;
+            $('#btn-share-camera').classList.remove('active');
+            $('#btn-share-camera').textContent = 'Share Camera';
+            broadcastCameraStatus(false);
+            updateViewDropdowns();
+        }
+    }
+
+    $('#stream-preview').classList.add('hidden');
+    $('#stream-preview').srcObject = null;
+    $('#btn-connect-stream').textContent = 'Connect';
+    $('#btn-connect-stream').classList.remove('active');
+    $('#stream-status').textContent = '';
+    $('#stream-status').className = 'status';
 }
 
 // --- UI Updates ---
@@ -1030,6 +1238,7 @@ $('#btn-leave').addEventListener('click', () => {
     isHost = false;
     joinedRoom = false;
     becomingHost = false;
+    if (whepPeerConnection) disconnectExternalStream();
     if (sharingCamera) stopCamera();
     // Clear room from URL
     const url = new URL(window.location);
@@ -1065,6 +1274,26 @@ $('#btn-share-camera').addEventListener('click', () => {
 });
 
 $('#btn-flip-camera').addEventListener('click', flipCamera);
+
+$('#btn-connect-stream').addEventListener('click', () => {
+    if (whepPeerConnection) {
+        disconnectExternalStream();
+    } else {
+        const url = $('#stream-url-input').value.trim();
+        if (!url) {
+            $('#stream-status').textContent = 'Enter a stream URL';
+            $('#stream-status').className = 'status error';
+            return;
+        }
+        connectExternalStream(url);
+    }
+});
+
+$('#stream-url-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        $('#btn-connect-stream').click();
+    }
+});
 
 $('#btn-enter-vr').addEventListener('click', () => {
     console.log('[EVENT] Enter VR button clicked');
@@ -1110,6 +1339,7 @@ $('#vr-controls').addEventListener('click', (e) => {
 });
 
 window.addEventListener('pagehide', () => {
+    if (whepPeerConnection) disconnectExternalStream();
     if (localStream) localStream.getTracks().forEach(t => t.stop());
     if (myPeer && !myPeer.destroyed) myPeer.destroy();
 });

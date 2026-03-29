@@ -47,6 +47,19 @@
         </div>
         <video id="camera-preview" class="hidden" autoplay playsinline muted></video>
 
+        <!-- External stream (WHEP) -->
+        <div id="stream-controls">
+            <div class="form-group">
+                <label for="stream-url-input">External Stream (WHEP)</label>
+                <div class="combo-input">
+                    <input type="url" id="stream-url-input" placeholder="http://192.168.0.90:8889/cam" autocomplete="off">
+                    <button id="btn-connect-stream" type="button">Connect</button>
+                </div>
+            </div>
+            <div id="stream-status" class="status"></div>
+        </div>
+        <video id="stream-preview" class="hidden" autoplay playsinline muted></video>
+
         <!-- QR Code -->
         <div id="lobby-qr"></div>
 
