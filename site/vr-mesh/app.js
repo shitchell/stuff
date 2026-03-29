@@ -684,15 +684,21 @@ async function populateCameraList() {
     try {
         const devices = await navigator.mediaDevices.enumerateDevices();
         const cameras = devices.filter(d => d.kind === 'videoinput');
+        console.log('[CAMERA] Enumerated', devices.length, 'devices,', cameras.length, 'cameras:');
+        cameras.forEach((cam, i) => {
+            console.log('[CAMERA]  ', i, cam.label || '(no label)', cam.deviceId?.slice(0, 12) + '...', cam.groupId?.slice(0, 8) + '...');
+        });
         select.innerHTML = '';
         if (cameras.length === 0) {
             select.innerHTML = '<option value="">No cameras found</option>';
             return;
         }
+        cameras.sort((a, b) => (a.label || '').localeCompare(b.label || '', undefined, { numeric: true }));
         cameras.forEach((cam, i) => {
             const opt = document.createElement('option');
             opt.value = cam.deviceId;
-            opt.textContent = cam.label || `Camera ${i + 1}`;
+            const label = cam.label || `Camera ${i + 1}`;
+            opt.textContent = label.replace(/\b\w/g, c => c.toUpperCase()).replace(/ *, */g, ' - ');
             if (cam.deviceId === selectedDeviceId) opt.selected = true;
             select.appendChild(opt);
         });
