@@ -626,11 +626,13 @@ function callPeerWithWhepStream(peerId) {
 }
 
 function getWhepStreamName() {
+    const label = $('#stream-label-input').value.trim();
+    if (label) return label;
+
     const url = $('#stream-url-input').value.trim();
     if (url) {
         try {
             const parsed = new URL(url);
-            // Use path segment as name, e.g. "/cam" -> "cam"
             const pathName = parsed.pathname.replace(/\/whep$/, '').split('/').filter(Boolean).pop();
             if (pathName) return pathName;
         } catch {}

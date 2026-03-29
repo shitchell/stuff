@@ -52,9 +52,10 @@
         <!-- External stream (WHEP) -->
         <div id="stream-controls">
             <div class="form-group">
-                <label for="stream-url-input">External Stream (WHEP)</label>
-                <div class="combo-input">
-                    <input type="url" id="stream-url-input" placeholder="http://192.168.0.90:8889/cam" autocomplete="off">
+                <label for="stream-url-input">Add Source</label>
+                <input type="url" id="stream-url-input" placeholder="http://192.168.0.90:8889/cam" autocomplete="off">
+                <div class="combo-input" style="margin-top: 0.3em;">
+                    <input type="text" id="stream-label-input" placeholder="Label (e.g. PiCam IR)" autocomplete="off">
                     <button id="btn-connect-stream" type="button">Connect</button>
                 </div>
             </div>
