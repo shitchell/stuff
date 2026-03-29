@@ -1,3 +1,46 @@
+:root {
+    /* Colors */
+    --bg: #111;
+    --bg-input: #1a1a1a;
+    --bg-raised: #222;
+    --bg-hover: #252525;
+    --border: #333;
+    --border-light: #555;
+    --text: #e0e0e0;
+    --text-bright: #fff;
+    --text-label: #aaa;
+    --text-muted: #888;
+    --text-dim: #666;
+    --accent: #3498db;
+    --accent-light: #7eb8da;
+    --success: #2ecc71;
+    --danger: #c0392b;
+    --error: #e74c3c;
+    --warning: #f1c40f;
+
+    /* Radii */
+    --radius: 8px;
+    --radius-sm: 4px;
+    --radius-lg: 12px;
+
+    /* Border */
+    --border-w: 2px;
+
+    /* Font sizes — consolidated scale */
+    --font-xs: 0.7rem;
+    --font-sm: 0.85rem;
+    --font-base: 1rem;
+    --font-lg: 1.1rem;
+    --font-xl: 1.2rem;
+    --font-2xl: 1.5rem;
+    --font-3xl: 2rem;
+
+    /* Spacing */
+    --pad-input: 0.75rem;
+    --pad-section: 1rem;
+    --gap: 0.5rem;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -6,8 +49,8 @@
 
 body {
     font-family: system-ui, -apple-system, sans-serif;
-    background: #111;
-    color: #e0e0e0;
+    background: var(--bg);
+    color: var(--text);
     min-height: 100dvh;
     display: flex;
     justify-content: center;
@@ -22,6 +65,99 @@ body.vr-active {
 
 .hidden { display: none !important; }
 
+/* --- Reusable: inputs & controls --- */
+.input {
+    font-size: var(--font-base);
+    padding: var(--pad-input);
+    border: var(--border-w) solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-input);
+    color: var(--text-bright);
+    font-family: inherit;
+}
+
+.input-lg {
+    font-size: var(--font-lg);
+    padding: 0.75rem;
+}
+
+select.input {
+    cursor: pointer;
+}
+
+/* --- Reusable: buttons --- */
+.btn {
+    border: var(--border-w) solid var(--border-light);
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--text-bright);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: var(--font-base);
+    padding: var(--pad-input);
+}
+
+.btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.btn-primary {
+    display: block;
+    width: 100%;
+    padding: var(--pad-input);
+    font-size: var(--font-lg);
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    font-weight: 600;
+    background: var(--accent);
+    color: var(--text-bright);
+    margin-top: var(--pad-section);
+}
+
+.btn-primary:disabled {
+    background: var(--border);
+    color: var(--text-dim);
+    cursor: not-allowed;
+}
+
+.btn-toggle {
+    padding: var(--pad-input);
+    font-size: var(--font-base);
+    border: var(--border-w) solid var(--border-light);
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--text-bright);
+    cursor: pointer;
+}
+
+.btn-toggle.active {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: var(--text-bright);
+}
+
+.btn-small {
+    padding: 0.4rem 0.8rem;
+    font-size: var(--font-sm);
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    background: transparent;
+    color: #ccc;
+    cursor: pointer;
+}
+
+/* --- Reusable: status --- */
+.status {
+    margin-top: var(--gap);
+    font-size: var(--font-sm);
+}
+
+.status.waiting { color: var(--warning); }
+.status.connected { color: var(--success); }
+.status.error { color: var(--error); }
+
 /* --- Join Screen --- */
 #join-screen {
     text-align: center;
@@ -31,35 +167,35 @@ body.vr-active {
 }
 
 #join-screen h1 {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
+    font-size: var(--font-3xl);
+    margin-bottom: var(--gap);
 }
 
 #join-screen p {
-    color: #888;
+    color: var(--text-muted);
     margin-bottom: 2rem;
 }
 
 .form-group {
     text-align: left;
-    margin-bottom: 1rem;
+    margin-bottom: var(--pad-section);
 }
 
 .form-group label {
     display: block;
-    font-size: 0.9rem;
-    color: #aaa;
+    font-size: var(--font-sm);
+    color: var(--text-label);
     margin-bottom: 0.25rem;
 }
 
 .form-group input, .form-group select {
     width: 100%;
-    font-size: 1.1rem;
-    padding: 0.75rem;
-    border: 2px solid #333;
-    border-radius: 8px;
-    background: #1a1a1a;
-    color: #fff;
+    font-size: var(--font-lg);
+    padding: var(--pad-input);
+    border: var(--border-w) solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-input);
+    color: var(--text-bright);
     font-family: inherit;
 }
 
@@ -67,40 +203,40 @@ body.vr-active {
     cursor: pointer;
 }
 
-/* Combo input (room field with dropdown arrow) */
+/* Combo input (input + button side by side) */
 .combo-input {
     display: flex;
 }
 
 .combo-input input {
-    border-radius: 8px 0 0 8px;
+    border-radius: var(--radius) 0 0 var(--radius);
     border-right: none;
     flex: 1;
 }
 
 .combo-input button {
-    border: 2px solid #333;
+    border: var(--border-w) solid var(--border);
     border-left: none;
-    border-radius: 0 8px 8px 0;
-    background: #222;
-    color: #888;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    background: var(--bg-raised);
+    color: var(--text-muted);
     padding: 0 0.75rem;
-    font-size: 0.8rem;
+    font-size: var(--font-sm);
     cursor: pointer;
 }
 
 /* Room history dropdown */
 #room-history {
-    background: #1a1a1a;
-    border: 2px solid #333;
+    background: var(--bg-input);
+    border: var(--border-w) solid var(--border);
     border-top: none;
-    border-radius: 0 0 8px 8px;
+    border-radius: 0 0 var(--radius) var(--radius);
     max-height: 150px;
     overflow-y: auto;
 }
 
 .room-history-item {
-    padding: 0.5rem 0.75rem;
+    padding: var(--pad-input);
     cursor: pointer;
     display: flex;
     justify-content: space-between;
@@ -108,112 +244,73 @@ body.vr-active {
 }
 
 .room-history-item:hover {
-    background: #252525;
+    background: var(--bg-hover);
 }
 
-.room-history-item .room-name { color: #fff; }
-.room-history-item .room-date { color: #666; font-size: 0.75rem; }
-
-/* Buttons */
-.btn-primary {
-    display: block;
-    width: 100%;
-    padding: 1rem;
-    font-size: 1.2rem;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 600;
-    background: #3498db;
-    color: #fff;
-    margin-top: 1rem;
-}
-
-.btn-primary:disabled {
-    background: #333;
-    color: #666;
-    cursor: not-allowed;
-}
-
-.btn-toggle {
-    padding: 0.6rem 1.2rem;
-    font-size: 1rem;
-    border: 2px solid #555;
-    border-radius: 8px;
-    background: transparent;
-    color: #fff;
-    cursor: pointer;
-}
-
-.btn-toggle.active {
-    background: #c0392b;
-    border-color: #c0392b;
-    color: #fff;
-}
-
-.btn-small {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.85rem;
-    border: 1px solid #555;
-    border-radius: 6px;
-    background: transparent;
-    color: #ccc;
-    cursor: pointer;
-}
-
-/* Status */
-.status {
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
-}
-
-.status.waiting { color: #f1c40f; }
-.status.connected { color: #2ecc71; }
-.status.error { color: #e74c3c; }
+.room-history-item .room-name { color: var(--text-bright); }
+.room-history-item .room-date { color: var(--text-dim); font-size: var(--font-xs); }
 
 /* --- Lobby --- */
 #lobby {
     width: 100%;
     max-width: 500px;
-    padding: 1rem;
+    padding: var(--pad-section);
 }
 
 #lobby-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid #333;
+    margin-bottom: var(--pad-section);
+    padding-bottom: var(--gap);
+    border-bottom: 1px solid var(--border);
 }
 
 .room-label {
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: var(--font-lg);
     font-family: monospace;
 }
 
 .name-label {
-    color: #888;
+    color: var(--text-muted);
     margin-left: 0.75rem;
-    font-size: 0.9rem;
+    font-size: var(--font-sm);
 }
 
+/* Section headers */
+#lobby h3 {
+    font-size: 1.05rem;
+    color: var(--accent-light);
+    margin-top: 1.7rem;
+    margin-bottom: var(--gap);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.3rem;
+}
+
+#lobby h4 {
+    font-size: var(--font-sm);
+    color: var(--text-muted);
+    margin-top: var(--gap);
+    margin-bottom: 0.3rem;
+}
+
+/* Camera controls */
 #camera-controls {
     display: flex;
-    gap: 0.5rem;
+    gap: var(--gap);
     align-items: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--gap);
 }
 
 #camera-select {
     flex: 1;
-    font-size: 1rem;
-    padding: 0.6rem 0.8rem;
-    border: 2px solid #555;
-    border-radius: 8px;
-    background: #1a1a1a;
-    color: #fff;
+    font-size: var(--font-base);
+    padding: var(--pad-input);
+    border: var(--border-w) solid var(--border-light);
+    border-radius: var(--radius);
+    background: var(--bg-input);
+    color: var(--text-bright);
     cursor: pointer;
     font-family: inherit;
     line-height: 1.2;
@@ -222,123 +319,109 @@ body.vr-active {
 #camera-preview, #stream-preview {
     width: 100%;
     max-height: 200px;
-    border-radius: 8px;
+    border-radius: var(--radius);
     background: #000;
     object-fit: cover;
-    margin-bottom: 1rem;
+    margin-bottom: var(--pad-section);
 }
 
 /* External stream controls */
 #stream-controls {
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--gap);
 }
 
 #stream-controls .combo-input input {
-    font-size: 0.95rem;
-    padding: 0.6rem 0.75rem;
+    font-size: var(--font-base);
+    padding: var(--pad-input);
 }
 
 #stream-controls .combo-input button {
-    padding: 0 1rem;
-    font-size: 0.85rem;
+    padding: 0 var(--pad-section);
+    font-size: var(--font-sm);
     white-space: nowrap;
 }
 
 #btn-connect-stream.active {
-    background: #c0392b;
-    border-color: #c0392b;
-    color: #fff;
+    background: var(--danger);
+    border-color: var(--danger);
+    color: var(--text-bright);
 }
 
 #stream-status {
-    font-size: 0.8rem;
+    font-size: var(--font-sm);
     margin-top: 0.25rem;
 }
 
+/* QR code */
 #lobby-qr {
     text-align: center;
-    margin-bottom: 1rem;
-}
-
-#peer-list {
-    margin-bottom: 1rem;
-}
-
-#lobby h3 {
-    font-size: 1.05rem;
-    color: #7eb8da;
-    margin-top: 1.7rem;
-    margin-bottom: 0.5rem;
-    border-bottom: 1px solid #333;
-    padding-bottom: 0.3rem;
-}
-
-#lobby h4 {
-    font-size: 0.9rem;
-    color: #888;
-    margin-top: 0.6rem;
-    margin-bottom: 0.3rem;
+    margin-bottom: var(--pad-section);
 }
 
 .qr-hint {
-    font-size: 0.85rem;
-    color: #666;
-    margin-bottom: 0.5rem;
+    font-size: var(--font-sm);
+    color: var(--text-dim);
+    margin-bottom: var(--gap);
     text-align: center;
+}
+
+/* Peer list */
+#peer-list {
+    margin-bottom: var(--pad-section);
 }
 
 .peer-item {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--gap);
     padding: 0.4rem 0;
 }
 
 .peer-name { flex: 1; }
 .peer-status {
-    font-size: 0.75rem;
+    font-size: var(--font-xs);
     padding: 0.15rem 0.4rem;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }
 
-.peer-status.sharing { background: #2ecc71; color: #111; }
-.peer-status.not-sharing { background: #333; color: #888; }
+.peer-status.sharing { background: var(--success); color: var(--bg); }
+.peer-status.not-sharing { background: var(--border); color: var(--text-muted); }
 
 .peer-thumb {
     width: 48px;
     height: 36px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     object-fit: cover;
     background: #000;
 }
 
 /* View setup */
 #view-setup {
-    margin-bottom: 1rem;
+    margin-bottom: var(--pad-section);
 }
 
 .corner-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 4px;
+    gap: var(--radius-sm);
     width: 80px;
     margin-top: 0.25rem;
 }
 
 .corner-btn {
     padding: 0.3rem;
-    font-size: 0.7rem;
-    border: 1px solid #555;
-    border-radius: 4px;
+    font-size: var(--font-xs);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
     background: transparent;
-    color: #888;
+    color: var(--text-muted);
     cursor: pointer;
 }
 
 .corner-btn.active {
-    background: #3498db;
-    border-color: #3498db;
-    color: #fff;
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--text-bright);
 }
 
 /* --- VR View --- */
@@ -370,7 +453,7 @@ body.vr-active {
     width: 12.5%;
     z-index: 5;
     border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     overflow: hidden;
 }
 
@@ -395,8 +478,8 @@ body.vr-active {
 }
 
 #vr-overlay-msg {
-    font-size: 1.5rem;
-    color: #e74c3c;
+    font-size: var(--font-2xl);
+    color: var(--error);
     text-align: center;
     padding: 2rem;
 }
@@ -418,14 +501,14 @@ body.vr-active {
     left: 50%;
     transform: translateX(-50%);
     background: rgba(255, 255, 255, 0.15);
-    color: #fff;
+    color: var(--text-bright);
     width: 36px;
     height: 36px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.2rem;
+    font-size: var(--font-xl);
     cursor: pointer;
 }
 
@@ -437,14 +520,14 @@ body.vr-active {
     transform: translateX(-50%);
     background: rgba(0, 0, 0, 0.6);
     padding: 8px 16px;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
 }
 
 #vr-scale-slider {
     width: 200px;
     height: 30px;
     cursor: pointer;
-    accent-color: #3498db;
+    accent-color: var(--accent);
 }
 
 /* Debug panel */
@@ -454,10 +537,10 @@ body.vr-active {
     right: 4px;
     z-index: 9999;
     background: rgba(255, 0, 0, 0.5);
-    color: #fff;
+    color: var(--text-bright);
     padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.7rem;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-xs);
     cursor: pointer;
 }
 
@@ -473,11 +556,11 @@ body.vr-active {
     max-height: 60vh;
     overflow: auto;
     padding: 8px;
-    border-radius: 8px;
+    border-radius: var(--radius);
 }
 
 #debug-panel button {
-    font-size: 0.7rem;
+    font-size: var(--font-xs);
     margin-right: 4px;
     margin-bottom: 4px;
 }
