@@ -146,9 +146,9 @@ body.vr-active {
 }
 
 .btn-toggle.active {
-    background: #2ecc71;
-    border-color: #2ecc71;
-    color: #111;
+    background: #c0392b;
+    border-color: #c0392b;
+    color: #fff;
 }
 
 .btn-small {
@@ -208,14 +208,15 @@ body.vr-active {
 
 #camera-select {
     flex: 1;
-    font-size: 0.9rem;
-    padding: 0.4rem 0.6rem;
-    border: 2px solid #333;
-    border-radius: 6px;
+    font-size: 1rem;
+    padding: 0.6rem 0.8rem;
+    border: 2px solid #555;
+    border-radius: 8px;
     background: #1a1a1a;
     color: #fff;
     cursor: pointer;
     font-family: inherit;
+    line-height: 1.2;
 }
 
 #camera-preview, #stream-preview {
@@ -263,10 +264,27 @@ body.vr-active {
     margin-bottom: 1rem;
 }
 
-#peer-list h3, #view-setup h3 {
-    font-size: 0.95rem;
-    color: #888;
+#lobby h3 {
+    font-size: 1.05rem;
+    color: #7eb8da;
+    margin-top: 1.7rem;
     margin-bottom: 0.5rem;
+    border-bottom: 1px solid #333;
+    padding-bottom: 0.3rem;
+}
+
+#lobby h4 {
+    font-size: 0.9rem;
+    color: #888;
+    margin-top: 0.6rem;
+    margin-bottom: 0.3rem;
+}
+
+.qr-hint {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+    text-align: center;
 }
 
 .peer-item {
